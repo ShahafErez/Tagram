@@ -32,9 +32,10 @@ class CreateProjectView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             title = serializer.data.get('title')
+            description = serializer.data.get('description')
             project_manager = self.request.session.session_key
 
-            project = Project(project_manager=project_manager, title=title)
+            project = Project(project_manager=project_manager, title=title, description=description)
             project.save()
             # saving the current project id in the session, so we could return the user to it if needed
             self.request.session['project_id'] = project.project_id # storing a custom variable in the user session
