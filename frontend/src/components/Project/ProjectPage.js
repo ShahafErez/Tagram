@@ -25,12 +25,31 @@ export default function ProjectPage() {
   }, []);
 
   return (
-    <div>
-      <h2>Welcome to project page {project.title}</h2>
-      <h3> Project Id: {id}</h3>
-      <h3> Description: {project.description}</h3>
-      <h3> Is the manager: {String(project.is_project_manager)}</h3>
-      <h3> Creation date: {project.created_at}</h3>
+    <div
+      class="card"
+      style={{ textAlign: "center", width: "50%", margin: "auto" }}
+    >
+      <div class="card-body">
+        <h2 class="card-title">{project.title}</h2>
+        <p class="card-text">
+          {" "}
+          <b>Project Id:</b> {id}
+        </p>
+        <p class="card-text">
+          {" "}
+          <b>Description: </b>
+          {project.description}
+        </p>
+        <p class="card-text">
+          {" "}
+          <b>Is the manager: </b>
+          {String(project.is_project_manager)}
+        </p>
+        <p class="card-text">
+          {" "}
+          <b>Creation date:</b> {project.created_at}
+        </p>
+      </div>
     </div>
   );
 }
