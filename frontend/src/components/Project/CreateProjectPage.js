@@ -29,22 +29,41 @@ export default function CreateProjectPage() {
   };
 
   return (
-    <div>
-      <h2>Welcome to Create project func!</h2>
+    <div style={{ maxWidth: "40%", margin: "auto" }}>
+      <h2>Create a new project</h2>
       <form onSubmit={handleSubmit}>
-        <label>Project Title</label>
-        <input
-          type="text"
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <label>Project Description</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        {!isPending && <button>Save</button>}
+        <div style={{ marginTop: "15px" }}>
+          <label>Project Title</label>
+          <input
+            class="form-control"
+            type="text"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter title"
+          />
+        </div>
+        <div style={{ marginTop: "15px" }}>
+          {" "}
+          <label>Project Description</label>
+          <textarea
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+            value={description}
+            placeholder="Your project description"
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        {!isPending && (
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style={{ marginTop: "15px" }}
+          >
+            Submit
+          </button>
+        )}
         {isPending && <button disabled>Adding project..</button>}
       </form>
     </div>
