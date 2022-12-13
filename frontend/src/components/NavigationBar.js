@@ -3,7 +3,7 @@ import React from "react";
 export default function NavigationBar() {
   return (
     <nav
-      class="navbar border-bottom border border-warning"
+      class="navbar border-bottom border border-secondary"
       style={{
         backgroundColor: "white",
         padding: "0 0 0px 12px",
@@ -24,6 +24,7 @@ export default function NavigationBar() {
           alt=""
           style={{
             paddingBottom: "0px",
+            marginRight: "10px",
           }}
         />
       </a>

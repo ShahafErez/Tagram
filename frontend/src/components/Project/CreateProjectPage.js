@@ -4,13 +4,11 @@ import { useNavigate } from "react-router-dom";
 export default function CreateProjectPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     // prevent the page from re-loading after submit
     e.preventDefault();
-    setIsPending(true);
 
     fetch("/api/project/create", {
       method: "POST",
@@ -23,7 +21,6 @@ export default function CreateProjectPage() {
       // redirecting to the project page after creation
       .then((response) => response.json())
       .then((data) => {
-        setIsPending(false);
         navigate("/project/" + data.project_id);
       });
   };
@@ -55,16 +52,13 @@ export default function CreateProjectPage() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        {!isPending && (
-          <button
-            type="submit"
-            class="btn btn-primary"
-            style={{ marginTop: "15px" }}
-          >
-            Submit
-          </button>
-        )}
-        {isPending && <button disabled>Adding project..</button>}
+        <button
+          type="submit"
+          class="btn btn-primary"
+          style={{ marginTop: "15px" }}
+        >
+          Submit
+        </button>
       </form>
     </div>
   );
