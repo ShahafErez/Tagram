@@ -7,7 +7,7 @@ export default function HomePage() {
       <h2 style={{ marginBottom: "20px" }}>Welcome to Tagram!</h2>
       <div>
         <Link to="/create">
-          <button type="button" class="btn btn-warning">
+          <button type="button" class="btn btn-primary">
             Create a new project
           </button>
         </Link>
