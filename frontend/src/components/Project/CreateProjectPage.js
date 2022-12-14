@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateProjectPage() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const navigate = useNavigate();
+  const [addMetaTagging, setaddMetaTagging] = useState(false);
 
   const handleSubmit = (e) => {
     // prevent the page from re-loading after submit
@@ -21,7 +22,11 @@ export default function CreateProjectPage() {
       // redirecting to the project page after creation
       .then((response) => response.json())
       .then((data) => {
-        navigate("/project/" + data.project_id);
+        if (addMetaTagging) {
+          navigate("/meta/" + data.project_id);
+        } else {
+          navigate("/project/" + data.project_id);
+        }
       });
   };
 
@@ -55,9 +60,18 @@ export default function CreateProjectPage() {
         <button
           type="submit"
           class="btn btn-primary"
+          onClick={() => setaddMetaTagging(false)}
           style={{ marginTop: "15px" }}
         >
           Submit
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          onClick={() => setaddMetaTagging(true)}
+          style={{ marginTop: "15px", marginLeft: "20px" }}
+        >
+          Submit and add meta-tagging
         </button>
       </form>
     </div>
