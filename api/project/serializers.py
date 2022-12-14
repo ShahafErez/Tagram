@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Project
+from .models import Project, File
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     description = serializers.CharField(allow_blank=True, default='')
@@ -21,3 +22,4 @@ class EditProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('title', 'description', 'project_id')
+

@@ -6,9 +6,26 @@ export default function CreateProjectPage() {
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
 
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const handleSubmit = (e) => {
     // prevent the page from re-loading after submit
     e.preventDefault();
+    // Create an object of formData
+    const formData = new FormData();
+    formData.append("myFile", selectedFile, selectedFile.name);
+    console.log(selectedFile);
+    console.log(formData);
+    //Request made to the backend api Send formData object
+    //axios.post("api/project/uploadfile", formData);
+    fetch("/api/project/uploadfile",
+    {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json'
+    },
+      body: formData,
+    });
 
     fetch("/api/project/create", {
       method: "POST",
@@ -24,6 +41,7 @@ export default function CreateProjectPage() {
         navigate("/project/" + data.project_id);
       });
   };
+
 
   return (
     <div style={{ maxWidth: "40%", margin: "auto" }}>
@@ -52,6 +70,7 @@ export default function CreateProjectPage() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+        <input type="file"  onChange={(e) => setSelectedFile( e.target.files[0]) }/>
         <button
           type="submit"
           class="btn btn-primary"

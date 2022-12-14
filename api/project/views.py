@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from .serializers import ProjectSerializer, CreateProjectSerializer, EditProjectSerializer
-from .models import Project
+from .models import Project, File
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
+import logging
+from .forms import UploadFile
 
 PROJECT_ID_NOT_FOUNT_MESSAGE = {'Project Not Found': 'Invalid Project Id.'}
 PROJECT_ID_NOT_IN_PATH_MESSAGE = {'Bad Request': 'Invalid post data, did not find a project id'}
@@ -122,4 +124,14 @@ class EditProject(APIView):
 
         return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
 
-    
+
+class UploadFile(APIView):
+    """
+    save file
+    """
+    def post(self, request, format=None):
+        print(request.FILES['myFile'])
+        #logging.DEBUG(request.FILES['myFile'])
+        file = File(file = request.FILES['myFile'])
+        file.save()
+        return Response("test", status=status.HTTP_200_OK)

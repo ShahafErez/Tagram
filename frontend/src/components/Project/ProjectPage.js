@@ -50,6 +50,8 @@ export default function ProjectPage() {
           <b>Creation date:</b> {project.created_at}
         </p>
       </div>
+      <div>
+      </div>
     </div>
   );
 }

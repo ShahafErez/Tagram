@@ -2,6 +2,7 @@ from django.db import models
 import string
 import random
 
+
 def generate_unique_code():
     length = 6
 
@@ -19,3 +20,6 @@ class Project(models.Model):
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+class File(models.Model):
+    file = models.FileField( upload_to='./uploads')
