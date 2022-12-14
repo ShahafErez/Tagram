@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { TokenAnnotator } from "react-text-annotate";
+import NLPAnnotator from "react-nlp-annotate";
 
 // todo- change to be dynamic
 const TEXT =
@@ -12,6 +13,19 @@ const TAG_COLORS = {
   Class: "#00ffa2",
   Attribute: "#84d2ff",
 };
+
+const labels = [
+  {
+    id: "gryffindor",
+    displayName: "Gryffindor",
+    description: "Daring, strong nerve and chivalry.",
+  },
+  {
+    id: "slytherin",
+    displayName: "Slytherin",
+    description: "Cunning and ambitious. Possibly dark wizard.",
+  },
+];
 
 const Card = ({ children }) => (
   <div
@@ -52,20 +66,19 @@ export default class Annotation extends Component {
               <option value="Class">Class</option>
               <option value="Attribute">Attribute</option>
             </select>
-            <TokenAnnotator
-              style={{
-                fontFamily: "IBM Plex Sans",
-                maxWidth: 500,
-                lineHeight: 1.5,
+
+            <NLPAnnotator
+              hotkeysEnabled
+              type="label-relationships"
+              labels={labels}
+              multipleLabels={false}
+              document="Harry was an honest to god good man"
+              onChange={(output) => {
+                console.log("Output is...", output);
               }}
-              tokens={TEXT.split(" ")}
-              value={this.state.value}
-              onChange={this.handleChange}
-              getSpan={(span) => ({
-                ...span,
-                tag: this.state.tag,
-                color: TAG_COLORS[this.state.tag],
-              })}
+              // this is just for label-relationships
+              entityLabels={labels}
+              relationshipLabels={labels}
             />
           </Card>
         </div>
