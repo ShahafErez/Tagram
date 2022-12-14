@@ -23,3 +23,4 @@ class Project(models.Model):
 
 class File(models.Model):
     file = models.FileField( upload_to='./uploads')
+    project_id = models.CharField(max_length=8, primary_key=True)

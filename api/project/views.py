@@ -132,6 +132,6 @@ class UploadFile(APIView):
     def post(self, request, format=None):
         print(request.FILES['myFile'])
         #logging.DEBUG(request.FILES['myFile'])
-        file = File(file = request.FILES['myFile'])
+        file = File(file = request.FILES['myFile'], project_id=request.POST['project_id'])
         file.save()
         return Response("test", status=status.HTTP_200_OK)
