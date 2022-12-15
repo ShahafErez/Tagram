@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, status
-from .serializers import ProjectSerializer, CreateProjectSerializer, EditProjectSerializer
+from .serializers import ProjectSerializer, CreateProjectSerializer, EditProjectSerializer, FileSerializer
 from .models import Project, File
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -135,3 +135,19 @@ class UploadFile(APIView):
         file = File(file = request.FILES['myFile'], project_id=request.POST['project_id'])
         file.save()
         return Response("test", status=status.HTTP_200_OK)
+
+class GetFile(APIView):
+    serializer_class = FileSerializer
+    lookup_url_kwarg = 'project_id'
+
+    def get(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg)
+        # Checking we got project id in the path param
+        if project_id != None:
+            project_query = File.objects.filter(project_id=project_id)
+            #logging("project id is: "+ project_id)
+            if len(project_query) > 0:
+                data = FileSerializer(project_query[0]).data
+                return Response(data, status=status.HTTP_200_OK)
+            return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
+        return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)

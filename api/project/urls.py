@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectView, CreateProjectView, GetProject, JoinProject, EditProject, UploadFile
+from .views import ProjectView, CreateProjectView, GetProject, JoinProject, EditProject, UploadFile, GetFile
 
 # app_name = 'project'
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('join', JoinProject.as_view()),
     path('edit', EditProject.as_view()),
     path('uploadfile', UploadFile.as_view()),
+    path('get-file', GetFile.as_view()),
 ]

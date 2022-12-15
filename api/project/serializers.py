@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Project, File
-
+from django import forms
 
 class ProjectSerializer(serializers.ModelSerializer):
     description = serializers.CharField(allow_blank=True, default='')
@@ -23,3 +23,9 @@ class EditProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('title', 'description', 'project_id')
 
+class FileSerializer(serializers.ModelSerializer):
+    file = forms.FileField()
+    project_id = serializers.CharField()
+    class Meta:
+        model = File
+        fields = ['file','project_id']

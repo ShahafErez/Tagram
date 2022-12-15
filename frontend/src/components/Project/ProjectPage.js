@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Annotation from "./Annotation";
 
 export default function ProjectPage() {
   let { id } = useParams();
@@ -51,6 +52,7 @@ export default function ProjectPage() {
         </p>
       </div>
       <div>
+        <Annotation project_id={id}></Annotation>
       </div>
     </div>
   );
