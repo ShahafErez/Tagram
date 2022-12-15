@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function CreateMetaTagging(props) {
   const navigate = useNavigate();
@@ -33,24 +34,24 @@ export default function CreateMetaTagging(props) {
     e.preventDefault();
     let labelDetails = {
       label: label,
-      labelType: labelType,
-      labelColor: labelColor,
+      labelType: "" + labelType,
+      labelColor: "" + labelColor,
     };
 
     setLabels(labels.concat(labelDetails));
 
     // reset value
-    setLabel(options[0]);
-    setLabelType("");
-    setLabelColor("#000000");
     e.target.reset();
+    setLabel(options[0]);
+    setLabelType();
+    setLabelColor("#000000");
   };
 
   /** Returns the label selection */
   function renderLabelSelection() {
     return (
-      <div>
-        <form class="p-3 mb-2 bg-white text-dark" onSubmit={handleLabelSubmit}>
+      <div class="p-3 mb-2 bg-white text-dark">
+        <form onSubmit={handleLabelSubmit}>
           <h5>Please select one or more labels</h5>
           <div class="card" style={{ padding: "15px" }}>
             <div>
@@ -117,6 +118,57 @@ export default function CreateMetaTagging(props) {
             </button>
           </div>
         </form>
+
+        <div class="accordion" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseOne"
+                aria-expanded="true"
+                aria-controls="collapseOne"
+              >
+                Current added labels
+              </button>
+            </h2>
+            <div
+              id="collapseOne"
+              class="accordion-collapse collapse show"
+              aria-labelledby="headingOne"
+              data-bs-parent="#accordionExample"
+            >
+              <div class="accordion-body">
+                <ul class="list-group">
+                  {labels.map((element, index) => (
+                    <li class="list-group-item">
+                      <span key={index}>
+                        <i
+                          class="bi bi-square-fill"
+                          style={{
+                            color: element.labelColor,
+                            fontSize: "17px",
+                            marginRight: "10px",
+                          }}
+                        ></i>
+                        <span>
+                          <b> label: </b>
+                        </span>
+                        <span>{String(element.label)} </span>
+                        <span style={{ marginLeft: "10px" }}>
+                          <b> label type: </b>
+                        </span>
+                        <span>{String(element.labelType)} </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {labels.length <= 0 && <p>You don't have labels yet</p>}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
