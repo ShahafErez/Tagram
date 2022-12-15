@@ -9,6 +9,6 @@ urlpatterns = [
     path('join', index),
     path('create', index),
     path('project/<str:projectID>', index),
-    path('meta/<str:projectID>', index),
+    path('create-meta', index),
     path('annotate', index)
 ]

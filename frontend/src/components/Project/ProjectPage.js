@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 export default function ProjectPage() {
   let { id } = useParams();
+  const navigate = useNavigate();
   const [project, setProject] = useState({
     title: "",
     description: "",

@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CreateMetaTagging from "./CreateMetaTagging";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
+
+  // project details
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  // page state
   const [isCreateMetaTagging, setIsCreateMetaTagging] = useState(false);
   const [isBrowseMetaTagging, setIsBrowseMetaTagging] = useState(false);
 
+  /** Handeles saving the project deatil
+   * Sends details to the backend
+   */
   const handleSubmit = (e) => {
     // prevent the page from re-loading after submit
     e.preventDefault();
@@ -20,21 +28,11 @@ export default function CreateProjectPage() {
         description,
       }),
     })
-      // redirecting to the project page after creation
       .then((response) => response.json())
       .then((data) => navigate("/project/" + data.project_id));
   };
 
-  const handleCreateMetaTagging = () => {
-    // setIsCreateMetaTagging(true);
-    return <div>CREATE META TAGGING</div>;
-  };
-
-  const handleBrowseMetaTagging = () => {
-    // setIsBrowseMetaTagging(true);
-    return <div>BROWSE META TAGGING</div>;
-  };
-
+  /* Returns the main create project form*/
   const createProjectForm = () => {
     return (
       <div>
@@ -84,12 +82,14 @@ export default function CreateProjectPage() {
             </div>
           </div>
           <div style={{ marginTop: "15px" }}>
+            {/* todo- add when users are added */}
             <label>Add Members</label>
             <i
               class="bi bi-person-add fa-6x"
               style={{ fontSize: "25px", marginLeft: "8px" }}
             ></i>
           </div>
+          {/* todo- check if meta tagging is selected */}
           <button
             type="submit"
             class="btn btn-primary"
@@ -103,14 +103,22 @@ export default function CreateProjectPage() {
     );
   };
 
+  /** Function that called when the meta tagging is being saved
+   */
+  function savedMetaTagging(metaTaggingId) {
+    setIsCreateMetaTagging(false);
+
+    // todo- add meta tagging in backend
+  }
+
   return (
     <div
       class="card"
       style={{ maxWidth: "70%", margin: "auto", padding: "20px" }}
     >
       {!isCreateMetaTagging && !isBrowseMetaTagging && createProjectForm()}
-      {isCreateMetaTagging && handleCreateMetaTagging()}
-      {isBrowseMetaTagging && handleBrowseMetaTagging()}
+      {isCreateMetaTagging && <CreateMetaTagging onSave={savedMetaTagging} />}
+      {/* {isBrowseMetaTagging && handleBrowseMetaTagging()} */}
     </div>
   );
 }
