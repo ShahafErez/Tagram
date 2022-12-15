@@ -12,8 +12,8 @@ export default function Routers() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/create" element={<CreateProjectPage />} />
+      <Route path="/create-meta" element={<SelectLabels />} />
       <Route path="/project/:id" element={<ProjectPage />} />
-      <Route path="/meta/:id" element={<SelectLabels />} />
       <Route path="/annotate" element={<Annotation />} />
     </Routes>
   );

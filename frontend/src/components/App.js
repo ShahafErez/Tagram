@@ -4,6 +4,7 @@ import { render } from "react-dom";
 import Routers from "./Routers";
 import NavigationBar from "./NavigationBar";
 import "../../static/css/styling.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default class App extends Component {
   constructor(props) {
