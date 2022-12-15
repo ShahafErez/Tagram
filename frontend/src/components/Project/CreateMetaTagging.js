@@ -13,17 +13,18 @@ export default function CreateMetaTagging(props) {
   const [labelColor, setLabelColor] = useState("#000000");
 
   // labels array
-  let labels = [];
+  const [labels, setLabels] = useState([]);
 
   /** Handeles saving the meta tagging details
    * Saves the details in the backend
    * Saved the labels details in the backend
    */
-  function createMetaTagging() {
-    console.log("title ", title);
-    console.log("array: ", labels);
-    // props.onSave("8");
-  }
+  const createMetaTagging = () => {
+    // TODO save on database
+
+    // todo- send meta tag id
+    props.onSave(labels);
+  };
 
   /** Handeles saving a label
    * Saves the details in the backend
@@ -36,7 +37,7 @@ export default function CreateMetaTagging(props) {
       labelColor: labelColor,
     };
 
-    // saves the detail to backend
+    setLabels(labels.concat(labelDetails));
 
     // reset value
     setLabel(options[0]);
@@ -50,8 +51,8 @@ export default function CreateMetaTagging(props) {
     return (
       <div>
         <form class="p-3 mb-2 bg-white text-dark" onSubmit={handleLabelSubmit}>
+          <h5>Please select one or more labels</h5>
           <div class="card" style={{ padding: "15px" }}>
-            <h4>Please select one or more labels</h4>
             <div>
               {/* Selecting the label type from the meta model list (todo- get from meta-model) */}
               <label>Select label type</label>
@@ -121,11 +122,11 @@ export default function CreateMetaTagging(props) {
   }
 
   return (
-    <div>
+    <div class="create-page">
       <h2>Create Meta-Tagging</h2>
 
       <div class="p-3 mb-2">
-        <label style={{ fontSize: "17px" }}>Title</label>
+        <h5>Title</h5>
         <input
           class="form-control"
           type="text"
@@ -143,12 +144,41 @@ export default function CreateMetaTagging(props) {
       >
         <button
           type="submit"
-          class="btn btn-primary"
-          style={{ marginLeft: "10px" }}
-          onClick={createMetaTagging}
+          class="btn btn-passive"
+          style={{
+            marginLeft: "10px",
+            backgroundColor: "#adb5bd",
+            width: "80px",
+          }}
+          onClick={() => {
+            props.onBack();
+          }}
         >
-          Save Meta-Tagging
+          Back
         </button>
+
+        {/* disable if there are no meta tagging selected */}
+        {labels.length <= 0 && (
+          <button
+            type="submit"
+            class="btn btn-primary disabled"
+            style={{ marginLeft: "10px", zIndex: "99999" }}
+            onClick={createMetaTagging}
+          >
+            Save Meta-Tagging
+          </button>
+        )}
+        {/* enabled */}
+        {labels.length > 0 && (
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style={{ marginLeft: "10px" }}
+            onClick={createMetaTagging}
+          >
+            Save Meta-Tagging
+          </button>
+        )}
       </div>
     </div>
   );

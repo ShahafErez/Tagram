@@ -106,9 +106,15 @@ export default function CreateProjectPage() {
   /** Function that called when the meta tagging is being saved
    */
   function savedMetaTagging(metaTaggingId) {
+    console.log(metaTaggingId);
     setIsCreateMetaTagging(false);
 
     // todo- add meta tagging in backend
+  }
+
+  function backToPage() {
+    console.log("back to page without saving");
+    setIsCreateMetaTagging(false);
   }
 
   return (
@@ -117,7 +123,9 @@ export default function CreateProjectPage() {
       style={{ maxWidth: "70%", margin: "auto", padding: "20px" }}
     >
       {!isCreateMetaTagging && !isBrowseMetaTagging && createProjectForm()}
-      {isCreateMetaTagging && <CreateMetaTagging onSave={savedMetaTagging} />}
+      {isCreateMetaTagging && (
+        <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
+      )}
       {/* {isBrowseMetaTagging && handleBrowseMetaTagging()} */}
     </div>
   );
