@@ -148,6 +148,11 @@ class GetFile(APIView):
             #logging("project id is: "+ project_id)
             if len(project_query) > 0:
                 data = FileSerializer(project_query[0]).data
+                with open(f".{data['file']}",'r') as f:
+                    text = f.read()
+                    # text = text.split('\n')
+                    # text = '<br/>'.join(text)
+                    data['text'] = text
                 return Response(data, status=status.HTTP_200_OK)
             return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
         return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)

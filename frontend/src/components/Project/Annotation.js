@@ -96,6 +96,7 @@ export default function Annotation(props) {
   const [file, setFile] = useState({
     file: "",
     project_id: "",
+    text: "",
   });
 
   
@@ -111,7 +112,7 @@ export default function Annotation(props) {
       .then((data) => {
         setFile(data);
         console.log(data);
-        console.log(file.file);
+
       });
     // we need to put [] as the second argument, if we want to render only once
   }, []);
@@ -120,7 +121,10 @@ export default function Annotation(props) {
     <div>
       hello to {file.project_id}
       <br></br>
-      <input type="button"  />
+      text in file is:
+      <br>
+      </br>
+      {file.text}
     </div>
   );
 }
