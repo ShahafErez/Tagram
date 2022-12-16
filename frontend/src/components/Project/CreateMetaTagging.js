@@ -10,7 +10,7 @@ export default function CreateMetaTagging(props) {
   // labels settings
   const [options, setOptions] = useState(["Class", "Attribute", "Aggregation"]);
   const [label, setLabel] = useState(options[0]);
-  const [labelType, setLabelType] = useState();
+  const [labelType, setLabelType] = useState("");
   const [labelColor, setLabelColor] = useState("#000000");
 
   // labels array
@@ -39,13 +39,22 @@ export default function CreateMetaTagging(props) {
     };
 
     setLabels(labels.concat(labelDetails));
-
-    // reset value
-    e.target.reset();
-    setLabel(options[0]);
-    setLabelType();
-    setLabelColor("#000000");
+    resetLabelValues(e);
   };
+
+  function resetLabelValues(e) {
+    e.target.reset();
+
+    setLabel(options[0]);
+    setLabelType("");
+    setLabelColor("#000000");
+
+    // setting all the label types to be "checked = false"
+    const typesArr = Array.from(document.getElementsByClassName("metaTagType"));
+    typesArr.forEach((type) => {
+      type.checked = false;
+    });
+  }
 
   /** Returns the label selection */
   function renderLabelSelection() {
@@ -69,12 +78,14 @@ export default function CreateMetaTagging(props) {
             </div>
             {/* Select the label type- tag or relation */}
             <div
-              onChange={(e) => setLabelType(e.target.value)}
+              onChange={(e) => {
+                setLabelType("" + e.target.value);
+              }}
               style={{ marginTop: "15px" }}
             >
               <div class="form-check form-check-inline">
                 <input
-                  class="form-check-input"
+                  class="form-check-input metaTagType"
                   type="radio"
                   name="inlineRadioOptions"
                   id="inlineRadio1"
@@ -87,7 +98,7 @@ export default function CreateMetaTagging(props) {
               </div>
               <div class="form-check form-check-inline">
                 <input
-                  class="form-check-input"
+                  class="form-check-input metaTagType"
                   type="radio"
                   name="inlineRadioOptions"
                   id="inlineRadio2"
