@@ -1,21 +1,26 @@
 from django.db import models
+from api.meta_tagging.models import MetaTagging
 import string
 import random
+
 
 def generate_unique_code():
     length = 6
 
     while True:
-        id= ''.join(random.choices(string.ascii_uppercase, k=length))
+        id = ''.join(random.choices(string.ascii_uppercase, k=length))
         # checking if other project has his id
         if Project.objects.filter(project_id=id).count() == 0:
             break
     return id
 
+
 class Project(models.Model):
-    project_id = models.CharField(max_length=8, default=generate_unique_code, unique=True, primary_key=True)
+    project_id = models.CharField(
+        max_length=8, default=generate_unique_code, unique=True, primary_key=True)
     title = models.CharField(max_length=500)
     description = models.CharField(max_length=5000, blank=True, default='')
+    meta_tagging = models.ForeignKey(
+        MetaTagging, on_delete=models.SET_NULL, null=True)
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
-

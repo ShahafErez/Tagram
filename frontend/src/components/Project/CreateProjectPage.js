@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateMetaTagging from "./CreateMetaTagging";
+import BrowseMetaTagging from "./BrowseMetaTagging";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
@@ -13,6 +14,10 @@ export default function CreateProjectPage() {
   const [isCreateMetaTagging, setIsCreateMetaTagging] = useState(false);
   const [isBrowseMetaTagging, setIsBrowseMetaTagging] = useState(false);
 
+  // meta tagging
+  const [metaTaggingId, setMetaTaggingId] = useState("");
+  const [metaTaggingTitle, setMetaTaggingTitle] = useState("");
+
   /** Handeles saving the project deatil
    * Sends details to the backend
    */
@@ -20,12 +25,15 @@ export default function CreateProjectPage() {
     // prevent the page from re-loading after submit
     e.preventDefault();
 
+    console.log("meta taggin id :", metaTaggingId);
+
     fetch("/api/project/create", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        title,
-        description,
+        title: title,
+        description: description,
+        meta_tagging: metaTaggingId,
       }),
     })
       .then((response) => response.json())
@@ -80,8 +88,30 @@ export default function CreateProjectPage() {
                 Create new meta-tagging
               </button>
             </div>
+            {metaTaggingTitle == "" && (
+              <p
+                style={{
+                  color: "#858585",
+                  margin: "2px 0 2px 0",
+                  fontSize: "15px",
+                }}
+              >
+                You don't have meta-tagging in your project yet
+              </p>
+            )}
+            {metaTaggingTitle != "" && (
+              <p
+                style={{
+                  color: "#858585",
+                  margin: "2px 0 2px 0",
+                  fontSize: "15px",
+                }}
+              >
+                You choose the meta-tagging <b>{metaTaggingTitle}</b>
+              </p>
+            )}
           </div>
-          <div style={{ marginTop: "15px" }}>
+          <div>
             {/* todo- add when users are added */}
             <label>Add Members</label>
             <i
@@ -93,7 +123,6 @@ export default function CreateProjectPage() {
           <button
             type="submit"
             class="btn btn-primary"
-            onClick={() => handleSubmit()}
             style={{ marginTop: "15px" }}
           >
             Save
@@ -105,11 +134,10 @@ export default function CreateProjectPage() {
 
   /** Function that called when the meta tagging is being saved
    */
-  function savedMetaTagging(metaTaggingId) {
-    console.log(metaTaggingId);
+  function savedMetaTagging(metaTagging) {
     setIsCreateMetaTagging(false);
-
-    // todo- add meta tagging in backend
+    setMetaTaggingTitle(metaTagging.title);
+    setMetaTaggingId(metaTagging.meta_tagging_id);
   }
 
   function backToPage() {
@@ -126,7 +154,7 @@ export default function CreateProjectPage() {
       {isCreateMetaTagging && (
         <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
       )}
-      {/* {isBrowseMetaTagging && handleBrowseMetaTagging()} */}
+      {isBrowseMetaTagging && <BrowseMetaTagging />}
     </div>
   );
 }

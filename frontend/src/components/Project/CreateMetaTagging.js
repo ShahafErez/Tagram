@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function CreateMetaTagging(props) {
   const navigate = useNavigate();
 
   // meta-tagging setting
   const [title, setTitle] = useState("");
-  const [metaTaggingId, setMetaTaggingId] = useState("");
 
   // labels settings
   let options = ["Class", "Attribute", "Aggregation"];
@@ -19,27 +17,34 @@ export default function CreateMetaTagging(props) {
   const [labels, setLabels] = useState([]);
 
   /** Handeles saving the meta tagging details
-   * Saves the details in the backend
-   * Saved the labels details in the backend
+   * Saves meta-tagging details
+   * Saves the labels details
    */
   const createMetaTagging = () => {
-    // create meta tagging
+    let meta_tagging_id = "";
+
+    // send the meta tagging to the backend and save it in memory
     fetch("/api/meta-tagging/create", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        title,
+        title: title,
       }),
     })
       .then((response) => response.json())
-      .then((data) => setMetaTaggingId(data));
-
-    /** create labels details
-     * labels: {labels[]}
-     */
-
-    // todo- send meta tag id
-    props.onSave(labels);
+      .then((data) => (meta_tagging_id = data.meta_tagging_id))
+      .then(() => {
+        // send the labels related to the meta-tagging to the backend and save it in memory.
+        fetch("/api/meta-tagging/create-labels", {
+          method: "POST",
+          headers: { "Content-Type": "application/json ; charset=utf-8" },
+          body: JSON.stringify({
+            meta_tagging: meta_tagging_id,
+            labels: labels,
+          }),
+        });
+      })
+      .then(() => props.onSave({ title, meta_tagging_id }));
   };
 
   /** Handeles saving a label
@@ -48,9 +53,9 @@ export default function CreateMetaTagging(props) {
   const handleLabelSubmit = (e) => {
     e.preventDefault();
     let labelDetails = {
-      labelName: labelName,
-      labelType: "" + labelType,
-      labelColor: "" + labelColor,
+      name: labelName,
+      type: "" + labelType,
+      color: "" + labelColor,
     };
 
     setLabels(labels.concat(labelDetails));
@@ -173,7 +178,7 @@ export default function CreateMetaTagging(props) {
                         <i
                           class="bi bi-square-fill"
                           style={{
-                            color: element.labelColor,
+                            color: element.color,
                             fontSize: "17px",
                             marginRight: "10px",
                           }}
@@ -181,11 +186,11 @@ export default function CreateMetaTagging(props) {
                         <span>
                           <b> label name: </b>
                         </span>
-                        <span>{String(element.labelName)} </span>
+                        <span>{String(element.name)} </span>
                         <span style={{ marginLeft: "10px" }}>
                           <b> label type: </b>
                         </span>
-                        <span>{String(element.labelType)} </span>
+                        <span>{String(element.type)} </span>
                       </span>
                     </li>
                   ))}
