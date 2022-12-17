@@ -5,11 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function CreateMetaTagging(props) {
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState(""); // meta-tagging setting
+  // meta-tagging setting
+  const [title, setTitle] = useState("");
+  const [metaTaggingId, setMetaTaggingId] = useState("");
 
   // labels settings
-  const [options, setOptions] = useState(["Class", "Attribute", "Aggregation"]);
-  const [label, setLabel] = useState(options[0]);
+  let options = ["Class", "Attribute", "Aggregation"];
+  const [labelName, setLabelName] = useState(options[0]);
   const [labelType, setLabelType] = useState("");
   const [labelColor, setLabelColor] = useState("#000000");
 
@@ -21,7 +23,20 @@ export default function CreateMetaTagging(props) {
    * Saved the labels details in the backend
    */
   const createMetaTagging = () => {
-    // TODO save on database
+    // create meta tagging
+    fetch("/api/meta-tagging/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json ; charset=utf-8" },
+      body: JSON.stringify({
+        title,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setMetaTaggingId(data));
+
+    /** create labels details
+     * labels: {labels[]}
+     */
 
     // todo- send meta tag id
     props.onSave(labels);
@@ -33,7 +48,7 @@ export default function CreateMetaTagging(props) {
   const handleLabelSubmit = (e) => {
     e.preventDefault();
     let labelDetails = {
-      label: label,
+      labelName: labelName,
       labelType: "" + labelType,
       labelColor: "" + labelColor,
     };
@@ -45,7 +60,7 @@ export default function CreateMetaTagging(props) {
   function resetLabelValues(e) {
     e.target.reset();
 
-    setLabel(options[0]);
+    setLabelName(options[0]);
     setLabelType("");
     setLabelColor("#000000");
 
@@ -68,7 +83,7 @@ export default function CreateMetaTagging(props) {
               <label>Select label type</label>
               <select
                 class="form-select"
-                onChange={(e) => setLabel(e.target.value)}
+                onChange={(e) => setLabelName(e.target.value)}
                 aria-label="Default select example"
               >
                 {options.map((element, index) => (
@@ -164,9 +179,9 @@ export default function CreateMetaTagging(props) {
                           }}
                         ></i>
                         <span>
-                          <b> label: </b>
+                          <b> label name: </b>
                         </span>
-                        <span>{String(element.label)} </span>
+                        <span>{String(element.labelName)} </span>
                         <span style={{ marginLeft: "10px" }}>
                           <b> label type: </b>
                         </span>
