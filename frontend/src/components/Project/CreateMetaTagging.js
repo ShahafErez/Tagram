@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
 export default function CreateMetaTagging(props) {
-  const navigate = useNavigate();
-
   // meta-tagging setting
   const [title, setTitle] = useState("");
 
@@ -240,19 +237,19 @@ export default function CreateMetaTagging(props) {
           Back
         </button>
 
-        {/* disable if there are no meta tagging selected */}
-        {labels.length <= 0 && (
-          <button
-            type="submit"
-            class="btn btn-primary disabled"
-            style={{ marginLeft: "10px", zIndex: "99999" }}
-            onClick={createMetaTagging}
-          >
-            Save Meta-Tagging
-          </button>
-        )}
+        {/* disable if there are no title and meta tagging selected */}
+        {labels.length <= 0 ||
+          (title == "" && (
+            <button
+              type="submit"
+              class="btn btn-primary disabled"
+              style={{ marginLeft: "10px", zIndex: "99999" }}
+            >
+              Save Meta-Tagging
+            </button>
+          ))}
         {/* enabled */}
-        {labels.length > 0 && (
+        {labels.length > 0 && title != "" && (
           <button
             type="submit"
             class="btn btn-primary"

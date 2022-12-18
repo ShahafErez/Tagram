@@ -136,6 +136,7 @@ export default function CreateProjectPage() {
    */
   function savedMetaTagging(metaTagging) {
     setIsCreateMetaTagging(false);
+    setIsBrowseMetaTagging(false);
     setMetaTaggingTitle(metaTagging.title);
     setMetaTaggingId(metaTagging.meta_tagging_id);
   }
@@ -143,18 +144,21 @@ export default function CreateProjectPage() {
   function backToPage() {
     console.log("back to page without saving");
     setIsCreateMetaTagging(false);
+    setIsBrowseMetaTagging(false);
   }
 
   return (
     <div
       class="card"
-      style={{ maxWidth: "70%", margin: "auto", padding: "20px" }}
+      style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
     >
       {!isCreateMetaTagging && !isBrowseMetaTagging && createProjectForm()}
       {isCreateMetaTagging && (
         <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
       )}
-      {isBrowseMetaTagging && <BrowseMetaTagging />}
+      {isBrowseMetaTagging && (
+        <BrowseMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
+      )}
     </div>
   );
 }
