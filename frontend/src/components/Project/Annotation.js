@@ -91,6 +91,27 @@ import React, { useEffect, useState } from "react";
 // }
 
 export default function Annotation(props) {
+
+  // todo- change to be dynamic
+const TAG_COLORS = {
+  Class: "#00ffa2",
+  Attribute: "#84d2ff",
+};
+
+const Card = ({ children }) => (
+  <div
+    style={{
+      boxShadow: "0 2px 4px rgba(0,0,0,.1)",
+      margin: 6,
+      maxWidth: 500,
+      padding: 16,
+    }}
+  >
+    {children}
+  </div>
+);
+
+
   const project_id = props.project_id;
 
   const [file, setFile] = useState({
@@ -99,6 +120,16 @@ export default function Annotation(props) {
     text: "",
   });
 
+  const [value, setValue] = useState([]);
+  const [tag, setTag] = useState("Class");
+
+  const handleValueChange = (value) => {
+    setValue( value );
+  };
+
+  const handleTagChange = (e) => {
+    setTag(e.target.value);
+  };
   
   //console.log("project_id is: "+project_id);
   useEffect(() => {
@@ -117,14 +148,41 @@ export default function Annotation(props) {
     // we need to put [] as the second argument, if we want to render only once
   }, []);
 
-  return(
-    <div>
-      hello to {file.project_id}
-      <br></br>
-      text in file is:
-      <br>
-      </br>
-      {file.text}
-    </div>
-  );
+  // render() {
+    return (
+      <div>
+        <div>
+          <Card>
+            <h4>Annotate</h4>
+            <select onChange={handleTagChange} value={tag}>
+              {/* todo- change to be dyanmic */}
+              <option value="Class">Class</option>
+              <option value="Attribute">Attribute</option>
+            </select>
+            <TokenAnnotator
+              style={{
+                fontFamily: "IBM Plex Sans",
+                maxWidth: 500,
+                lineHeight: 1.5,
+              }}
+              tokens={file.text.split(" ")}
+              value={value}
+              onChange={handleValueChange}
+              getSpan={(span) => ({
+                ...span,
+                tag: tag,
+                color: TAG_COLORS[tag],
+              })}
+            />
+          </Card>
+        </div>
+
+        <Card>
+          <h4>Output Value</h4>
+          <pre>{JSON.stringify(value, null, 2)}</pre>
+        </Card>
+      </div>
+    );
+  // }
+
 }
