@@ -1,41 +1,6 @@
 import React from "react";
 
 export default function MetaTaggingObject(props) {
-  // return (
-  //   <div>
-  //     <ul class="list-group list-group-flush">
-  //       {props.metaTagging &&
-  //         props.metaTagging.map((element, index) => (
-  //           <li class="list-group-item">
-  //             <span key={index}>
-  //               <div class="row">
-  //                 <div class="col-sm">
-  //                   <i
-  //                     class="bi bi-square-fill"
-  //                     style={{
-  //                       color: element.color,
-  //                       fontSize: "17px",
-  //                       marginRight: "10px",
-  //                     }}
-  //                   ></i>
-  //                 </div>
-  //                 <div class="col-lg">
-  //                   <span style={{ minWidth: "700px" }}>
-  //                     {String(element.name)}{" "}
-  //                   </span>
-  //                 </div>
-  //                 <div class="col-md">
-  //                   {" "}
-  //                   <span>{String(element.type)} </span>
-  //                 </div>
-  //               </div>
-  //             </span>
-  //           </li>
-  //         ))}
-  //     </ul>
-  //   </div>
-  // );
-
   return (
     <div>
       <table class="table">
