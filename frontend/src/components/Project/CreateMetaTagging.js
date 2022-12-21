@@ -238,16 +238,15 @@ export default function CreateMetaTagging(props) {
         </button>
 
         {/* disable if there are no title and meta tagging selected */}
-        {labels.length <= 0 ||
-          (title == "" && (
-            <button
-              type="submit"
-              class="btn btn-primary disabled"
-              style={{ marginLeft: "10px", zIndex: "99999" }}
-            >
-              Save Meta-Tagging
-            </button>
-          ))}
+        {(labels.length <= 0 || title == "") && (
+          <button
+            type="submit"
+            class="btn btn-primary disabled"
+            style={{ marginLeft: "10px", zIndex: "99999" }}
+          >
+            Save Meta-Tagging
+          </button>
+        )}
         {/* enabled */}
         {labels.length > 0 && title != "" && (
           <button
