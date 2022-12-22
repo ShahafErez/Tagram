@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "any-text": "^1.2.0"
+  },
+  "dependencies": {
+    "bootstrap-icons": "^1.10.2"
+  }
+}

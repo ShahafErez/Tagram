@@ -24,3 +24,8 @@ class Project(models.Model):
         MetaTagging, on_delete=models.SET_NULL, null=True)
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class File(models.Model):
+    file = models.FileField(upload_to='./uploads')
+    project_id = models.CharField(max_length=8, primary_key=True)

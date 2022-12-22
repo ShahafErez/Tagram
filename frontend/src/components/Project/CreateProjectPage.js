@@ -5,6 +5,7 @@ import BrowseMetaTagging from "./BrowseMetaTagging";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
+  let project_id;
 
   // project details
   const [title, setTitle] = useState("");
@@ -17,6 +18,9 @@ export default function CreateProjectPage() {
   // meta tagging
   const [metaTaggingId, setMetaTaggingId] = useState("");
   const [metaTaggingTitle, setMetaTaggingTitle] = useState("");
+
+  // files
+  const [selectedFile, setSelectedFile] = useState(null);
 
   /** Handeles saving the project deatil
    * Sends details to the backend
@@ -37,7 +41,26 @@ export default function CreateProjectPage() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => navigate("/project/" + data.project_id));
+      .then((data) => {
+        project_id = data.project_id;
+        console.log("project_id: " + project_id);
+        // Create an object of formData
+        const formData = new FormData();
+        formData.append("myFile", selectedFile, selectedFile.name);
+        formData.append("project_id", project_id);
+        console.log(selectedFile);
+        console.log(formData);
+        //Request made to the backend api Send formData object
+        //axios.post("api/project/uploadfile", formData);
+        fetch("/api/project/uploadfile", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: formData,
+        });
+      })
+      .then(() => navigate("/project/" + project_id));
   };
 
   /* Returns the main create project form*/
@@ -69,6 +92,10 @@ export default function CreateProjectPage() {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
+          <input
+            type="file"
+            onChange={(e) => setSelectedFile(e.target.files[0])}
+          />
           <div style={{ marginTop: "15px" }}>
             <label>Add Meta-Tagging</label>
             <div style={{ marginTop: "5px" }}>
@@ -119,6 +146,7 @@ export default function CreateProjectPage() {
               style={{ fontSize: "25px", marginLeft: "8px" }}
             ></i>
           </div>
+
           {/* todo- check if meta tagging is selected */}
           <button
             type="submit"

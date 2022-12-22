@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import MetaTaggingObject from "./MetaTaggingObject";
+import Annotation from "./Annotation";
 
 export default function ProjectPage() {
   let { id } = useParams();
@@ -62,6 +63,9 @@ export default function ProjectPage() {
         </p>
       </div>
       <MetaTaggingObject metaTagging={metaTaggingLabels} />
+      <div>
+        <Annotation project_id={id}></Annotation>
+      </div>
     </div>
   );
 }

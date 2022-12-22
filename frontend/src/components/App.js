@@ -5,8 +5,7 @@ import Routers from "./Routers";
 import NavigationBar from "./NavigationBar";
 import "../../static/css/styling.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
+
 
 export default class App extends Component {
   constructor(props) {
