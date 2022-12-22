@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import MetaTaggingObject from "./MetaTaggingObject";
 
 export default function ProjectPage() {
   let { id } = useParams();
@@ -9,18 +11,25 @@ export default function ProjectPage() {
     is_project_manager: false,
     created_at: "",
   });
+  const [metaTaggingLabels, setMetaTaggingLabels] = useState();
 
   useEffect(() => {
+    let meta_tagging_id = "";
+
     fetch("/api/project/get?project_id=" + id)
-      .then((response) => {
-        if (!response.ok) {
-          navigate("/");
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
         setProject(data);
-      });
+        meta_tagging_id = data.meta_tagging;
+      })
+      .then(() =>
+        fetch(
+          "/api/meta-tagging/labels-by-id?meta-tagging-id=" + meta_tagging_id
+        )
+      )
+      .then((response) => response.json())
+      .then((data) => setMetaTaggingLabels(data));
+
     // we need to put [] as the second argument, if we want to render only once
   }, []);
 
@@ -35,11 +44,13 @@ export default function ProjectPage() {
           {" "}
           <b>Project Id:</b> {id}
         </p>
-        <p class="card-text">
-          {" "}
-          <b>Description: </b>
-          {project.description}
-        </p>
+        {project.description != "" && (
+          <p class="card-text">
+            {" "}
+            <b>Description: </b>
+            {project.description}
+          </p>
+        )}
         <p class="card-text">
           {" "}
           <b>Is the manager: </b>
@@ -50,6 +61,7 @@ export default function ProjectPage() {
           <b>Creation date:</b> {project.created_at}
         </p>
       </div>
+      <MetaTaggingObject metaTagging={metaTaggingLabels} />
     </div>
   );
 }
