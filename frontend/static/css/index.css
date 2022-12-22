@@ -13,3 +13,18 @@ h2 {
 .create-page h5 {
   font-size: 20px;
 }
+
+.project-page h5 {
+  font-weight: 400;
+  margin-top: 15px;
+}
+
+.meta-tagging-object th {
+  font-weight: 500;
+}
+
+.annotate h4 {
+  margin-top: 15px;
+  font-weight: 500px;
+  font-size: 18px;
+}
