@@ -8,6 +8,7 @@ urlpatterns = [
     path('info', index),
     path('join', index),
     path('create', index),
-    path('annotate', index),
-    path('project/<str:projectID>', index)
+    path('project/<str:projectID>', index),
+    path('create-meta', index),
+    path('annotate', index)
 ]
