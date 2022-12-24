@@ -15,6 +15,9 @@ export default function AnnotationTag(props) {
   const [value, setValue] = useState([]);
   const [tag, setTag] = useState(tag_options[0]);
 
+  const [tagsSummarry, setTagsSummarry] = useState(props.tagsSummarry);
+  
+
   const handleValueChange = (value) => {
     setValue(value);
   };

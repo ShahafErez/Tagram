@@ -24,15 +24,27 @@ export default function AnnotationRelation(props) {
     setRelationCount(relationCount+1);
     if (relationCount==2){
       let temp_rel = relationSummarry;
-      temp_rel.push({Type:tag,From:value[value.length -2].tokens,To:value[value.length -1].tokens});
+      temp_rel.push({Type:tag,From:value[value.length -2].tokens,To:value[value.length -1].tokens,From_start_end:[value[value.length -2].start,value[value.length -2].end], To_start_end:[value[value.length -1].start,value[value.length -1].end]});
       setRelationSummary(temp_rel);
       setRelationCount(1);
     }
+    console.log(relationSummarry);
   };
 
   const handleTagChange = (e) => {
     setTag(e.target.value);
   };
+
+
+  const exportRelationsToFile = () =>{
+    const fileData = JSON.stringify(relationSummarry);
+    const blob = new Blob([fileData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "relations-info.json";
+    link.href = url;
+    link.click();
+  }
 
   return (
     <div class="annotate">
@@ -94,7 +106,7 @@ export default function AnnotationRelation(props) {
       </table>
         </div>
         <br></br>
-
+        <button id="saveRelationBtn" onClick={exportRelationsToFile}>Export Relations to File</button>
     </div>
   );
 }

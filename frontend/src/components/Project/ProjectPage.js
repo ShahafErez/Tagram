@@ -27,6 +27,7 @@ export default function ProjectPage() {
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
 
   const [relationSummarry, setRelationSummary] = useState([]);
+  const [tagsSummarry, settagsSummary] = useState([]);
 
   // getting project details
   useEffect(() => {
@@ -122,10 +123,10 @@ export default function ProjectPage() {
             </button>
           </div>
           {tagsLabels.length > 0 && isAnnotateTags && (
-            <AnnotationTag file={file} labels={tagsLabels} />
+            <AnnotationTag file={file} labels={tagsLabels} tagsSummarry={tagsSummarry}/>
           )}
           {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation file={file} labels={relationsLabels} relationSummarry={relationSummarry}/>
+            <AnnotationRelation file={file} labels={relationsLabels} relationSummarry={relationSummarry} />
           )}
         </div>
       </div>
