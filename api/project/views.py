@@ -151,12 +151,16 @@ class UploadFile(APIView):
     """
 
     def post(self, request, format=None):
-        print(request.FILES['myFile'])
-        # logging.DEBUG(request.FILES['myFile'])
-        file = File(file=request.FILES['myFile'],
-                    project_id=request.POST['project_id'])
-        file.save()
-        return Response("test", status=status.HTTP_200_OK)
+        project_id=request.POST['project_id']
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                # logging.DEBUG(request.FILES['myFile'])
+                file = File(file=request.FILES['myFile'],
+                            project=project)
+                file.save()
+                return Response("test", status=status.HTTP_200_OK)
 
 
 class GetFile(APIView):
@@ -165,17 +169,21 @@ class GetFile(APIView):
 
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg)
-        # Checking we got project id in the path param
         if project_id != None:
-            project_query = File.objects.filter(project_id=project_id)
-            # logging("project id is: "+ project_id)
+            project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
-                data = FileSerializer(project_query[0]).data
-                with open(f".{data['file']}", 'r') as f:
-                    text = f.read()
-                    # text = text.split('\n')
-                    # text = '<br/>'.join(text)
-                    data['text'] = text
-                return Response(data, status=status.HTTP_200_OK)
-            return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
+                project = project_query[0]
+                # Checking we got project id in the path param
+                if project != None:
+                    project_query = File.objects.filter(project=project)
+                    # logging("project id is: "+ project_id)
+                    if len(project_query) > 0:
+                        data = FileSerializer(project_query[0]).data
+                        with open(f".{data['file']}", 'r') as f:
+                            text = f.read()
+                            # text = text.split('\n')
+                            # text = '<br/>'.join(text)
+                            data['text'] = text
+                        return Response(data, status=status.HTTP_200_OK)
+                    return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
         return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
