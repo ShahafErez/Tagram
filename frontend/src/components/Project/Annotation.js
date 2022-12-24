@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { TokenAnnotator } from "react-text-annotate";
-import NLPAnnotator from "react-nlp-annotate";
 
 // todo- change to be dynamic
 const TEXT =
@@ -67,19 +65,7 @@ export default class Annotation extends Component {
               <option value="Attribute">Attribute</option>
             </select>
 
-            <NLPAnnotator
-              hotkeysEnabled
-              type="label-relationships"
-              labels={labels}
-              multipleLabels={false}
-              document="Harry was an honest to god good man"
-              onChange={(output) => {
-                console.log("Output is...", output);
-              }}
-              // this is just for label-relationships
-              entityLabels={labels}
-              relationshipLabels={labels}
-            />
+         
           </Card>
         </div>
 

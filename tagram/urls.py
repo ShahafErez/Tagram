@@ -15,12 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from frontend.views import login
+from frontend.views import register
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('api/', include('api.urls')),
+    path('register', register,  name='register'),
+    path('login', login,  name='login'),
     path('', include('frontend.urls')),
+
 
 ]
