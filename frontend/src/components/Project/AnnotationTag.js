@@ -98,7 +98,7 @@ export default function AnnotationTag(props) {
       </table>
         </div>
         <br></br>
-        <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button>
+        {/* <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button> */}
     </div>
   );
 }

@@ -13,8 +13,8 @@ export default function ProjectPage() {
     created_at: "",
   });
   const [file, setFile] = useState({
+    file_id: "",
     file: "",
-    project_id: "",
     text: "",
   });
 
@@ -78,6 +78,32 @@ export default function ProjectPage() {
       });
   }, []);
 
+  // [[tagsSummarry] , [relationSummarry]] output
+  const exportToFile = () =>{
+    const fileData = JSON.stringify([tagsSummarry].concat([relationSummarry]));
+    const blob = new Blob([fileData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "allTagging.json";
+    link.href = url;
+    link.click();
+  }
+
+  const saveAnnotation = () =>{
+    fetch("/api/project/save-annotation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json ; charset=utf-8" },
+      body: JSON.stringify({
+        project_id: id,
+        file_id: file.file_id,
+        tags: tagsSummarry,
+        relations: relationSummarry,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+  }
+
   return (
     <div
       class="card project-page"
@@ -129,6 +155,10 @@ export default function ProjectPage() {
             <AnnotationRelation file={file} labels={relationsLabels} relationSummarry={relationSummarry} />
           )}
         </div>
+        <br></br>
+        <button id="exportAllTaggingBtn" onClick={exportToFile}>Export All Tagging to File</button>
+        <br></br><br></br><br></br>
+        <button id="saveAllTaggingBtn" onClick={saveAnnotation}>Save All</button>
       </div>
     </div>
   );

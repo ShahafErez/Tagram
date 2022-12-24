@@ -106,7 +106,7 @@ export default function AnnotationRelation(props) {
       </table>
         </div>
         <br></br>
-        <button id="saveRelationBtn" onClick={exportRelationsToFile}>Export Relations to File</button>
+        {/* <button id="saveRelationBtn" onClick={exportRelationsToFile}>Export Relations to File</button> */}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, File
+from .models import Project, File, Annotation
 from django import forms
 
 
@@ -34,3 +34,17 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = ['file_id','file', 'project']
+
+class SaveAnnotationSerializer(serializers.ModelSerializer):
+    project_id = serializers.CharField(allow_blank=False)
+    file_id = serializers.CharField(allow_blank=False)
+    class Meta:
+        model = Annotation
+        fields = ('project_id', 'file_id', 'tags', 'relations')
+
+class GetAnnotationSerializer(serializers.ModelSerializer):
+    tags = serializers.CharField(allow_blank=True, default='')
+    relations = serializers.CharField(allow_blank=True, default='')
+    class Meta:
+        model = Annotation
+        fields = ('project_id', 'file_id', 'tags', 'relations')

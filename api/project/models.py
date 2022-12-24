@@ -4,7 +4,7 @@ import string
 import random
 
 
-def generate_unique_code():
+def generate_unique_code(): #TODO: make 1 method that recives table name and genarates unique id
     length = 6
 
     while True:
@@ -41,3 +41,24 @@ class File(models.Model):
     file = models.FileField(upload_to='./uploads')
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE)
+
+
+def generate_annotation_unique_code():
+    length = 6
+
+    while True:
+        id = ''.join(random.choices(string.ascii_uppercase, k=length))
+        # checking if other annotation has his id
+        if Annotation.objects.filter(annotation_id=id).count() == 0:
+            break
+    return id
+
+
+class Annotation(models.Model):
+    annotation_id = models.CharField(
+        max_length=10, default=generate_annotation_unique_code, unique=True, primary_key=True)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE)
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    tags = models.CharField(max_length=2000,null=True)
+    relations = models.CharField(max_length=2000,null=True)
