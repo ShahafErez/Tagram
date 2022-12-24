@@ -15,8 +15,18 @@ export default function AnnotationRelation(props) {
   const [value, setValue] = useState([]);
   const [tag, setTag] = useState(tag_options[0]);
 
+  const [relationSummarry, setRelationSummary] = useState([]);
+  const [ relationCount, setRelationCount] = useState(1);
+
   const handleValueChange = (value) => {
     setValue(value);
+    setRelationCount(relationCount+1);
+    if (relationCount==2){
+      let temp_rel = relationSummarry;
+      temp_rel.push({Type:tag,From:value[value.length -2].tokens,To:value[value.length -1].tokens});
+      setRelationSummary(temp_rel);
+      setRelationCount(1);
+    }
   };
 
   const handleTagChange = (e) => {
@@ -63,7 +73,25 @@ export default function AnnotationRelation(props) {
       </div>
 
       <h4>Output Value</h4>
-      <pre>{JSON.stringify(value, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
+      <div>
+      <table>
+        <tr>
+          <th>Type</th>
+          <th>From</th>
+          <th>To</th>
+        </tr>
+        {relationSummarry.map((val, key) => {
+          return (
+            <tr key={key}>
+              <td>{val.Type}</td>
+              <td>{val.From}</td>
+              <td>{val.To}</td>
+            </tr>
+          )
+        })}
+      </table>
+        </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ export default function CreateMetaTagging(props) {
   const [title, setTitle] = useState("");
 
   // labels settings
-  let options = ["Class", "Attribute", "Aggregation"];
+  let options = ["Class", "Attribute", "Aggregation","inheritance","co-occurrence"];
   const [labelName, setLabelName] = useState(options[0]);
   const [labelType, setLabelType] = useState("");
   const [labelColor, setLabelColor] = useState("#000000");

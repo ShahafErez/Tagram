@@ -28,3 +28,17 @@ h2 {
   font-weight: 500px;
   font-size: 18px;
 }
+
+table {
+  border: 2px solid forestgreen;
+  width: 650px;
+  height: 200px;
+}
+  
+th {
+  border-bottom: 1px solid black;
+}
+  
+td {
+  text-align: center;
+}
