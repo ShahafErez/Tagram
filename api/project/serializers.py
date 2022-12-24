@@ -29,8 +29,8 @@ class CreateProjectSerializer(serializers.ModelSerializer):
 
 class FileSerializer(serializers.ModelSerializer):
     file = forms.FileField()
-    project_id = serializers.CharField()
+    # project_id = serializers.CharField()
 
     class Meta:
         model = File
-        fields = ['file', 'project_id']
+        fields = ['file_id','file', 'project']

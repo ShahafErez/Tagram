@@ -25,7 +25,19 @@ class Project(models.Model):
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
+def generate_file_unique_code():
+    length = 6
+
+    while True:
+        id = ''.join(random.choices(string.ascii_uppercase, k=length))
+        # checking if other file has his id
+        if File.objects.filter(file_id=id).count() == 0:
+            break
+    return id
 
 class File(models.Model):
+    file_id = models.CharField(
+        max_length=8, default=generate_file_unique_code, unique=True, primary_key=True)
     file = models.FileField(upload_to='./uploads')
-    project_id = models.CharField(max_length=8, primary_key=True)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE)
