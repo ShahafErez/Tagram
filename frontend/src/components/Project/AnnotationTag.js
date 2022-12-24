@@ -16,15 +16,29 @@ export default function AnnotationTag(props) {
   const [tag, setTag] = useState(tag_options[0]);
 
   const [tagsSummarry, setTagsSummarry] = useState(props.tagsSummarry);
-  
+
 
   const handleValueChange = (value) => {
     setValue(value);
+    let temp_tags = tagsSummarry;
+    temp_tags.push({Type:tag,token:value[value.length -1].tokens});
+    setTagsSummarry(temp_tags);
   };
 
   const handleTagChange = (e) => {
     setTag(e.target.value);
   };
+
+
+  const exportTagsToFile = () =>{
+    const fileData = JSON.stringify(tagsSummarry);
+    const blob = new Blob([fileData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "tags-info.json";
+    link.href = url;
+    link.click();
+  }
 
   return (
     <div class="annotate">
@@ -66,7 +80,25 @@ export default function AnnotationTag(props) {
       </div>
 
       <h4>Output Value</h4>
-      <pre>{JSON.stringify(value, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
+      <div>
+      <table>
+        <tr>
+          <th>Tag Type</th>
+          <th>Term</th>
+        </tr>
+        {tagsSummarry.map((val, key) => {
+          return (
+            <tr key={key}>
+              <td>{val.Type}</td>
+              <td>{val.token}</td>
+            </tr>
+          )
+        })}
+      </table>
+        </div>
+        <br></br>
+        <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button>
     </div>
   );
 }
