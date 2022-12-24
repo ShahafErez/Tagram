@@ -15,7 +15,8 @@ export default function AnnotationRelation(props) {
   const [value, setValue] = useState([]);
   const [tag, setTag] = useState(tag_options[0]);
 
-  const [relationSummarry, setRelationSummary] = useState([]);
+  const [relationSummarry, setRelationSummary] = useState(props.relationSummarry);
+  // let relationSummarry = props.relationSummarry;
   const [ relationCount, setRelationCount] = useState(1);
 
   const handleValueChange = (value) => {
@@ -72,7 +73,7 @@ export default function AnnotationRelation(props) {
         </div>
       </div>
 
-      <h4>Output Value</h4>
+      <h4>Relations</h4>
       {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
       <div>
       <table>
@@ -92,6 +93,8 @@ export default function AnnotationRelation(props) {
         })}
       </table>
         </div>
+        <br></br>
+
     </div>
   );
 }

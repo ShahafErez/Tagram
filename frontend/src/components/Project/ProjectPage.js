@@ -26,6 +26,8 @@ export default function ProjectPage() {
   const [isAnnotateTags, setIsAnnotateTags] = useState(false);
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
 
+  const [relationSummarry, setRelationSummary] = useState([]);
+
   // getting project details
   useEffect(() => {
     let meta_tagging_id = "";
@@ -123,7 +125,7 @@ export default function ProjectPage() {
             <AnnotationTag file={file} labels={tagsLabels} />
           )}
           {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation file={file} labels={relationsLabels} />
+            <AnnotationRelation file={file} labels={relationsLabels} relationSummarry={relationSummarry}/>
           )}
         </div>
       </div>
