@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from frontend.views import loginpage
-from frontend.views import register
-from frontend.views import index
+from frontend.views import loginpage, register, logoutUser, index
+
+
 
 
 urlpatterns = [
@@ -28,6 +28,8 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('register', register,  name='register'),
     path('login', loginpage,  name='login'),
+    path('logout', logoutUser,  name='logout'),
+
     path('home', index,  name='home'),
 
     path('', include('frontend.urls') , name='home'),

@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import index
-from .views import login
+from .views import loginpage , logoutUser
 from .views import register
 
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('project/<str:projectID>', index),
     path('meta/<str:projectID>', index),
     path('annotate', index),
-    path('login', login),
+    path('login', loginpage),
+    path('logout', logoutUser),
     path('register', register,  name='register'),
 ]
