@@ -11,17 +11,23 @@ export default function AnnotationTag(props) {
   });
 
   const file = props.file;
-
-  const [value, setValue] = useState([]);
-  const [tag, setTag] = useState(tag_options[0]);
-
   const [tagsSummarry, setTagsSummarry] = useState(props.tagsSummarry);
 
+  const [value, setValue] = useState(tagsSummarry);
+  const [tag, setTag] = useState(tag_options[0]);
 
   const handleValueChange = (value) => {
     setValue(value);
     let temp_tags = tagsSummarry;
-    temp_tags.push({Type:tag,token:value[value.length -1].tokens});
+    let index = value.length - 1;
+    temp_tags.push({
+      Type: tag,
+      token: value[index].tokens,
+      start: value[index].start,
+      end: value[index].end,
+      tag: value[index].tag,
+      color: value[index].color,
+    });
     setTagsSummarry(temp_tags);
   };
 
@@ -29,8 +35,7 @@ export default function AnnotationTag(props) {
     setTag(e.target.value);
   };
 
-
-  const exportTagsToFile = () =>{
+  const exportTagsToFile = () => {
     const fileData = JSON.stringify(tagsSummarry);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -38,7 +43,7 @@ export default function AnnotationTag(props) {
     link.download = "tags-info.json";
     link.href = url;
     link.click();
-  }
+  };
 
   return (
     <div class="annotate">
@@ -77,28 +82,26 @@ export default function AnnotationTag(props) {
             })}
           />
         </div>
-      </div>
-
-      <h4>Output Value</h4>
-      {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
-      <div>
-      <table>
-        <tr>
-          <th>Tag Type</th>
-          <th>Term</th>
-        </tr>
-        {tagsSummarry.map((val, key) => {
-          return (
-            <tr key={key}>
-              <td>{val.Type}</td>
-              <td>{val.token}</td>
+        <h4>Output Value</h4>
+        {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
+        <div>
+          <table>
+            <tr>
+              <th>Tag Type</th>
+              <th>Term</th>
             </tr>
-          )
-        })}
-      </table>
+            {tagsSummarry.map((val, key) => {
+              return (
+                <tr key={key}>
+                  <td>{val.Type}</td>
+                  <td>{val.token}</td>
+                </tr>
+              );
+            })}
+          </table>
         </div>
-        <br></br>
-        {/* <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button> */}
+      </div>
+      {/* <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button> */}
     </div>
   );
 }
