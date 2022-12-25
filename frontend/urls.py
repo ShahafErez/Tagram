@@ -7,7 +7,7 @@ from .views import register
 app_name = 'frontend'
 
 urlpatterns = [
-    path('', index),
+    path('', index, name = 'home'),
     path('info', index),
     path('join', index),
     path('create', index),
@@ -16,8 +16,4 @@ urlpatterns = [
     path('annotate', index),
     path('login', login),
     path('register', register,  name='register'),
-    path('register/', register, name='register'),
-
-
-
 ]
