@@ -27,6 +27,7 @@ export default function ProjectPage() {
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
 
   const [relationSummarry, setRelationSummary] = useState([]);
+  const [relationCurrentState, setRelationCurrentState] = useState([]);
   const [tagsSummarry, settagsSummary] = useState([]);
 
   // getting project details
@@ -79,7 +80,7 @@ export default function ProjectPage() {
   }, []);
 
   // [[tagsSummarry] , [relationSummarry]] output
-  const exportToFile = () =>{
+  const exportToFile = () => {
     const fileData = JSON.stringify([tagsSummarry].concat([relationSummarry]));
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -87,9 +88,9 @@ export default function ProjectPage() {
     link.download = "allTagging.json";
     link.href = url;
     link.click();
-  }
+  };
 
-  const saveAnnotation = () =>{
+  const saveAnnotation = () => {
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -101,8 +102,8 @@ export default function ProjectPage() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
-  }
+      .then((data) => console.log(data));
+  };
 
   return (
     <div
@@ -149,16 +150,31 @@ export default function ProjectPage() {
             </button>
           </div>
           {tagsLabels.length > 0 && isAnnotateTags && (
-            <AnnotationTag file={file} labels={tagsLabels} tagsSummarry={tagsSummarry}/>
+            <AnnotationTag
+              file={file}
+              labels={tagsLabels}
+              tagsSummarry={tagsSummarry}
+            />
           )}
           {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation file={file} labels={relationsLabels} relationSummarry={relationSummarry} />
+            <AnnotationRelation
+              file={file}
+              labels={relationsLabels}
+              relationSummarry={relationSummarry}
+              relationCurrentState={relationCurrentState}
+            />
           )}
         </div>
         <br></br>
-        <button id="exportAllTaggingBtn" onClick={exportToFile}>Export All Tagging to File</button>
-        <br></br><br></br><br></br>
-        <button id="saveAllTaggingBtn" onClick={saveAnnotation}>Save All</button>
+        <button id="exportAllTaggingBtn" onClick={exportToFile}>
+          Export All Tagging to File
+        </button>
+        <br></br>
+        <br></br>
+        <br></br>
+        <button id="saveAllTaggingBtn" onClick={saveAnnotation}>
+          Save All
+        </button>
       </div>
     </div>
   );

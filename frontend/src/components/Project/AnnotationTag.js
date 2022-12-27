@@ -16,18 +16,24 @@ export default function AnnotationTag(props) {
   const [value, setValue] = useState(tagsSummarry);
   const [tag, setTag] = useState(tag_options[0]);
 
+  /** Creating a json object that will store the value of the selected tag
+   * This is used for displaying the previous selected tags, even after closing the tag tab
+   */
+  function createTagObject(value) {
+    return {
+      Type: tag,
+      token: value.tokens,
+      start: value.start,
+      end: value.end,
+      tag: value.tag,
+      color: value.color,
+    };
+  }
+
   const handleValueChange = (value) => {
     setValue(value);
     let temp_tags = tagsSummarry;
-    let index = value.length - 1;
-    temp_tags.push({
-      Type: tag,
-      token: value[index].tokens,
-      start: value[index].start,
-      end: value[index].end,
-      tag: value[index].tag,
-      color: value[index].color,
-    });
+    temp_tags.push(createTagObject(value[value.length - 1]));
     setTagsSummarry(temp_tags);
   };
 
