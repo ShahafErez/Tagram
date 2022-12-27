@@ -19,7 +19,7 @@ export default function CreateProjectPage() {
   const [metaTaggingId, setMetaTaggingId] = useState("");
   const [metaTaggingTitle, setMetaTaggingTitle] = useState("");
 
-  // files
+  // file
   const [selectedFile, setSelectedFile] = useState(null);
 
   /** Handeles saving the project deatil
@@ -51,7 +51,6 @@ export default function CreateProjectPage() {
         console.log(selectedFile);
         console.log(formData);
         //Request made to the backend api Send formData object
-        //axios.post("api/project/uploadfile", formData);
         fetch("/api/project/uploadfile", {
           method: "POST",
           headers: {
@@ -63,10 +62,30 @@ export default function CreateProjectPage() {
       .then(() => navigate("/project/" + project_id));
   };
 
-  /* Returns the main create project form*/
-  const createProjectForm = () => {
-    return (
-      <div>
+  /** Function that called when the meta tagging is being saved
+   */
+  function savedMetaTagging(metaTagging) {
+    setIsCreateMetaTagging(false);
+    setIsBrowseMetaTagging(false);
+    setMetaTaggingTitle(metaTagging.title);
+    setMetaTaggingId(metaTagging.meta_tagging_id);
+  }
+
+  function backToPage() {
+    console.log("back to page without saving");
+    setIsCreateMetaTagging(false);
+    setIsBrowseMetaTagging(false);
+  }
+
+  return (
+    <div
+      class="card"
+      style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
+    >
+      {/* If we're in the create meta-tagging or browse meta-tagging -> 
+        we set the className to be 'hide', and we hide the content in style.css
+      */}
+      <div className={isCreateMetaTagging || isBrowseMetaTagging ? "hide" : ""}>
         <h2>Create a new project</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
@@ -103,14 +122,20 @@ export default function CreateProjectPage() {
               <button
                 type="submit"
                 class="btn btn-outline-secondary"
-                onClick={() => setIsBrowseMetaTagging(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsBrowseMetaTagging(true);
+                }}
               >
                 Browse existing meta-tagging
               </button>
               <button
                 type="submit"
                 class="btn btn-outline-secondary"
-                onClick={() => setIsCreateMetaTagging(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsCreateMetaTagging(true);
+                }}
                 style={{ marginLeft: "20px", width: "238px" }}
               >
                 Create new meta-tagging
@@ -140,7 +165,7 @@ export default function CreateProjectPage() {
             )}
           </div>
           <div>
-            {/* todo- add when users are added */}
+            {/* TODO- add when users are added */}
             <label>Add Members</label>
             <i
               class="bi bi-person-add fa-6x"
@@ -148,7 +173,7 @@ export default function CreateProjectPage() {
             ></i>
           </div>
 
-          {/* todo- check if meta tagging is selected */}
+          {/* TODO- check if meta tagging is selected */}
           <button
             type="submit"
             class="btn btn-primary"
@@ -158,35 +183,16 @@ export default function CreateProjectPage() {
           </button>
         </form>
       </div>
-    );
-  };
 
-  /** Function that called when the meta tagging is being saved
-   */
-  function savedMetaTagging(metaTagging) {
-    setIsCreateMetaTagging(false);
-    setIsBrowseMetaTagging(false);
-    setMetaTaggingTitle(metaTagging.title);
-    setMetaTaggingId(metaTagging.meta_tagging_id);
-  }
-
-  function backToPage() {
-    console.log("back to page without saving");
-    setIsCreateMetaTagging(false);
-    setIsBrowseMetaTagging(false);
-  }
-
-  return (
-    <div
-      class="card"
-      style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
-    >
-      {!isCreateMetaTagging && !isBrowseMetaTagging && createProjectForm()}
+      {/* If we're in create or browse- we'll call that component */}
       {isCreateMetaTagging && (
         <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
       )}
       {isBrowseMetaTagging && (
-        <BrowseMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
+        <div>
+          <div style={{ display: "none" }}>createProjectForm()</div>
+          <BrowseMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
+        </div>
       )}
     </div>
   );

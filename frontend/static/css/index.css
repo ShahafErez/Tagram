@@ -28,3 +28,7 @@ h2 {
   font-weight: 500px;
   font-size: 18px;
 }
+
+.hide {
+  display: none;
+}
