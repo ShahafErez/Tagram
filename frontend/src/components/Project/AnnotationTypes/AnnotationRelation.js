@@ -14,9 +14,7 @@ export default function AnnotationRelation(props) {
 
   const [tag, setTag] = useState(tag_options[0]);
 
-  const [relationSummarry, setRelationSummary] = useState(
-    props.relationSummarry
-  );
+  const [relationSummary, setRelationSummary] = useState(props.relationSummary);
   const [relationCurrentState, setRelationCurrentState] = useState(
     props.relationCurrentState
   );
@@ -44,7 +42,7 @@ export default function AnnotationRelation(props) {
       temp_current_state.push(createTagObject(value[value.length - 1]));
       temp_current_state.push(createTagObject(value[value.length - 2]));
 
-      let temp_rel = relationSummarry;
+      let temp_rel = relationSummary;
       temp_rel.push({
         Type: tag,
         From: value[value.length - 2].tokens,
@@ -69,7 +67,7 @@ export default function AnnotationRelation(props) {
   };
 
   const exportRelationsToFile = () => {
-    const fileData = JSON.stringify(relationSummarry);
+    const fileData = JSON.stringify(relationSummary);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -90,7 +88,6 @@ export default function AnnotationRelation(props) {
             onChange={handleTagChange}
             value={tag}
           >
-            {/* todo- change to be dyanmic */}
             {tag_options.map((element, index) => (
               <option key={index}>{element}</option>
             ))}
@@ -126,7 +123,7 @@ export default function AnnotationRelation(props) {
             <th>From</th>
             <th>To</th>
           </tr>
-          {relationSummarry.map((val, key) => {
+          {relationSummary.map((val, key) => {
             return (
               <tr key={key}>
                 <td>{val.Type}</td>

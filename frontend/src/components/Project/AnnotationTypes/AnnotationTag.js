@@ -11,9 +11,9 @@ export default function AnnotationTag(props) {
   });
 
   const file = props.file;
-  const [tagsSummarry, setTagsSummarry] = useState(props.tagsSummarry);
+  const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
 
-  const [value, setValue] = useState(tagsSummarry);
+  const [value, setValue] = useState(tagsSummary);
   const [tag, setTag] = useState(tag_options[0]);
 
   /** Creating a json object that will store the value of the selected tag
@@ -32,9 +32,9 @@ export default function AnnotationTag(props) {
 
   const handleValueChange = (value) => {
     setValue(value);
-    let temp_tags = tagsSummarry;
+    let temp_tags = tagsSummary;
     temp_tags.push(createTagObject(value[value.length - 1]));
-    setTagsSummarry(temp_tags);
+    setTagsSummary(temp_tags);
   };
 
   const handleTagChange = (e) => {
@@ -42,7 +42,7 @@ export default function AnnotationTag(props) {
   };
 
   const exportTagsToFile = () => {
-    const fileData = JSON.stringify(tagsSummarry);
+    const fileData = JSON.stringify(tagsSummary);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -63,7 +63,6 @@ export default function AnnotationTag(props) {
             onChange={handleTagChange}
             value={tag}
           >
-            {/* todo- change to be dyanmic */}
             {tag_options.map((element, index) => (
               <option key={index}>{element}</option>
             ))}
@@ -96,7 +95,7 @@ export default function AnnotationTag(props) {
               <th>Tag Type</th>
               <th>Term</th>
             </tr>
-            {tagsSummarry.map((val, key) => {
+            {tagsSummary.map((val, key) => {
               return (
                 <tr key={key}>
                   <td>{val.Type}</td>

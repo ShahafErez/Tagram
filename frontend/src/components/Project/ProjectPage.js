@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MetaTaggingObject from "./MetaTaggingObject";
-import AnnotationTag from "./AnnotationTag";
-import AnnotationRelation from "./AnnotationRelation";
+import AnnotationTag from "./AnnotationTypes/AnnotationTag";
+import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
+import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
 
 export default function ProjectPage() {
   let { id } = useParams();
@@ -25,10 +26,12 @@ export default function ProjectPage() {
 
   const [isAnnotateTags, setIsAnnotateTags] = useState(false);
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
+  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(true);
 
-  const [relationSummarry, setRelationSummary] = useState([]);
+  const [relationSummary, setRelationSummary] = useState([]);
+  const [tagsSummary, settagsSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState([]);
-  const [tagsSummarry, settagsSummary] = useState([]);
+  const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
 
   // getting project details
   useEffect(() => {
@@ -79,9 +82,9 @@ export default function ProjectPage() {
       });
   }, []);
 
-  // [[tagsSummarry] , [relationSummarry]] output
+  // [[tagsSummary] , [relationSummary]] output
   const exportToFile = () => {
-    const fileData = JSON.stringify([tagsSummarry].concat([relationSummarry]));
+    const fileData = JSON.stringify([tagsSummary].concat([relationSummary]));
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -97,8 +100,8 @@ export default function ProjectPage() {
       body: JSON.stringify({
         project_id: id,
         file_id: file.file_id,
-        tags: tagsSummarry,
-        relations: relationSummarry,
+        tags: tagsSummary,
+        relations: relationSummary,
       }),
     })
       .then((response) => response.json())
@@ -134,6 +137,7 @@ export default function ProjectPage() {
               onClick={() => {
                 setIsAnnotateTags(true);
                 setIsAnnotateRelations(false);
+                setIsAnnotateCoOccurrence(false);
               }}
             >
               Annotate Tags
@@ -144,24 +148,43 @@ export default function ProjectPage() {
               onClick={() => {
                 setIsAnnotateRelations(true);
                 setIsAnnotateTags(false);
+                setIsAnnotateCoOccurrence(false);
               }}
             >
               Annotate Relations
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              onClick={() => {
+                setIsAnnotateCoOccurrence(true);
+                setIsAnnotateRelations(false);
+                setIsAnnotateTags(false);
+              }}
+            >
+              Annotate Co-Occurrence
             </button>
           </div>
           {tagsLabels.length > 0 && isAnnotateTags && (
             <AnnotationTag
               file={file}
               labels={tagsLabels}
-              tagsSummarry={tagsSummarry}
+              tagsSummary={tagsSummary}
             />
           )}
           {relationsLabels.length > 0 && isAnnotateRelations && (
             <AnnotationRelation
               file={file}
               labels={relationsLabels}
-              relationSummarry={relationSummarry}
+              coOccurrenceSummary={relationSummary}
               relationCurrentState={relationCurrentState}
+            />
+          )}
+          {isAnnotateCoOccurrence && (
+            <AnnotationCoOccurrence
+              file={file}
+              labels={relationsLabels}
+              coOccurrenceSummary={coOccurrenceSummary}
             />
           )}
         </div>
