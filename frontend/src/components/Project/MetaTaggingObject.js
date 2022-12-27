@@ -2,7 +2,7 @@ import React from "react";
 
 export default function MetaTaggingObject(props) {
   return (
-    <div>
+    <div class="meta-tagging-object">
       <table class="table">
         <thead>
           <tr>

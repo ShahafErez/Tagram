@@ -95,6 +95,7 @@ export default function CreateProjectPage() {
           <input
             type="file"
             onChange={(e) => setSelectedFile(e.target.files[0])}
+            style={{ marginTop: "15px" }}
           />
           <div style={{ marginTop: "15px" }}>
             <label>Add Meta-Tagging</label>

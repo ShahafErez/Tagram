@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics, status
-from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer
-from .models import Project, File
+from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer,SaveAnnotationSerializer, GetAnnotationSerializer
+from .models import Project, File, Annotation
 from api.meta_tagging.models import MetaTagging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 import logging
 from .forms import UploadFile
+import json
 
 PROJECT_ID_NOT_FOUNT_MESSAGE = {'Project Not Found': 'Invalid Project Id.'}
 PROJECT_ID_NOT_IN_PATH_MESSAGE = {
@@ -151,12 +152,16 @@ class UploadFile(APIView):
     """
 
     def post(self, request, format=None):
-        print(request.FILES['myFile'])
-        # logging.DEBUG(request.FILES['myFile'])
-        file = File(file=request.FILES['myFile'],
-                    project_id=request.POST['project_id'])
-        file.save()
-        return Response("test", status=status.HTTP_200_OK)
+        project_id=request.POST['project_id']
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                # logging.DEBUG(request.FILES['myFile'])
+                file = File(file=request.FILES['myFile'],
+                            project=project)
+                file.save()
+                return Response("test", status=status.HTTP_200_OK)
 
 
 class GetFile(APIView):
@@ -165,17 +170,80 @@ class GetFile(APIView):
 
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg)
-        # Checking we got project id in the path param
         if project_id != None:
-            project_query = File.objects.filter(project_id=project_id)
-            # logging("project id is: "+ project_id)
+            project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
-                data = FileSerializer(project_query[0]).data
-                with open(f".{data['file']}", 'r') as f:
-                    text = f.read()
-                    # text = text.split('\n')
-                    # text = '<br/>'.join(text)
-                    data['text'] = text
-                return Response(data, status=status.HTTP_200_OK)
-            return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
+                project = project_query[0]
+
+                if project != None:
+                    project_query = File.objects.filter(project=project)
+                    # logging("project id is: "+ project_id)
+                    if len(project_query) > 0:
+                        data = FileSerializer(project_query[0]).data
+                        with open(f".{data['file']}", 'r') as f:
+                            text = f.read()
+                            # text = text.split('\n')
+                            # text = '<br/>'.join(text)
+                            data['text'] = text
+                        return Response(data, status=status.HTTP_200_OK)
+                    return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
         return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
+
+class SaveAnnotation(APIView):
+    """
+    saving annotation to DB
+    """
+    serializer_class = SaveAnnotationSerializer
+    def post(self, request, format=None):
+
+        # serialize all the data that was sent
+        # serializer = self.serializer_class(data=request.data)
+        data = request.data
+        if data:
+            project, file = None,None
+            project_id = data['project_id']
+            if project_id != None:
+                project_query = Project.objects.filter(project_id=project_id)
+                if (len(project_query)) > 0:
+                    project = project_query[0]
+                else:
+                    return Response({'Bad Request': 'No project was found'}, status=status.HTTP_400_BAD_REQUEST)
+            file_id = data['file_id']
+            if file_id != None:
+                file_query = File.objects.filter(file_id=file_id)
+                if (len(file_query)) > 0:
+                    file = file_query[0]
+                else:
+                    return Response({'Bad Request': 'No file was found'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            tags = json.dumps(data['tags'])
+            relations = json.dumps(data['relations'])
+
+            annotation = Annotation(project=project, file=file, tags=tags, relations=relations)
+            annotation.save()
+
+            # return feedback to user
+            return Response("Annotation saved successfully", status=status.HTTP_201_CREATED)
+        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetAnnotation(APIView):
+    lookup_url_kwarg = 'project_id'
+    def get(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg)
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                
+                if project != None:
+                    annotation_query = Annotation.objects.filter(project=project)
+                    # logging("project id is: "+ project_id)
+                    if len(annotation_query) > 0:
+                        data = GetAnnotationSerializer(annotation_query[0]).data
+                        data['tags'] = json.loads(data['tags'])
+                        data['relations'] = json.loads(data['relations'])
+                        return Response(data, status=status.HTTP_200_OK)
+                    return Response("no annotation found", status=status.HTTP_404_NOT_FOUND)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+
