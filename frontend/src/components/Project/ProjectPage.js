@@ -24,9 +24,9 @@ export default function ProjectPage() {
   const [tagsLabels, setTagsLabels] = useState([]);
   const [relationsLabels, setRelationsLabels] = useState([]);
 
-  const [isAnnotateTags, setIsAnnotateTags] = useState(false);
+  const [isAnnotateTags, setIsAnnotateTags] = useState(true);
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
-  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(true);
+  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
   const [relationSummary, setRelationSummary] = useState([]);
   const [tagsSummary, settagsSummary] = useState([]);
@@ -82,7 +82,6 @@ export default function ProjectPage() {
       });
   }, []);
 
-  // [[tagsSummary] , [relationSummary]] output
   const exportToFile = () => {
     const fileData = JSON.stringify([tagsSummary].concat([relationSummary]));
     const blob = new Blob([fileData], { type: "text/plain" });
@@ -176,28 +175,34 @@ export default function ProjectPage() {
             <AnnotationRelation
               file={file}
               labels={relationsLabels}
-              coOccurrenceSummary={relationSummary}
+              relationSummary={relationSummary}
               relationCurrentState={relationCurrentState}
             />
           )}
           {isAnnotateCoOccurrence && (
             <AnnotationCoOccurrence
               file={file}
-              labels={relationsLabels}
               coOccurrenceSummary={coOccurrenceSummary}
             />
           )}
         </div>
-        <br></br>
-        <button id="exportAllTaggingBtn" onClick={exportToFile}>
-          Export All Tagging to File
-        </button>
-        <br></br>
-        <br></br>
-        <br></br>
-        <button id="saveAllTaggingBtn" onClick={saveAnnotation}>
-          Save All
-        </button>
+        <div>
+          <button
+            class="btn btn-primary"
+            id="saveAllTaggingBtn"
+            onClick={saveAnnotation}
+          >
+            Save All Tagging In System
+          </button>
+          <button
+            id="exportAllTaggingBtn"
+            class="btn btn-primary"
+            onClick={exportToFile}
+            style={{ marginLeft: "10px" }}
+          >
+            Export All Tagging to File
+          </button>
+        </div>
       </div>
     </div>
   );

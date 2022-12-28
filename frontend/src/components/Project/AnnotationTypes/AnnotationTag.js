@@ -41,6 +41,15 @@ export default function AnnotationTag(props) {
     setTag(e.target.value);
   };
 
+  const processToken = (value) => {
+    console.log("value token ", value.token);
+    let tokenString = "";
+    value.token.forEach((token) => {
+      tokenString += " " + token;
+    });
+    return tokenString;
+  };
+
   const exportTagsToFile = () => {
     const fileData = JSON.stringify(tagsSummary);
     const blob = new Blob([fileData], { type: "text/plain" });
@@ -87,22 +96,25 @@ export default function AnnotationTag(props) {
             })}
           />
         </div>
-        <h4>Output Value</h4>
-        {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
-        <div>
-          <table>
-            <tr>
-              <th>Tag Type</th>
-              <th>Term</th>
-            </tr>
-            {tagsSummary.map((val, key) => {
-              return (
-                <tr key={key}>
-                  <td>{val.Type}</td>
-                  <td>{val.token}</td>
-                </tr>
-              );
-            })}
+        <h4>Selected Tags</h4>
+        <div style={{ width: "80%", margin: "auto" }}>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Type</th>
+                <th scope="col">Term</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tagsSummary.map((val, key) => {
+                return (
+                  <tr key={key}>
+                    <td>{val.Type}</td>
+                    <td>{processToken(val)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
       </div>
