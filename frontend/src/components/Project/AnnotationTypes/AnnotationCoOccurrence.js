@@ -12,33 +12,21 @@ export default function AnnotationCoOccurrence(props) {
 
   const handleValueChange = (value) => {
     setCoOccurrenceSet(value);
-    // let tempSet = coOccurrenceSet;
-    // tempSet.push(value[value.length - 1].tokens);
-    // tempSet.push(value);
-    // setCoOccurrenceSet(tempSet);
-    console.log("9 ", coOccurrenceSet);
-    // let temp_selection = coOccurrenceSummary;
-    // temp_selection.push();
-    // setCoOccurrenceSummary(temp_selection);
   };
 
   const handleSave = () => {
-    // console.log("hanlde sa")
     let tempCoOccur = coOccurrenceSummary;
     tempCoOccur.push(coOccurrenceSet);
     setCoOccurrenceSummary(tempCoOccur);
-    console.log(coOccurrenceSummary);
     setCoOccurrenceSet([]);
   };
 
-  const exportTagsToFile = () => {
-    const fileData = JSON.stringify(coOccurrenceSummary);
-    const blob = new Blob([fileData], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "co-occurrence-info.json";
-    link.href = url;
-    link.click();
+  const processToken = (tokens) => {
+    let tokenString = "";
+    tokens.forEach((token) => {
+      tokenString += " " + token;
+    });
+    return tokenString;
   };
 
   return (
@@ -66,18 +54,34 @@ export default function AnnotationCoOccurrence(props) {
             save co-occurrence set
           </button>
         </div>
-        <h4>Output Value</h4>
-        <div>
-          {coOccurrenceSummary.map((coOccurSet, key) => {
-            return (
-              <ul>
-                <p>set {key}</p>
-                {coOccurSet.map((coOccurItem, key) => {
-                  return <li>{coOccurItem.tokens}</li>;
-                })}
-              </ul>
-            );
-          })}
+        <h4>Selected Sets</h4>
+        <div style={{ width: "80%", margin: "auto" }}>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {coOccurrenceSummary.map((coOccurSet, key) => {
+                return (
+                  <tr key={key}>
+                    <td>
+                      <div>
+                        {coOccurSet.map((coOccurItem, key) => {
+                          return (
+                            <p style={{ margin: "0px" }}>
+                              {processToken(coOccurItem.tokens)}
+                            </p>
+                          );
+                        })}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

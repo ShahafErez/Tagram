@@ -66,14 +66,12 @@ export default function AnnotationRelation(props) {
     setTag(e.target.value);
   };
 
-  const exportRelationsToFile = () => {
-    const fileData = JSON.stringify(relationSummary);
-    const blob = new Blob([fileData], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "relations-info.json";
-    link.href = url;
-    link.click();
+  const processToken = (tokens) => {
+    let tokenString = "";
+    tokens.forEach((token) => {
+      tokenString += " " + token;
+    });
+    return tokenString;
   };
 
   return (
@@ -112,30 +110,31 @@ export default function AnnotationRelation(props) {
             })}
           />
         </div>
-      </div>
 
-      <h4>Relations</h4>
-      {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
-      <div>
-        <table>
-          <tr>
-            <th>Type</th>
-            <th>From</th>
-            <th>To</th>
-          </tr>
-          {relationSummary.map((val, key) => {
-            return (
-              <tr key={key}>
-                <td>{val.Type}</td>
-                <td>{val.From}</td>
-                <td>{val.To}</td>
+        <h4>Selected Relations</h4>
+        <div style={{ width: "80%", margin: "auto" }}>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Type</th>
+                <th scope="col">Term From</th>
+                <th scope="col">Term To</th>
               </tr>
-            );
-          })}
-        </table>
+            </thead>
+            <tbody>
+              {relationSummary.map((val, key) => {
+                return (
+                  <tr key={key}>
+                    <td>{val.Type}</td>
+                    <td>{processToken(val.From)}</td>
+                    <td>{processToken(val.To)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <br></br>
-      {/* <button id="saveRelationBtn" onClick={exportRelationsToFile}>Export Relations to File</button> */}
     </div>
   );
 }

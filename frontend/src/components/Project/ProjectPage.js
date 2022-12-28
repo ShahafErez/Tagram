@@ -93,6 +93,9 @@ export default function ProjectPage() {
   };
 
   const saveAnnotation = () => {
+    console.log("tags: ", tagsSummary);
+    console.log("relations: ", relationSummary);
+    console.log("co occur: ", coOccurrenceSummary);
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -101,10 +104,15 @@ export default function ProjectPage() {
         file_id: file.file_id,
         tags: tagsSummary,
         relations: relationSummary,
+        coOccurrence: coOccurrenceSummary,
       }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
+    }).then((response) => {
+      console.log(response);
+      if (response.status == 201) {
+        alert("Annotation information saved");
+      }
+      return response.json();
+    });
   };
 
   return (

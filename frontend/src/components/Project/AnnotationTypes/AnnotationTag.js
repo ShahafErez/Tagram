@@ -50,16 +50,6 @@ export default function AnnotationTag(props) {
     return tokenString;
   };
 
-  const exportTagsToFile = () => {
-    const fileData = JSON.stringify(tagsSummary);
-    const blob = new Blob([fileData], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "tags-info.json";
-    link.href = url;
-    link.click();
-  };
-
   return (
     <div class="annotate">
       <div style={{ padding: "10px" }}>
@@ -118,7 +108,6 @@ export default function AnnotationTag(props) {
           </table>
         </div>
       </div>
-      {/* <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button> */}
     </div>
   );
 }
