@@ -11,9 +11,9 @@ export default function AnnotationTag(props) {
   });
 
   const file = props.file;
-  const [tagsSummarry, setTagsSummarry] = useState(props.tagsSummarry);
+  const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
 
-  const [value, setValue] = useState(tagsSummarry);
+  const [value, setValue] = useState(tagsSummary);
   const [tag, setTag] = useState(tag_options[0]);
 
   /** Creating a json object that will store the value of the selected tag
@@ -32,23 +32,22 @@ export default function AnnotationTag(props) {
 
   const handleValueChange = (value) => {
     setValue(value);
-    let temp_tags = tagsSummarry;
+    let temp_tags = tagsSummary;
     temp_tags.push(createTagObject(value[value.length - 1]));
-    setTagsSummarry(temp_tags);
+    setTagsSummary(temp_tags);
   };
 
   const handleTagChange = (e) => {
     setTag(e.target.value);
   };
 
-  const exportTagsToFile = () => {
-    const fileData = JSON.stringify(tagsSummarry);
-    const blob = new Blob([fileData], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.download = "tags-info.json";
-    link.href = url;
-    link.click();
+  const processToken = (value) => {
+    console.log("value token ", value.token);
+    let tokenString = "";
+    value.token.forEach((token) => {
+      tokenString += " " + token;
+    });
+    return tokenString;
   };
 
   return (
@@ -63,7 +62,6 @@ export default function AnnotationTag(props) {
             onChange={handleTagChange}
             value={tag}
           >
-            {/* todo- change to be dyanmic */}
             {tag_options.map((element, index) => (
               <option key={index}>{element}</option>
             ))}
@@ -88,26 +86,28 @@ export default function AnnotationTag(props) {
             })}
           />
         </div>
-        <h4>Output Value</h4>
-        {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
-        <div>
-          <table>
-            <tr>
-              <th>Tag Type</th>
-              <th>Term</th>
-            </tr>
-            {tagsSummarry.map((val, key) => {
-              return (
-                <tr key={key}>
-                  <td>{val.Type}</td>
-                  <td>{val.token}</td>
-                </tr>
-              );
-            })}
+        <h4>Selected Tags</h4>
+        <div style={{ width: "80%", margin: "auto" }}>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Type</th>
+                <th scope="col">Term</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tagsSummary.map((val, key) => {
+                return (
+                  <tr key={key}>
+                    <td>{val.Type}</td>
+                    <td>{processToken(val)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
       </div>
-      {/* <button id="saveTagsBtn" onClick={exportTagsToFile}>Export Tags to File</button> */}
     </div>
   );
 }
