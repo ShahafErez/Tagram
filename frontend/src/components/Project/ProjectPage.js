@@ -29,7 +29,7 @@ export default function ProjectPage() {
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
   const [relationSummary, setRelationSummary] = useState([]);
-  const [tagsSummary, settagsSummary] = useState([]);
+  const [tagsSummary, setTagsSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState([]);
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
 
@@ -78,7 +78,11 @@ export default function ProjectPage() {
         return response.json();
       })
       .then((data) => {
-        setFile(data);
+        // saving the file as array of lines
+        let textArray = data.text.split("\n");
+        setTagsSummary(new Array(textArray.length).fill([]));
+        // let newData = data.text.repl
+        setFile(textArray);
       });
   }, []);
 

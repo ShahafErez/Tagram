@@ -11,7 +11,10 @@ export default function AnnotationTag(props) {
   });
 
   const file = props.file;
+  // console.log("file ", file);
+
   const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
+  // console.log("0 ", tagsSummary);
 
   const [value, setValue] = useState(tagsSummary);
   const [tag, setTag] = useState(tag_options[0]);
@@ -31,9 +34,16 @@ export default function AnnotationTag(props) {
   }
 
   const handleValueChange = (value) => {
+    console.log("value is ", value);
     setValue(value);
-    let temp_tags = tagsSummary;
-    temp_tags.push(createTagObject(value[value.length - 1]));
+    let temp_tags_summary = tagsSummary;
+    let temp_tags_key = temp_tags_summary[key];
+    console.log("should be empty array of size 0 ", temp_tags_key);
+
+    temp_tags_key.push(createTagObject(value[value.length - 1]));
+
+    temp_tags[key] = temp_tags_index;
+    console.log("99 ", temp_tags);
     setTagsSummary(temp_tags);
   };
 
@@ -69,22 +79,28 @@ export default function AnnotationTag(props) {
         </div>
 
         <div style={{ marginTop: "15px" }}>
-          <TokenAnnotator
-            style={{
-              padding: "5px",
-              lineHeight: 1.5,
-              border: "1px solid #fcc727",
-              borderRadius: "2px",
-            }}
-            tokens={file.text.split(" ")}
-            value={value}
-            onChange={handleValueChange}
-            getSpan={(span) => ({
-              ...span,
-              tag: tag,
-              color: TAG_COLORS[tag],
-            })}
-          />
+          {file.map((sentence, key) => {
+            console.log("8888 ", sentence, key);
+            return (
+              <TokenAnnotator
+                style={{
+                  padding: "5px",
+                  lineHeight: 1.5,
+                  border: "1px solid #fcc727",
+                  borderRadius: "2px",
+                }}
+                tokens={sentence.split(" ")}
+                value={value}
+                // onChange={handleValueChange}
+                onChange={(e) => handleValueChange(key, e)}
+                getSpan={(span) => ({
+                  ...span,
+                  tag: tag,
+                  color: TAG_COLORS[tag],
+                })}
+              />
+            );
+          })}
         </div>
         <h4>Selected Tags</h4>
         <div style={{ width: "80%", margin: "auto" }}>
@@ -100,7 +116,7 @@ export default function AnnotationTag(props) {
                 return (
                   <tr key={key}>
                     <td>{val.Type}</td>
-                    <td>{processToken(val)}</td>
+                    {/* <td>{processToken(val)}</td> */}
                   </tr>
                 );
               })}
