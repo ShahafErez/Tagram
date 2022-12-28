@@ -4,7 +4,7 @@ import string
 import random
 
 
-def generate_unique_code(): #TODO: make 1 method that recives table name and genarates unique id
+def generate_unique_code():  # TODO: make 1 method that recives table name and genarates unique id
     length = 6
 
     while True:
@@ -25,6 +25,7 @@ class Project(models.Model):
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 def generate_file_unique_code():
     length = 6
 
@@ -34,6 +35,7 @@ def generate_file_unique_code():
         if File.objects.filter(file_id=id).count() == 0:
             break
     return id
+
 
 class File(models.Model):
     file_id = models.CharField(
@@ -60,5 +62,6 @@ class Annotation(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE)
     file = models.ForeignKey(File, on_delete=models.CASCADE)
-    tags = models.CharField(max_length=2000,null=True)
-    relations = models.CharField(max_length=2000,null=True)
+    tags = models.CharField(max_length=4096, null=True)
+    relations = models.CharField(max_length=4096, null=True)
+    co_occcurrence = models.CharField(max_length=4096, null=True)
