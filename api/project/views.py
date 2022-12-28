@@ -220,11 +220,10 @@ class SaveAnnotation(APIView):
 
             tags = json.dumps(data['tags'])
             relations = json.dumps(data['relations'])
-            print("!!! tags", tags)
-            print("!!! relations", relations)
+            co_occcurrence = json.dumps(data['co_occcurrence'])
 
             annotation = Annotation(
-                project=project, file=file, tags=tags, relations=relations)
+                project=project, file=file, tags=tags, relations=relations, co_occcurrence=co_occcurrence)
             annotation.save()
 
             # return feedback to user
@@ -251,6 +250,8 @@ class GetAnnotation(APIView):
                             annotation_query[0]).data
                         data['tags'] = json.loads(data['tags'])
                         data['relations'] = json.loads(data['relations'])
+                        data['co_occcurrence'] = json.loads(
+                            data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
                     return Response("no annotation found", status=status.HTTP_404_NOT_FOUND)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
