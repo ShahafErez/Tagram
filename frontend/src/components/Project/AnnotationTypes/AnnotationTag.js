@@ -10,19 +10,43 @@ export default function AnnotationTag(props) {
     tag_options.push(label["name"] + "");
   });
 
+  /**
+   * To support multi-lines files, we set the below variable to be an array
+   * the size of the array will be the number of lines in the file
+   */
   const file = props.file;
-  // console.log("file ", file);
-
   const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
-  // console.log("0 ", tagsSummary);
+  const [value, setValue] = useState(props.tagsSummary);
 
-  const [value, setValue] = useState(tagsSummary);
+  // Only one tag is selected at all time
   const [tag, setTag] = useState(tag_options[0]);
+
+  const handleValueChange = (key, selectedValue) => {
+    // updating the value array with the selected value
+    let tempValue = JSON.parse(JSON.stringify(value));
+    tempValue[key] = selectedValue;
+    setValue(tempValue);
+
+    // updating tagsSummary array
+    let temp_tags_summary = JSON.parse(JSON.stringify(tagsSummary));
+    let temp_tags_key = temp_tags_summary[key];
+    let tagObject = createTagObject(selectedValue[selectedValue.length - 1]);
+    temp_tags_key.push(tagObject);
+    setTagsSummary(temp_tags_summary);
+
+    // sending the updated tagsSummary to project page
+    props.onChangeTags(temp_tags_summary);
+  };
+
+  const handleTagChange = (e) => {
+    setTag(e.target.value);
+  };
 
   /** Creating a json object that will store the value of the selected tag
    * This is used for displaying the previous selected tags, even after closing the tag tab
    */
   function createTagObject(value) {
+    // console.log("create tag object recived value ", value);
     return {
       Type: tag,
       token: value.tokens,
@@ -33,26 +57,7 @@ export default function AnnotationTag(props) {
     };
   }
 
-  const handleValueChange = (value) => {
-    console.log("value is ", value);
-    setValue(value);
-    let temp_tags_summary = tagsSummary;
-    let temp_tags_key = temp_tags_summary[key];
-    console.log("should be empty array of size 0 ", temp_tags_key);
-
-    temp_tags_key.push(createTagObject(value[value.length - 1]));
-
-    temp_tags[key] = temp_tags_index;
-    console.log("99 ", temp_tags);
-    setTagsSummary(temp_tags);
-  };
-
-  const handleTagChange = (e) => {
-    setTag(e.target.value);
-  };
-
   const processToken = (value) => {
-    console.log("value token ", value.token);
     let tokenString = "";
     value.token.forEach((token) => {
       tokenString += " " + token;
@@ -78,21 +83,24 @@ export default function AnnotationTag(props) {
           </select>
         </div>
 
-        <div style={{ marginTop: "15px" }}>
+        {/* Each line of the file has a TokenAnnotator tag */}
+        <div
+          class="border border-secondary rounded"
+          style={{ marginTop: "15px" }}
+        >
           {file.map((sentence, key) => {
-            console.log("8888 ", sentence, key);
             return (
               <TokenAnnotator
                 style={{
                   padding: "5px",
                   lineHeight: 1.5,
-                  border: "1px solid #fcc727",
                   borderRadius: "2px",
                 }}
                 tokens={sentence.split(" ")}
-                value={value}
-                // onChange={handleValueChange}
-                onChange={(e) => handleValueChange(key, e)}
+                value={value[key]}
+                onChange={(e) => {
+                  handleValueChange(key, e);
+                }}
                 getSpan={(span) => ({
                   ...span,
                   tag: tag,
@@ -112,13 +120,15 @@ export default function AnnotationTag(props) {
               </tr>
             </thead>
             <tbody>
-              {tagsSummary.map((val, key) => {
-                return (
-                  <tr key={key}>
-                    <td>{val.Type}</td>
-                    {/* <td>{processToken(val)}</td> */}
-                  </tr>
-                );
+              {tagsSummary.map((valuesArray, key) => {
+                return valuesArray.map((val, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{val.Type}</td>
+                      <td>{processToken(val)}</td>
+                    </tr>
+                  );
+                });
               })}
             </tbody>
           </table>

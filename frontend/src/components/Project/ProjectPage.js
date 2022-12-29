@@ -13,6 +13,11 @@ export default function ProjectPage() {
     is_project_manager: false,
     created_at: "",
   });
+  const [fileArray, setFileArray] = useState({
+    file_id: "",
+    file: "",
+    text: "",
+  });
   const [file, setFile] = useState({
     file_id: "",
     file: "",
@@ -82,7 +87,8 @@ export default function ProjectPage() {
         let textArray = data.text.split("\n");
         setTagsSummary(new Array(textArray.length).fill([]));
         // let newData = data.text.repl
-        setFile(textArray);
+        setFileArray(textArray);
+        setFile(data.text);
       });
   }, []);
 
@@ -175,9 +181,12 @@ export default function ProjectPage() {
           </div>
           {tagsLabels.length > 0 && isAnnotateTags && (
             <AnnotationTag
-              file={file}
+              file={fileArray}
               labels={tagsLabels}
               tagsSummary={tagsSummary}
+              onChangeTags={(newValue) => {
+                setTagsSummary(newValue);
+              }}
             />
           )}
           {relationsLabels.length > 0 && isAnnotateRelations && (

@@ -5,12 +5,13 @@ export default function AnnotationRelation(props) {
   let TAG_COLORS = {};
   let tag_options = [];
 
+  // console.log(props.file);
   props.labels.forEach(function (label, index) {
     TAG_COLORS[label["name"]] = label["color"];
     tag_options.push(label["name"] + "");
   });
 
-  const file = props.file;
+  const [file, setfile] = useState(props.file);
 
   const [tag, setTag] = useState(tag_options[0]);
 
@@ -35,6 +36,7 @@ export default function AnnotationRelation(props) {
 
   const handleValueChange = (value) => {
     setValue(value);
+    console.log("000 value ", value);
     setRelationCount(relationCount + 1);
     if (relationCount == 2) {
       // Saving the selected terms to be displayed constantly
@@ -92,24 +94,26 @@ export default function AnnotationRelation(props) {
           </select>
         </div>
 
-        <div style={{ marginTop: "15px" }}>
-          <TokenAnnotator
-            style={{
-              padding: "5px",
-              lineHeight: 1.5,
-              border: "1px solid #fcc727",
-              borderRadius: "2px",
-            }}
-            tokens={file.text.split(" ")}
-            value={value}
-            onChange={handleValueChange}
-            getSpan={(span) => ({
-              ...span,
-              tag: tag,
-              color: TAG_COLORS[tag],
-            })}
-          />
-        </div>
+        {file != "" && (
+          <div style={{ marginTop: "15px" }}>
+            <TokenAnnotator
+              style={{
+                padding: "5px",
+                lineHeight: 1.5,
+                border: "1px solid #fcc727",
+                borderRadius: "2px",
+              }}
+              tokens={file.split(" ")}
+              value={value}
+              onChange={handleValueChange}
+              getSpan={(span) => ({
+                ...span,
+                tag: tag,
+                color: TAG_COLORS[tag],
+              })}
+            />
+          </div>
+        )}
 
         <h4>Selected Relations</h4>
         <div style={{ width: "80%", margin: "auto" }}>
