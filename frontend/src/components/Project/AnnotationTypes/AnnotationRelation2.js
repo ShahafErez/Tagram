@@ -1,7 +1,7 @@
 import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
 
-export default function AnnotationTag(props) {
+export default function AnnotationRelation2(props) {
   let TAG_COLORS = {};
   let tag_options = [];
 
@@ -10,32 +10,47 @@ export default function AnnotationTag(props) {
     tag_options.push(label["name"] + "");
   });
 
-  const [currentState, setCurrentState] = useState(props.tagCurrentState);
+  const [currentState, setCurrentState] = useState(props.relationCurrentState);
   /**
    * To support multi-lines files, we set the below variable to be an array
    * the size of the array will be the number of lines in the file
    */
   const file = props.file;
-  const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
+  const [relationSummary, setRelationSummary] = useState(props.relationSummary);
 
+  const [relationCount, setRelationCount] = useState(1);
   // Only one tag is selected at all time
   const [tag, setTag] = useState(tag_options[0]);
 
   const handleValueChange = (key, selectedValue) => {
-    // updating the current selected state
+    // updating the current selected value
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
 
-    // updating tagsSummary array
-    let temp_tags_summary = JSON.parse(JSON.stringify(tagsSummary));
-    // let temp_tags_value = temp_tags_summary[key];
-    let tagObject = createTagObject(selectedValue[selectedValue.length - 1]);
-    temp_tags_summary.push(tagObject);
-    setTagsSummary(temp_tags_summary);
+    setRelationCount(relationCount + 1);
 
-    // sending the updated tagsSummary to project page
-    props.onChangeTags(tagsSummary, currentState);
+    if (relationCount == 2) {
+      let temp_rel = JSON.parse(JSON.stringify(relationSummary));
+      temp_rel.push({
+        Type: tag,
+        From: selectedValue[selectedValue.length - 2].tokens,
+        To: selectedValue[selectedValue.length - 1].tokens,
+        From_start_end: [
+          selectedValue[selectedValue.length - 2].start,
+          selectedValue[selectedValue.length - 2].end,
+        ],
+        To_start_end: [
+          selectedValue[selectedValue.length - 1].start,
+          selectedValue[selectedValue.length - 1].end,
+        ],
+      });
+      setRelationSummary(temp_rel);
+      setRelationCount(1);
+
+      // sending the updated variables to project page
+      props.onChangeRelation(relationSummary, currentState);
+    }
   };
 
   const handleTagChange = (e) => {
@@ -46,7 +61,6 @@ export default function AnnotationTag(props) {
    * This is used for displaying the previous selected tags, even after closing the tag tab
    */
   function createTagObject(value) {
-    // console.log("create tag object recived value ", value);
     return {
       Type: tag,
       token: value.tokens,
@@ -57,9 +71,9 @@ export default function AnnotationTag(props) {
     };
   }
 
-  const processToken = (value) => {
+  const processToken = (tokens) => {
     let tokenString = "";
-    value.token.forEach((token) => {
+    tokens.forEach((token) => {
       tokenString += " " + token;
     });
     return tokenString;
@@ -68,7 +82,7 @@ export default function AnnotationTag(props) {
   return (
     <div class="annotate">
       <div style={{ padding: "10px" }}>
-        <h4>Annotate Tags</h4>
+        <h4>Annotate Relations</h4>
         <div>
           <select
             class="form-select"
@@ -98,6 +112,7 @@ export default function AnnotationTag(props) {
                 tokens={sentence.split(" ")}
                 value={currentState[key]}
                 onChange={(e) => {
+                  console.log("value changes");
                   handleValueChange(key, e);
                 }}
                 getSpan={(span) => ({
@@ -116,15 +131,17 @@ export default function AnnotationTag(props) {
             <thead>
               <tr>
                 <th scope="col">Type</th>
-                <th scope="col">Term</th>
+                <th scope="col">Term From</th>
+                <th scope="col">Term To</th>
               </tr>
             </thead>
             <tbody>
-              {tagsSummary.map((val, key) => {
+              {relationSummary.map((val, key) => {
                 return (
                   <tr key={key}>
                     <td>{val.Type}</td>
-                    <td>{processToken(val)}</td>
+                    <td>{processToken(val.From)}</td>
+                    <td>{processToken(val.To)}</td>
                   </tr>
                 );
               })}

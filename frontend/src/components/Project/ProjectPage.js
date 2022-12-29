@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MetaTaggingObject from "./MetaTaggingObject";
 import AnnotationTag from "./AnnotationTypes/AnnotationTag";
-import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
+import AnnotationRelation2 from "./AnnotationTypes/AnnotationRelation2";
 import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
 
 export default function ProjectPage() {
@@ -29,13 +29,14 @@ export default function ProjectPage() {
   const [tagsLabels, setTagsLabels] = useState([]);
   const [relationsLabels, setRelationsLabels] = useState([]);
 
-  const [isAnnotateTags, setIsAnnotateTags] = useState(true);
-  const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
+  const [isAnnotateTags, setIsAnnotateTags] = useState(false);
+  const [isAnnotateRelations, setIsAnnotateRelations] = useState(true);
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
-  const [relationSummary, setRelationSummary] = useState([]);
   const [tagsSummary, setTagsSummary] = useState([]);
-  const [relationCurrentState, setRelationCurrentState] = useState([]);
+  const [tagCurrentState, setTagCurrentState] = useState();
+  const [relationSummary, setRelationSummary] = useState([]);
+  const [relationCurrentState, setRelationCurrentState] = useState();
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
 
   // getting project details
@@ -85,7 +86,10 @@ export default function ProjectPage() {
       .then((data) => {
         // saving the file as array of lines
         let textArray = data.text.split("\n");
-        setTagsSummary(new Array(textArray.length).fill([]));
+        setTagCurrentState(new Array(textArray.length).fill([]));
+        setRelationCurrentState(new Array(textArray.length).fill([]));
+        setCoOccurrenceSummary(new Array(textArray.length).fill([]));
+
         // let newData = data.text.repl
         setFileArray(textArray);
         setFile(data.text);
@@ -184,17 +188,23 @@ export default function ProjectPage() {
               file={fileArray}
               labels={tagsLabels}
               tagsSummary={tagsSummary}
-              onChangeTags={(newValue) => {
-                setTagsSummary(newValue);
+              tagCurrentState={tagCurrentState}
+              onChangeTags={(newValueSummary, newValueCurrentState) => {
+                setTagsSummary(newValueSummary);
+                setTagCurrentState(newValueCurrentState);
               }}
             />
           )}
           {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation
-              file={file}
+            <AnnotationRelation2
+              file={fileArray}
               labels={relationsLabels}
               relationSummary={relationSummary}
               relationCurrentState={relationCurrentState}
+              onChangeRelation={(newValueSummary, newValueCurrentState) => {
+                setRelationSummary(newValueSummary);
+                setRelationCurrentState(newValueCurrentState);
+              }}
             />
           )}
           {isAnnotateCoOccurrence && (
