@@ -2,23 +2,36 @@ import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
 
 export default function AnnotationCoOccurrence(props) {
+  let color = "#fcc727";
   const file = props.file;
+
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
     props.coOccurrenceSummary
   );
-  const [color, setColor] = useState("#fbed56");
+  const [currentState, setCurrentState] = useState(
+    props.coOccurrenceCurrentState
+  );
+  const [currentlySelectedArray, setCurrentlySelectedArray] = useState([]);
 
-  const [coOccurrenceSet, setCoOccurrenceSet] = useState([]);
-
-  const handleValueChange = (value) => {
-    setCoOccurrenceSet(value);
+  const handleValueChange = (key, selectedValue) => {
+    let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    temp_current_state[key] = selectedValue;
+    setCurrentState(temp_current_state);
+    let temp_currently_selected_array = JSON.parse(
+      JSON.stringify(currentlySelectedArray)
+    );
+    temp_currently_selected_array.push(
+      selectedValue[selectedValue.length - 1].tokens
+    );
+    setCurrentlySelectedArray(temp_currently_selected_array);
   };
 
   const handleSave = () => {
-    let tempCoOccur = coOccurrenceSummary;
-    tempCoOccur.push(coOccurrenceSet);
+    let tempCoOccur = JSON.parse(JSON.stringify(coOccurrenceSummary));
+    tempCoOccur.push([currentlySelectedArray]);
     setCoOccurrenceSummary(tempCoOccur);
-    setCoOccurrenceSet([]);
+    setCurrentState(new Array(file.length).fill([]));
+    setCurrentlySelectedArray([]);
   };
 
   const processToken = (tokens) => {
@@ -33,23 +46,31 @@ export default function AnnotationCoOccurrence(props) {
     <div class="annotate">
       <div style={{ padding: "10px" }}>
         <h4>Annotate Co-Occurrence</h4>
-        <div style={{ marginTop: "15px" }}>
-          <TokenAnnotator
-            style={{
-              padding: "5px",
-              lineHeight: 1.5,
-              border: "1px solid #fcc727",
-              borderRadius: "2px",
-            }}
-            tokens={file.text.split(" ")}
-            value={coOccurrenceSet}
-            onChange={handleValueChange}
-            getSpan={(span) => ({
-              ...span,
-              tag: "",
-              color: color,
-            })}
-          />
+        <div
+          class="border border-secondary rounded"
+          style={{ marginTop: "15px" }}
+        >
+          {file.map((sentence, key) => {
+            return (
+              <TokenAnnotator
+                style={{
+                  padding: "5px",
+                  lineHeight: 1.5,
+                }}
+                tokens={sentence.split(" ")}
+                value={currentState[key]}
+                onChange={(e) => {
+                  console.log("value changes");
+                  handleValueChange(key, e);
+                }}
+                getSpan={(span) => ({
+                  ...span,
+                  tag: "",
+                  color: color,
+                })}
+              />
+            );
+          })}
           <button class="btn btn-secondary" onClick={handleSave}>
             save co-occurrence set
           </button>
@@ -65,17 +86,21 @@ export default function AnnotationCoOccurrence(props) {
             <tbody>
               {coOccurrenceSummary.map((coOccurSet, key) => {
                 return (
-                  <tr key={key}>
+                  <tr>
                     <td>
-                      <div>
-                        {coOccurSet.map((coOccurItem, key) => {
-                          return (
-                            <p style={{ margin: "0px" }}>
-                              {processToken(coOccurItem.tokens)}
-                            </p>
-                          );
-                        })}
-                      </div>
+                      {coOccurSet.map((coOccurItem, key) => {
+                        return (
+                          <div>
+                            {coOccurItem.map((item, key) => {
+                              return (
+                                <p style={{ margin: "0px" }}>
+                                  {processToken(item)}
+                                </p>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
                     </td>
                   </tr>
                 );

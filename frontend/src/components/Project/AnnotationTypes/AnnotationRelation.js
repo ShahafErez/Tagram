@@ -10,58 +10,47 @@ export default function AnnotationRelation(props) {
     tag_options.push(label["name"] + "");
   });
 
+  const [currentState, setCurrentState] = useState(props.relationCurrentState);
   /**
    * To support multi-lines files, we set the below variable to be an array
    * the size of the array will be the number of lines in the file
    */
   const file = props.file;
   const [relationSummary, setRelationSummary] = useState(props.relationSummary);
-  // Array saving the current state of the values, for displying
-  const [relationCurrentState, setRelationCurrentState] = useState(
-    props.relationCurrentState
-  );
-  const [value, setValue] = useState(relationCurrentState);
 
   const [relationCount, setRelationCount] = useState(1);
   // Only one tag is selected at all time
   const [tag, setTag] = useState(tag_options[0]);
 
   const handleValueChange = (key, selectedValue) => {
-    console.log("handle change");
-    // updating the value array with the selected value
-    let tempValue = JSON.parse(JSON.stringify(value));
-    tempValue[key] = selectedValue;
-    setValue(tempValue);
+    // updating the current selected value
+    let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    temp_current_state[key] = selectedValue;
+    setCurrentState(temp_current_state);
 
     setRelationCount(relationCount + 1);
-    if (relationCount == 2) {
-      // Saving the selected terms to be displayed
-      let temp_current_state = JSON.parse(JSON.stringify(relationCurrentState));
-      temp_current_state.push(createTagObject(value[value.length - 1]));
-      temp_current_state.push(createTagObject(value[value.length - 2]));
-      setRelationCurrentState(temp_current_state);
 
-      // updating relationSummary array
-      let temp_relation_summary = JSON.parse(JSON.stringify(relationSummary));
-      let temp_tags_value = temp_relation_summary[key];
-      temp_tags_value.push({
+    if (relationCount == 2) {
+      let temp_rel = JSON.parse(JSON.stringify(relationSummary));
+
+      temp_rel.push({
         Type: tag,
-        From: value[value.length - 2].tokens,
-        To: value[value.length - 1].tokens,
+        From: selectedValue[selectedValue.length - 2].tokens,
+        To: selectedValue[selectedValue.length - 1].tokens,
         From_start_end: [
-          value[value.length - 2].start,
-          value[value.length - 2].end,
+          selectedValue[selectedValue.length - 2].start,
+          selectedValue[selectedValue.length - 2].end,
         ],
         To_start_end: [
-          value[value.length - 1].start,
-          value[value.length - 1].end,
+          selectedValue[selectedValue.length - 1].start,
+          selectedValue[selectedValue.length - 1].end,
         ],
       });
-      setRelationSummary(temp_relation_summary);
+      setRelationSummary(temp_rel);
       setRelationCount(1);
 
-      // sending the updated tagsSummary to project page
-      props.onChangeRelation(temp_relation_summary);
+      // sending the updated variables to project page
+      props.onChangeRelation(relationSummary, currentState);
     }
   };
 
@@ -69,15 +58,9 @@ export default function AnnotationRelation(props) {
     setTag(e.target.value);
   };
 
-  const processToken = (tokens) => {
-    let tokenString = "";
-    tokens.forEach((token) => {
-      tokenString += " " + token;
-    });
-    return tokenString;
-  };
-
-  // Creating a json object that will store the value of the selected relations
+  /** Creating a json object that will store the value of the selected tag
+   * This is used for displaying the previous selected tags, even after closing the tag tab
+   */
   function createTagObject(value) {
     return {
       Type: tag,
@@ -88,6 +71,14 @@ export default function AnnotationRelation(props) {
       color: value.color,
     };
   }
+
+  const processToken = (tokens) => {
+    let tokenString = "";
+    tokens.forEach((token) => {
+      tokenString += " " + token;
+    });
+    return tokenString;
+  };
 
   return (
     <div class="annotate">
@@ -107,6 +98,7 @@ export default function AnnotationRelation(props) {
           </select>
         </div>
 
+        {/* Each line of the file has a TokenAnnotator tag */}
         <div
           class="border border-secondary rounded"
           style={{ marginTop: "15px" }}
@@ -119,8 +111,9 @@ export default function AnnotationRelation(props) {
                   lineHeight: 1.5,
                 }}
                 tokens={sentence.split(" ")}
-                value={value[key]}
+                value={currentState[key]}
                 onChange={(e) => {
+                  console.log("value changes");
                   handleValueChange(key, e);
                 }}
                 getSpan={(span) => ({
@@ -133,7 +126,7 @@ export default function AnnotationRelation(props) {
           })}
         </div>
 
-        <h4>Selected Relations</h4>
+        <h4>Selected Tags</h4>
         <div style={{ width: "80%", margin: "auto" }}>
           <table class="table">
             <thead>
@@ -147,9 +140,9 @@ export default function AnnotationRelation(props) {
               {relationSummary.map((val, key) => {
                 return (
                   <tr key={key}>
-                    {/* <td>{val.Type}</td> */}
-                    {/* <td>{processToken(val.From)}</td> */}
-                    {/* <td>{processToken(val.To)}</td> */}
+                    <td>{val.Type}</td>
+                    <td>{processToken(val.From)}</td>
+                    <td>{processToken(val.To)}</td>
                   </tr>
                 );
               })}
