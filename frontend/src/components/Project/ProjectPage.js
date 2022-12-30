@@ -13,11 +13,6 @@ export default function ProjectPage() {
     is_project_manager: false,
     created_at: "",
   });
-  const [fileArray, setFileArray] = useState({
-    file_id: "",
-    file: "",
-    text: "",
-  });
   const [file, setFile] = useState({
     file_id: "",
     file: "",
@@ -33,6 +28,7 @@ export default function ProjectPage() {
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
+  // setting the summary and current state for each annotation type
   const [tagsSummary, setTagsSummary] = useState([]);
   const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
@@ -91,9 +87,11 @@ export default function ProjectPage() {
         setRelationCurrentState(new Array(textArray.length).fill([]));
         setCoOccurrenceCurrentState(new Array(textArray.length).fill([]));
 
-        // let newData = data.text.repl
-        setFileArray(textArray);
-        setFile(data.text);
+        setFile({
+          file_id: data.file_id,
+          file: data.file,
+          text: textArray,
+        });
       });
   }, []);
 
@@ -108,6 +106,9 @@ export default function ProjectPage() {
   };
 
   const saveAnnotation = () => {
+    console.log("tagsSummary ", tagsSummary);
+    console.log("relationSummary ", relationSummary);
+    console.log("coOccurrenceSummary ", coOccurrenceSummary);
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -184,9 +185,9 @@ export default function ProjectPage() {
               Annotate Co-Occurrence
             </button>
           </div>
-          {tagsLabels.length > 0 && isAnnotateTags && (
+          {file.text != "" && tagsLabels.length > 0 && isAnnotateTags && (
             <AnnotationTag
-              file={fileArray}
+              file={file.text}
               labels={tagsLabels}
               tagsSummary={tagsSummary}
               tagCurrentState={tagCurrentState}
@@ -196,21 +197,23 @@ export default function ProjectPage() {
               }}
             />
           )}
-          {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation
-              file={fileArray}
-              labels={relationsLabels}
-              relationSummary={relationSummary}
-              relationCurrentState={relationCurrentState}
-              onChangeRelation={(newValueSummary, newValueCurrentState) => {
-                setRelationSummary(newValueSummary);
-                setRelationCurrentState(newValueCurrentState);
-              }}
-            />
-          )}
+          {file.text != "" &&
+            relationsLabels.length > 0 &&
+            isAnnotateRelations && (
+              <AnnotationRelation
+                file={file.text}
+                labels={relationsLabels}
+                relationSummary={relationSummary}
+                relationCurrentState={relationCurrentState}
+                onChangeRelation={(newValueSummary, newValueCurrentState) => {
+                  setRelationSummary(newValueSummary);
+                  setRelationCurrentState(newValueCurrentState);
+                }}
+              />
+            )}
           {file.text != "" && isAnnotateCoOccurrence && (
             <AnnotationCoOccurrence
-              file={fileArray}
+              file={file.text}
               coOccurrenceCurrentState={coOccurrenceCurrentState}
               coOccurrenceSummary={coOccurrenceSummary}
               onChangeCoOcurr={(newValueSummary, newValueCurrentState) => {

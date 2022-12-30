@@ -24,6 +24,7 @@ export default function AnnotationCoOccurrence(props) {
       selectedValue[selectedValue.length - 1].tokens
     );
     setCurrentlySelectedArray(temp_currently_selected_array);
+    props.onChangeCoOcurr(coOccurrenceSummary, currentState);
   };
 
   const handleSave = () => {
@@ -71,10 +72,10 @@ export default function AnnotationCoOccurrence(props) {
               />
             );
           })}
-          <button class="btn btn-secondary" onClick={handleSave}>
-            save co-occurrence set
-          </button>
         </div>
+        <button class="btn btn-secondary" onClick={handleSave}>
+          save co-occurrence set
+        </button>
         <h4>Selected Sets</h4>
         <div style={{ width: "80%", margin: "auto" }}>
           <table class="table">
