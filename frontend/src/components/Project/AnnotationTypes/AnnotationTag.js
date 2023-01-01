@@ -5,51 +5,68 @@ export default function AnnotationTag(props) {
   let TAG_COLORS = {};
   let tag_options = [];
 
+  // mapping the values for the token information
   props.labels.forEach(function (label, index) {
     TAG_COLORS[label["name"]] = label["color"];
     tag_options.push(label["name"] + "");
   });
 
-  const [currentState, setCurrentState] = useState(props.tagCurrentState);
   /**
    * To support multi-lines files, we set the below variable to be an array
    * the size of the array will be the number of lines in the file
    */
+  const [currentState, setCurrentState] = useState(props.tagCurrentState);
   const file = props.file;
   const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
 
-  // Only one tag is selected at all time
   const [tag, setTag] = useState(tag_options[0]);
 
+  /**
+   * Updating the current state and the tags summary arrays with the updated information
+   * @param {*} key the line's index in the file
+   * @param {*} selectedValue the updated value
+   */
   const handleValueChange = (key, selectedValue) => {
-    // updating the current selected state
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
 
-    // updating tagsSummary array
     let temp_tags_summary = JSON.parse(JSON.stringify(tagsSummary));
-    // let temp_tags_value = temp_tags_summary[key];
     let tagObject = createTagObject(selectedValue[selectedValue.length - 1]);
-    temp_tags_summary.push(tagObject);
+    temp_tags_summary[key].push(tagObject);
     setTagsSummary(temp_tags_summary);
 
-    // sending the updated tagsSummary to project page
-    props.onChangeTags(tagsSummary, currentState);
+    // sending the updated arrays to the parent component
+    props.onChangeTags(temp_tags_summary, temp_current_state);
+  };
+
+  /**
+   * Unselecting a value- updating the current state
+   * And re-setting all the values in tags summary
+   */
+  const unselectValue = (key, selectedValue) => {
+    let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    temp_current_state[key] = selectedValue;
+    setCurrentState(temp_current_state);
+
+    let temp_tags_summary = JSON.parse(JSON.stringify(tagsSummary));
+    for (let i = 0; i < temp_tags_summary.length; i++) {
+      temp_tags_summary[i] = temp_current_state[i];
+    }
+    setTagsSummary(temp_tags_summary);
+
+    props.onChangeTags(temp_tags_summary, temp_current_state);
   };
 
   const handleTagChange = (e) => {
     setTag(e.target.value);
   };
 
-  /** Creating a json object that will store the value of the selected tag
-   * This is used for displaying the previous selected tags, even after closing the tag tab
-   */
+  /** Creating a json object that will store the value of the selected tag */
   function createTagObject(value) {
-    // console.log("create tag object recived value ", value);
     return {
       Type: tag,
-      token: value.tokens,
+      tokens: value.tokens,
       start: value.start,
       end: value.end,
       tag: value.tag,
@@ -59,7 +76,7 @@ export default function AnnotationTag(props) {
 
   const processToken = (value) => {
     let tokenString = "";
-    value.token.forEach((token) => {
+    value.forEach((token) => {
       tokenString += " " + token;
     });
     return tokenString;
@@ -98,7 +115,13 @@ export default function AnnotationTag(props) {
                 tokens={sentence.split(" ")}
                 value={currentState[key]}
                 onChange={(e) => {
-                  handleValueChange(key, e);
+                  // checking if a value was un-selected
+                  if (e.length < currentState[key].length) {
+                    unselectValue(key, e);
+                  } else {
+                    // new value was added
+                    handleValueChange(key, e);
+                  }
                 }}
                 getSpan={(span) => ({
                   ...span,
@@ -120,11 +143,11 @@ export default function AnnotationTag(props) {
               </tr>
             </thead>
             <tbody>
-              {tagsSummary.map((val, key) => {
+              {tagsSummary.flat(1).map((val, key) => {
                 return (
                   <tr key={key}>
-                    <td>{val.Type}</td>
-                    <td>{processToken(val)}</td>
+                    <td>{val.tag}</td>
+                    <td>{processToken(val.tokens)}</td>
                   </tr>
                 );
               })}

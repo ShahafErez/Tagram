@@ -29,7 +29,7 @@ export default function ProjectPage() {
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
   // setting the summary and current state for each annotation type
-  const [tagsSummary, setTagsSummary] = useState([]);
+  const [tagsSummary, setTagsSummary] = useState();
   const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState();
@@ -86,6 +86,7 @@ export default function ProjectPage() {
         setTagCurrentState(new Array(textArray.length).fill([]));
         setRelationCurrentState(new Array(textArray.length).fill([]));
         setCoOccurrenceCurrentState(new Array(textArray.length).fill([]));
+        setTagsSummary(new Array(textArray.length).fill([]));
 
         setFile({
           file_id: data.file_id,
