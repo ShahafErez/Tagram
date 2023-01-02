@@ -19,3 +19,6 @@ class Project(models.Model):
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
+class User(models.Model):
+    username = models.CharField(max_length=500)
+    is_project_manager = models.BooleanField(default=False)

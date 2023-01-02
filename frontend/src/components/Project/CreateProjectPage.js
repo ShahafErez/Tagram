@@ -17,6 +17,7 @@ export default function CreateProjectPage() {
       body: JSON.stringify({
         title,
         description,
+        // username
       }),
     })
       // redirecting to the project page after creation

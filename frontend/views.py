@@ -4,7 +4,13 @@ from django.views.decorators.csrf import csrf_protect
 from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from rest_framework import generics, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.http import JsonResponse
 
 @login_required(login_url = 'login')
 def index(request, *args, **kwargs):
@@ -13,7 +19,7 @@ def index(request, *args, **kwargs):
 @csrf_protect
 def loginpage(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return redirect('home')
+        return render(request, 'frontend/index.html')       
     else:
         if request.method == 'POST':
             username1 = request.POST.get('username')
@@ -21,7 +27,9 @@ def loginpage(request, *args, **kwargs):
             user = authenticate(request, username = username1, password = password1)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                context ={}
+                request.session['username'] = username1
+                return render(request, 'frontend/index.html',context)
             else:
                 messages.info(request, "Username or password is incorrect")
     context ={}
@@ -42,9 +50,17 @@ def register(request, *args, **kwargs):
             form = CreateUserForm(request.POST)
             if form.is_valid():
                 form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, 'Hi ' + user+"! You can start your annotation project now!")
+                username1 = form.cleaned_data.get('username')
+                password1 = form.cleaned_data.get('password1')
+                user = authenticate(request, username = username1, password = password1)
+                if user is not None:
+                    login(request, user)
+                    context ={}
+                    request.session['username'] = username1
+                    return render(request, 'frontend/index.html',context)
+                messages.success(request, 'Hi ' + username1+"! You can start your annotation project now!")
+                context ={}
                 return redirect('login')
-    return render(request, 'frontend/register.html',{'form':form})
+        return render(request, 'frontend/register.html',{'form':form})
 
 
