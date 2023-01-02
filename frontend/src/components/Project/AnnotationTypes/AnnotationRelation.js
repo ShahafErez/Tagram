@@ -153,6 +153,13 @@ export default function AnnotationRelation(props) {
     return tokenString;
   };
 
+  const removeSelection = (key) => {
+    let temp_relation_summary = JSON.parse(JSON.stringify(relationSummary));
+    temp_relation_summary.splice(key, 1);
+    setRelationSummary(temp_relation_summary);
+    props.onChangeRelation(temp_relation_summary, currentState);
+  };
+
   return (
     <div class="annotate">
       <div style={{ padding: "10px" }}>
@@ -237,18 +244,27 @@ export default function AnnotationRelation(props) {
                 <th scope="col">Type</th>
                 <th scope="col">Term From</th>
                 <th scope="col">Term To</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
-              {relationSummary.map((val, key) => {
-                return (
-                  <tr key={key}>
-                    <td>{val.tag}</td>
-                    <td>{processToken(val.From)}</td>
-                    <td>{processToken(val.To)}</td>
-                  </tr>
-                );
-              })}
+              {relationSummary.length > 0 &&
+                relationSummary.map((val, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{val.tag}</td>
+                      <td>{processToken(val.From)}</td>
+                      <td>{processToken(val.To)}</td>
+                      <td>
+                        <i
+                          class="bi bi-trash3"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => removeSelection(key)}
+                        ></i>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

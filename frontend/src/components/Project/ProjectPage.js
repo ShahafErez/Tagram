@@ -97,7 +97,11 @@ export default function ProjectPage() {
   }, []);
 
   const exportToFile = () => {
-    const fileData = JSON.stringify([tagsSummary].concat([relationSummary]));
+    const fileData = JSON.stringify({
+      tags: tagsSummary,
+      relations: relationSummary,
+      coOccurr: coOccurrenceSummary,
+    });
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

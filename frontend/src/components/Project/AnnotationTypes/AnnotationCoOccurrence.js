@@ -13,6 +13,10 @@ export default function AnnotationCoOccurrence(props) {
   );
   const [currentlySelectedArray, setCurrentlySelectedArray] = useState([]);
 
+  /**
+   * Saving a value select in the current state
+   * And in currently selected array
+   */
   const handleValueChange = (key, selectedValue) => {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
@@ -24,15 +28,51 @@ export default function AnnotationCoOccurrence(props) {
       selectedValue[selectedValue.length - 1].tokens
     );
     setCurrentlySelectedArray(temp_currently_selected_array);
-    props.onChangeCoOcurr(coOccurrenceSummary, currentState);
+    props.onChangeCoOcurr(coOccurrenceSummary, temp_current_state);
   };
 
+  /**
+   * Unselecting token
+   * Re-rendering currently selected array
+   */
+  const unselectValue = (key, selectedValue) => {
+    let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    temp_current_state[key] = selectedValue;
+    setCurrentState(temp_current_state);
+
+    let temp_currently_selected_array = [];
+    for (const current_state_array of temp_current_state) {
+      for (const current_state of current_state_array) {
+        temp_currently_selected_array.push(current_state.tokens);
+      }
+    }
+    setCurrentlySelectedArray(temp_currently_selected_array);
+    props.onChangeCoOcurr(coOccurrenceSummary, temp_current_state);
+  };
+
+  /**
+   * Saving a currently selected array in co occurrence summary
+   * And re-setting the currently selected array
+   */
   const handleSave = () => {
     let tempCoOccur = JSON.parse(JSON.stringify(coOccurrenceSummary));
     tempCoOccur.push([currentlySelectedArray]);
     setCoOccurrenceSummary(tempCoOccur);
     setCurrentState(new Array(file.length).fill([]));
     setCurrentlySelectedArray([]);
+    props.onChangeCoOcurr(tempCoOccur, currentState);
+  };
+
+  /**
+   * Removing tagging set
+   */
+  const removeSet = (key) => {
+    let temp_co_occurrence_summary = JSON.parse(
+      JSON.stringify(coOccurrenceSummary)
+    );
+    temp_co_occurrence_summary.splice(key, 1);
+    setCoOccurrenceSummary(temp_co_occurrence_summary);
+    props.onChangeCoOcurr(temp_co_occurrence_summary, currentState);
   };
 
   const processToken = (tokens) => {
@@ -61,8 +101,12 @@ export default function AnnotationCoOccurrence(props) {
                 tokens={sentence.split(" ")}
                 value={currentState[key]}
                 onChange={(e) => {
-                  console.log("value changes");
-                  handleValueChange(key, e);
+                  // checking if a value was un-selected
+                  if (e.length < currentState[key].length) {
+                    unselectValue(key, e);
+                  } else {
+                    handleValueChange(key, e);
+                  }
                 }}
                 getSpan={(span) => ({
                   ...span,
@@ -81,6 +125,7 @@ export default function AnnotationCoOccurrence(props) {
           <table class="table">
             <thead>
               <tr>
+                <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -102,6 +147,13 @@ export default function AnnotationCoOccurrence(props) {
                           </div>
                         );
                       })}
+                    </td>
+                    <td>
+                      <i
+                        class="bi bi-trash3"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => removeSet(key)}
+                      ></i>
                     </td>
                   </tr>
                 );
