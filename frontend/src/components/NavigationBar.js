@@ -1,7 +1,8 @@
 import React from "react";
 
+
 export default function NavigationBar() {
-  return (
+    return (
     <nav
       class="navbar border-bottom border border-secondary"
       style={{
@@ -12,7 +13,8 @@ export default function NavigationBar() {
     >
       <a
         class="navbar-brand"
-        href="/"
+        
+        href="/"  
         style={{
           marginRight: "0px",
           paddingTop: "0px",
@@ -35,6 +37,7 @@ export default function NavigationBar() {
       >
         Create a Project
       </a>
+      <span><a href="/logout" style={{ fontSize: "17px", margin: "20px" }}>Logout</a></span>
     </nav>
   );
 }
