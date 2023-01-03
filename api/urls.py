@@ -5,4 +5,5 @@ urlpatterns = [
     path('project/', include('api.project.urls')),
     path('getsession/', GetSessionDetails.as_view()),
 
+    path('meta-tagging/', include('api.meta_tagging.urls')),
 ]
