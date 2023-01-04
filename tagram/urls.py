@@ -29,9 +29,7 @@ urlpatterns = [
     path('register', register,  name='register'),
     path('login', loginpage,  name='login'),
     path('logout', logoutUser,  name='logout'),
-
     path('home', index,  name='home'),
-
     path('', include('frontend.urls') , name='home'),
 
 

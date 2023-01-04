@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function HomePage() {
   useEffect(() => {
-    fetch("/api/getsession")
+    fetch("/api/users/getsession")
       .then((response) => {
         console.log(response)
         return response.json();

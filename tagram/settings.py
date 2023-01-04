@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'frontend.apps.FrontendConfig',
     'djoser',
-
+    'api.users.apps.UsersConfig',
     'api.apps.ApiConfig',
     'api.project.apps.ProjectConfig',
     'api.meta_tagging.apps.MetaTaggingConfig'
