@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateMetaTagging from "./CreateMetaTagging";
 import BrowseMetaTagging from "./BrowseMetaTagging";
+import { ReactSession } from "react-client-session";
 
 export default function CreateProjectPage() {
+  let username = ReactSession.get("username");
+  console.log("create project page, username: ", username);
+
   const navigate = useNavigate();
   let project_id;
 

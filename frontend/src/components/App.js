@@ -1,15 +1,16 @@
 import React, { Component } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { render } from "react-dom";
+import { ReactSession } from "react-client-session";
 import Routers from "./Routers";
 import NavigationBar from "./NavigationBar";
 import "../../static/css/styling.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-
 export default class App extends Component {
   constructor(props) {
     super(props);
+    ReactSession.setStoreType("localStorage");
   }
 
   render() {

@@ -28,7 +28,6 @@ class Project(models.Model):
 
 def generate_file_unique_code():
     length = 6
-
     while True:
         id = ''.join(random.choices(string.ascii_uppercase, k=length))
         # checking if other file has his id

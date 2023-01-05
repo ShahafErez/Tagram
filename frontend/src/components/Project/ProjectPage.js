@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ReactSession } from "react-client-session";
 import MetaTaggingObject from "./MetaTaggingObject";
 import AnnotationTag from "./AnnotationTypes/AnnotationTag";
 import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
@@ -7,6 +8,10 @@ import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
 
 export default function ProjectPage() {
   let { id } = useParams();
+
+  let username = ReactSession.get("username");
+  console.log("project page, username: ", username);
+
   const [project, setProject] = useState({
     title: "",
     description: "",
@@ -28,10 +33,13 @@ export default function ProjectPage() {
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
+  // setting the summary and current state for each annotation type
+  const [tagsSummary, setTagsSummary] = useState();
+  const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
-  const [tagsSummary, settagsSummary] = useState([]);
-  const [relationCurrentState, setRelationCurrentState] = useState([]);
+  const [relationCurrentState, setRelationCurrentState] = useState();
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
+  const [coOccurrenceCurrentState, setCoOccurrenceCurrentState] = useState();
 
   // getting project details
   useEffect(() => {
@@ -64,12 +72,13 @@ export default function ProjectPage() {
         });
         setTagsLabels(tags);
         setRelationsLabels(relations);
-      });
+      })
+      .then(() => getProjcetFile());
     // we need to put [] as the second argument, if we want to render only once
   }, []);
 
   // getting project file
-  useEffect(() => {
+  function getProjcetFile() {
     fetch("/api/project/get-file?project_id=" + id)
       .then((response) => {
         if (!response.ok) {
@@ -78,12 +87,27 @@ export default function ProjectPage() {
         return response.json();
       })
       .then((data) => {
-        setFile(data);
+        // saving the file as array of lines
+        let textArray = data.text.split("\n");
+        setTagCurrentState(new Array(textArray.length).fill([]));
+        setRelationCurrentState(new Array(textArray.length).fill([]));
+        setCoOccurrenceCurrentState(new Array(textArray.length).fill([]));
+        setTagsSummary(new Array(textArray.length).fill([]));
+
+        setFile({
+          file_id: data.file_id,
+          file: data.file,
+          text: textArray,
+        });
       });
-  }, []);
+  }
 
   const exportToFile = () => {
-    const fileData = JSON.stringify([tagsSummary].concat([relationSummary]));
+    const fileData = JSON.stringify({
+      tags: tagsSummary,
+      relations: relationSummary,
+      coOccurr: coOccurrenceSummary,
+    });
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -93,6 +117,9 @@ export default function ProjectPage() {
   };
 
   const saveAnnotation = () => {
+    console.log("tagsSummary ", tagsSummary);
+    console.log("relationSummary ", relationSummary);
+    console.log("coOccurrenceSummary ", coOccurrenceSummary);
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -113,102 +140,125 @@ export default function ProjectPage() {
   };
 
   return (
-    <div
-      class="card project-page"
-      style={{
-        textAlign: "center",
-        width: "50%",
-        margin: "auto",
-        minHeight: "500px",
-      }}
-    >
-      <div class="card-body">
-        <h2 class="card-title">{project.title}</h2>
+    <div>
+      {file.text != "" && (
+        <div
+          class="card project-page"
+          style={{
+            textAlign: "center",
+            width: "50%",
+            margin: "auto",
+            minHeight: "500px",
+          }}
+        >
+          <div class="card-body">
+            <h2 class="card-title">{project.title}</h2>
 
-        {project.description != "" && (
-          <p class="card-text">{project.description}</p>
-        )}
+            {project.description != "" && (
+              <p class="card-text">{project.description}</p>
+            )}
 
-        {metaTaggingLabels.length > 0 && (
-          <MetaTaggingObject metaTagging={metaTaggingLabels} />
-        )}
+            {metaTaggingLabels.length > 0 && (
+              <MetaTaggingObject metaTagging={metaTaggingLabels} />
+            )}
 
-        <div>
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              onClick={() => {
-                setIsAnnotateTags(true);
-                setIsAnnotateRelations(false);
-                setIsAnnotateCoOccurrence(false);
-              }}
-            >
-              Annotate Tags
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              onClick={() => {
-                setIsAnnotateRelations(true);
-                setIsAnnotateTags(false);
-                setIsAnnotateCoOccurrence(false);
-              }}
-            >
-              Annotate Relations
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              onClick={() => {
-                setIsAnnotateCoOccurrence(true);
-                setIsAnnotateRelations(false);
-                setIsAnnotateTags(false);
-              }}
-            >
-              Annotate Co-Occurrence
-            </button>
+            <div>
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  onClick={() => {
+                    setIsAnnotateTags(true);
+                    setIsAnnotateRelations(false);
+                    setIsAnnotateCoOccurrence(false);
+                  }}
+                >
+                  Annotate Tags
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  onClick={() => {
+                    setIsAnnotateRelations(true);
+                    setIsAnnotateTags(false);
+                    setIsAnnotateCoOccurrence(false);
+                  }}
+                >
+                  Annotate Relations
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  onClick={() => {
+                    setIsAnnotateCoOccurrence(true);
+                    setIsAnnotateRelations(false);
+                    setIsAnnotateTags(false);
+                  }}
+                >
+                  Annotate Co-Occurrence
+                </button>
+              </div>
+              {tagsLabels.length > 0 && isAnnotateTags && (
+                <AnnotationTag
+                  file={file.text}
+                  labels={tagsLabels}
+                  tagsSummary={tagsSummary}
+                  tagCurrentState={tagCurrentState}
+                  onChangeTags={(newValueSummary, newValueCurrentState) => {
+                    setTagsSummary(newValueSummary);
+                    setTagCurrentState(newValueCurrentState);
+                  }}
+                />
+              )}
+              {file.text != "" &&
+                relationsLabels.length > 0 &&
+                isAnnotateRelations && (
+                  <AnnotationRelation
+                    file={file.text}
+                    labels={relationsLabels}
+                    relationSummary={relationSummary}
+                    relationCurrentState={relationCurrentState}
+                    onChangeRelation={(
+                      newValueSummary,
+                      newValueCurrentState
+                    ) => {
+                      setRelationSummary(newValueSummary);
+                      setRelationCurrentState(newValueCurrentState);
+                    }}
+                  />
+                )}
+              {file.text != "" && isAnnotateCoOccurrence && (
+                <AnnotationCoOccurrence
+                  file={file.text}
+                  coOccurrenceCurrentState={coOccurrenceCurrentState}
+                  coOccurrenceSummary={coOccurrenceSummary}
+                  onChangeCoOcurr={(newValueSummary, newValueCurrentState) => {
+                    setCoOccurrenceSummary(newValueSummary);
+                    setCoOccurrenceCurrentState(newValueCurrentState);
+                  }}
+                />
+              )}
+            </div>
+            <div>
+              <button
+                class="btn btn-primary"
+                id="saveAllTaggingBtn"
+                onClick={saveAnnotation}
+              >
+                Save All Tagging In System
+              </button>
+              <button
+                id="exportAllTaggingBtn"
+                class="btn btn-primary"
+                onClick={exportToFile}
+                style={{ marginLeft: "10px" }}
+              >
+                Export All Tagging to File
+              </button>
+            </div>
           </div>
-          {tagsLabels.length > 0 && isAnnotateTags && (
-            <AnnotationTag
-              file={file}
-              labels={tagsLabels}
-              tagsSummary={tagsSummary}
-            />
-          )}
-          {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation
-              file={file}
-              labels={relationsLabels}
-              relationSummary={relationSummary}
-              relationCurrentState={relationCurrentState}
-            />
-          )}
-          {isAnnotateCoOccurrence && (
-            <AnnotationCoOccurrence
-              file={file}
-              coOccurrenceSummary={coOccurrenceSummary}
-            />
-          )}
         </div>
-        <div>
-          <button
-            class="btn btn-primary"
-            id="saveAllTaggingBtn"
-            onClick={saveAnnotation}
-          >
-            Save All Tagging In System
-          </button>
-          <button
-            id="exportAllTaggingBtn"
-            class="btn btn-primary"
-            onClick={exportToFile}
-            style={{ marginLeft: "10px" }}
-          >
-            Export All Tagging to File
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
