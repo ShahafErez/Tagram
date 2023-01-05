@@ -41,10 +41,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'frontend.apps.FrontendConfig',
     'djoser',
-
+    'api.users.apps.UsersConfig',
     'api.apps.ApiConfig',
     'api.project.apps.ProjectConfig',
-    # 'api.users.apps.UsersConfig'
+    'api.meta_tagging.apps.MetaTaggingConfig'
 ]
 
 MIDDLEWARE = [
@@ -177,3 +177,11 @@ SIMPLE_JWT = {
 #         'user_delete': 'djoser.serializers.UserDeleteSerializer',
 #     }
 # }
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        
+    )
+}
