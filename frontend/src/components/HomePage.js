@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ReactSession } from "react-client-session";
 
 export default function HomePage() {
   useEffect(() => {
     fetch("/api/users/getsession")
       .then((response) => {
-        console.log(response)
+        console.log(response);
         return response.json();
       })
       .then((data) => {
-        console.log("username=" + data);
+        ReactSession.set("username", data);
       });
     // we need to put [] as the second argument, if we want to render only once
   }, []);
