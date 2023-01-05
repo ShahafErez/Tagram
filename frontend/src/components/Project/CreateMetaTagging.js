@@ -339,10 +339,10 @@ export default function CreateMetaTagging(props) {
               backgroundColor: "#adb5bd",
             }}
             onClick={() => {
-              props.onBack();
+              setIsMetaTaggingCreated(false);
             }}
           >
-            Back To Create Project
+            Back To Create Meta Model
           </button>
 
           {/* disable if there are no title and meta tagging selected */}
