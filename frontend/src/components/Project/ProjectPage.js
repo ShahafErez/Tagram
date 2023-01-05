@@ -28,10 +28,13 @@ export default function ProjectPage() {
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
+  // setting the summary and current state for each annotation type
+  const [tagsSummary, setTagsSummary] = useState();
+  const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
-  const [tagsSummary, settagsSummary] = useState([]);
-  const [relationCurrentState, setRelationCurrentState] = useState([]);
+  const [relationCurrentState, setRelationCurrentState] = useState();
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
+  const [coOccurrenceCurrentState, setCoOccurrenceCurrentState] = useState();
 
   // getting project details
   useEffect(() => {
@@ -78,12 +81,27 @@ export default function ProjectPage() {
         return response.json();
       })
       .then((data) => {
-        setFile(data);
+        // saving the file as array of lines
+        let textArray = data.text.split("\n");
+        setTagCurrentState(new Array(textArray.length).fill([]));
+        setRelationCurrentState(new Array(textArray.length).fill([]));
+        setCoOccurrenceCurrentState(new Array(textArray.length).fill([]));
+        setTagsSummary(new Array(textArray.length).fill([]));
+
+        setFile({
+          file_id: data.file_id,
+          file: data.file,
+          text: textArray,
+        });
       });
   }, []);
 
   const exportToFile = () => {
-    const fileData = JSON.stringify([tagsSummary].concat([relationSummary]));
+    const fileData = JSON.stringify({
+      tags: tagsSummary,
+      relations: relationSummary,
+      coOccurr: coOccurrenceSummary,
+    });
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -93,6 +111,9 @@ export default function ProjectPage() {
   };
 
   const saveAnnotation = () => {
+    console.log("tagsSummary ", tagsSummary);
+    console.log("relationSummary ", relationSummary);
+    console.log("coOccurrenceSummary ", coOccurrenceSummary);
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -169,25 +190,41 @@ export default function ProjectPage() {
               Annotate Co-Occurrence
             </button>
           </div>
-          {tagsLabels.length > 0 && isAnnotateTags && (
+          {file.text != "" && tagsLabels.length > 0 && isAnnotateTags && (
             <AnnotationTag
-              file={file}
+              file={file.text}
               labels={tagsLabels}
               tagsSummary={tagsSummary}
+              tagCurrentState={tagCurrentState}
+              onChangeTags={(newValueSummary, newValueCurrentState) => {
+                setTagsSummary(newValueSummary);
+                setTagCurrentState(newValueCurrentState);
+              }}
             />
           )}
-          {relationsLabels.length > 0 && isAnnotateRelations && (
-            <AnnotationRelation
-              file={file}
-              labels={relationsLabels}
-              relationSummary={relationSummary}
-              relationCurrentState={relationCurrentState}
-            />
-          )}
-          {isAnnotateCoOccurrence && (
+          {file.text != "" &&
+            relationsLabels.length > 0 &&
+            isAnnotateRelations && (
+              <AnnotationRelation
+                file={file.text}
+                labels={relationsLabels}
+                relationSummary={relationSummary}
+                relationCurrentState={relationCurrentState}
+                onChangeRelation={(newValueSummary, newValueCurrentState) => {
+                  setRelationSummary(newValueSummary);
+                  setRelationCurrentState(newValueCurrentState);
+                }}
+              />
+            )}
+          {file.text != "" && isAnnotateCoOccurrence && (
             <AnnotationCoOccurrence
-              file={file}
+              file={file.text}
+              coOccurrenceCurrentState={coOccurrenceCurrentState}
               coOccurrenceSummary={coOccurrenceSummary}
+              onChangeCoOcurr={(newValueSummary, newValueCurrentState) => {
+                setCoOccurrenceSummary(newValueSummary);
+                setCoOccurrenceCurrentState(newValueCurrentState);
+              }}
             />
           )}
         </div>

@@ -10,68 +10,154 @@ export default function AnnotationRelation(props) {
     tag_options.push(label["name"] + "");
   });
 
+  const [currentState, setCurrentState] = useState(props.relationCurrentState);
+  /**
+   * To support multi-lines files, we set the below variable to be an array
+   * the size of the array will be the number of lines in the file
+   */
   const file = props.file;
-
-  const [tag, setTag] = useState(tag_options[0]);
-
   const [relationSummary, setRelationSummary] = useState(props.relationSummary);
-  const [relationCurrentState, setRelationCurrentState] = useState(
-    props.relationCurrentState
-  );
-  const [relationCount, setRelationCount] = useState(1);
-  const [value, setValue] = useState(relationCurrentState);
 
-  // Creating a json object that will store the value of the selected relations
-  function createTagObject(value) {
-    return {
-      Type: tag,
-      token: value.tokens,
-      start: value.start,
-      end: value.end,
-      tag: value.tag,
-      color: value.color,
-    };
-  }
+  // saving the first and second element that was choosen
+  const [firstElement, setFirstElement] = useState({
+    selected: false,
+    start: null,
+    end: null,
+    tokens: [],
+  });
+  const [secondElement, setSecondElement] = useState({
+    selected: false,
+    start: null,
+    end: null,
+    tokens: [],
+  });
+  // The current tag the user choose
+  const [tag, setTag] = useState(tag_options[0]);
+  const [tagSelectingError, setTagSelectingError] = useState("");
 
-  const handleValueChange = (value) => {
-    setValue(value);
-    setRelationCount(relationCount + 1);
-    if (relationCount == 2) {
-      // Saving the selected terms to be displayed constantly
-      let temp_current_state = relationCurrentState;
-      temp_current_state.push(createTagObject(value[value.length - 1]));
-      temp_current_state.push(createTagObject(value[value.length - 2]));
+  const handleValueChange = (key, selectedValue) => {
+    // saving the current state after relation selection
+    let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    temp_current_state[key] = selectedValue;
+    setCurrentState(temp_current_state);
 
-      let temp_rel = relationSummary;
-      temp_rel.push({
-        Type: tag,
-        From: value[value.length - 2].tokens,
-        To: value[value.length - 1].tokens,
-        From_start_end: [
-          value[value.length - 2].start,
-          value[value.length - 2].end,
-        ],
-        To_start_end: [
-          value[value.length - 1].start,
-          value[value.length - 1].end,
-        ],
+    // setting the value at the first/second value
+    let value = selectedValue[selectedValue.length - 1];
+    if (!firstElement.selected) {
+      setFirstElement({
+        selected: true,
+        start: value.start,
+        end: value.end,
+        tokens: value.tokens,
+        index: key,
       });
-      setRelationCurrentState(temp_current_state);
-      setRelationSummary(temp_rel);
-      setRelationCount(1);
+    } else if (!secondElement.selected) {
+      setSecondElement({
+        selected: true,
+        start: value.start,
+        end: value.end,
+        tokens: value.tokens,
+        index: key,
+      });
     }
+    // sending the new state
+    props.onChangeRelation(relationSummary, temp_current_state);
+  };
+
+  const handleSave = () => {
+    // saving the relation in relationSummary
+    let temp_relation_summary = JSON.parse(JSON.stringify(relationSummary));
+    temp_relation_summary.push({
+      tag: tag,
+      From: firstElement,
+      To: secondElement,
+    });
+    setRelationSummary(temp_relation_summary);
+    // re-setting the current state to be null
+    let now_current_state = new Array(file.length).fill([]);
+    setCurrentState(now_current_state);
+    props.onChangeRelation(temp_relation_summary, currentState);
+    // re-setting the first and second values
+    setFirstElement({
+      selected: false,
+      start: null,
+      end: null,
+      tokens: [],
+    });
+    setSecondElement({
+      selected: false,
+      start: null,
+      end: null,
+      tokens: [],
+    });
+
+    // sending the updated variables to project page
+    props.onChangeRelation(temp_relation_summary, now_current_state);
   };
 
   const handleTagChange = (e) => {
-    setTag(e.target.value);
+    // checking if the current state isn't in the middle of a tag change
+    if (!firstElement.selected && !secondElement.selected) {
+      setTag(e.target.value);
+      if (tagSelectingError !== "") {
+        setTagSelectingError("");
+      }
+    } else {
+      // showing an alert message
+      setTagSelectingError(
+        <div
+          style={{ marginTop: "5px" }}
+          class="alert alert-warning alert-dismissible fade show"
+          role="alert"
+        >
+          You can't change relation type during selection
+          <button
+            style={{ marginTop: "0px" }}
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => {
+              setTagSelectingError("");
+            }}
+          ></button>
+        </div>
+      );
+    }
   };
 
-  const processToken = (tokens) => {
+  // re-setting the current state
+  const handleResetSelect = () => {
+    setFirstElement({
+      selected: false,
+      start: null,
+      end: null,
+      tokens: [],
+    });
+    setSecondElement({
+      selected: false,
+      start: null,
+      end: null,
+      tokens: [],
+    });
+    let now_current_state = new Array(file.length).fill([]);
+    setCurrentState(now_current_state);
+    props.onChangeRelation(relationSummary, now_current_state);
+  };
+
+  const processToken = (value) => {
     let tokenString = "";
-    tokens.forEach((token) => {
+    value.tokens.forEach((token) => {
       tokenString += " " + token;
     });
     return tokenString;
+  };
+
+  const removeSelection = (key) => {
+    let temp_relation_summary = JSON.parse(JSON.stringify(relationSummary));
+    temp_relation_summary.splice(key, 1);
+    setRelationSummary(temp_relation_summary);
+    props.onChangeRelation(temp_relation_summary, currentState);
   };
 
   return (
@@ -92,26 +178,65 @@ export default function AnnotationRelation(props) {
           </select>
         </div>
 
-        <div style={{ marginTop: "15px" }}>
-          <TokenAnnotator
-            style={{
-              padding: "5px",
-              lineHeight: 1.5,
-              border: "1px solid #fcc727",
-              borderRadius: "2px",
-            }}
-            tokens={file.text.split(" ")}
-            value={value}
-            onChange={handleValueChange}
-            getSpan={(span) => ({
-              ...span,
-              tag: tag,
-              color: TAG_COLORS[tag],
-            })}
-          />
+        <div>{tagSelectingError}</div>
+        {/* Each line of the file has a TokenAnnotator tag */}
+        <div
+          class="border border-secondary rounded"
+          style={{ marginTop: "10px" }}
+        >
+          {file.map((sentence, key) => {
+            return (
+              <TokenAnnotator
+                style={{
+                  padding: "5px",
+                  lineHeight: 1.5,
+                }}
+                tokens={sentence.split(" ")}
+                value={currentState[key]}
+                onChange={(e) => {
+                  // checking if value was removed or is both terms wasn't selected yet
+                  if (
+                    e.length < currentState[key].length ||
+                    (firstElement.selected && secondElement.selected)
+                  ) {
+                    return "";
+                  }
+                  handleValueChange(key, e);
+                }}
+                getSpan={(span) => ({
+                  ...span,
+                  tag: tag,
+                  color: TAG_COLORS[tag],
+                })}
+              />
+            );
+          })}
         </div>
 
-        <h4>Selected Relations</h4>
+        <button
+          type="submit"
+          class="btn btn-passive"
+          style={{
+            marginRight: "10px",
+            backgroundColor: "#adb5bd",
+          }}
+          onClick={handleResetSelect}
+        >
+          Reset Select
+        </button>
+
+        <button
+          class="btn btn-secondary"
+          onClick={() => {
+            if (firstElement.selected && secondElement.selected) {
+              handleSave();
+            }
+          }}
+        >
+          Save Relation
+        </button>
+
+        <h4>Selected Tags</h4>
         <div style={{ width: "80%", margin: "auto" }}>
           <table class="table">
             <thead>
@@ -119,18 +244,27 @@ export default function AnnotationRelation(props) {
                 <th scope="col">Type</th>
                 <th scope="col">Term From</th>
                 <th scope="col">Term To</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
-              {relationSummary.map((val, key) => {
-                return (
-                  <tr key={key}>
-                    <td>{val.Type}</td>
-                    <td>{processToken(val.From)}</td>
-                    <td>{processToken(val.To)}</td>
-                  </tr>
-                );
-              })}
+              {relationSummary.length > 0 &&
+                relationSummary.map((val, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{val.tag}</td>
+                      <td>{processToken(val.From)}</td>
+                      <td>{processToken(val.To)}</td>
+                      <td>
+                        <i
+                          class="bi bi-trash3"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => removeSelection(key)}
+                        ></i>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
