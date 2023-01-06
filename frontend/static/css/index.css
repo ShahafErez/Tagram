@@ -10,6 +10,19 @@ h2 {
   text-align: center;
 }
 
+.navbar li .nav-link,
+.logout {
+  color: black;
+  font-size: 17px;
+}
+
+.navbar li a:hover,
+.logout:hover {
+  color: #fcc727;
+  font-size: 17px;
+  cursor: "pointer";
+}
+
 .create-page h5 {
   font-size: 20px;
 }

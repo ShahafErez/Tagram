@@ -90,27 +90,6 @@ class GetProject(APIView):
         return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
 
 
-class JoinProject(APIView):
-    """
-        Join user to existing project
-    """
-    lookup_url_kwarg = 'project_id'
-
-    def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
-        project_id = request.data.get(self.lookup_url_kwarg)
-        if project_id != None:
-            project_query = Project.objects.filter(project_id=project_id)
-            if len(project_query) > 0:
-                project = project_query[0]
-                self.request.session['project_id'] = project_id
-                return Response({'message': 'Project Joined!'}, status=status.HTTP_200_OK)
-            return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
-        return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UploadFile(APIView):
     """
     save file
