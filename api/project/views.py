@@ -111,41 +111,6 @@ class JoinProject(APIView):
         return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class EditProject(APIView):
-#     """
-#         Edit existing project
-#     """
-
-#     serializer_class = EditProjectSerializer
-
-#     def put(self, request, format=None):
-
-#         if not self.request.session.exists(self.request.session.session_key):
-#             self.request.session.create()
-
-#         # serializer contains the content on the edit request
-#         serializer = self.serializer_class(data=request.data)
-#         if serializer.is_valid():
-#             project_id = serializer.data.get('project_id')
-#             updated_title = serializer.data.get('title')
-
-#             project_query = Project.objects.filter(project_id=project_id)
-#             if len(project_query) <= 0:
-#                 return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
-
-#             project = project_query[0]
-
-#             user_id = self.request.session.session_key
-#             if project.project_manager != user_id:
-#                  return Response({'message': 'Invalid user request. Only the project manager can edit the project'}, status=status.HTTP_403_FORBIDDEN)
-
-#             project.title = updated_title
-#             project.save(update_fields=['title'])
-#             return Response(ProjectSerializer(project).data, status=status.HTTP_200_OK)
-
-        # return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UploadFile(APIView):
     """
     save file
@@ -157,7 +122,6 @@ class UploadFile(APIView):
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
-                # logging.DEBUG(request.FILES['myFile'])
                 file = File(file=request.FILES['myFile'],
                             project=project)
                 file.save()
@@ -177,13 +141,10 @@ class GetFile(APIView):
 
                 if project != None:
                     project_query = File.objects.filter(project=project)
-                    # logging("project id is: "+ project_id)
                     if len(project_query) > 0:
                         data = FileSerializer(project_query[0]).data
                         with open(f".{data['file']}", 'r') as f:
                             text = f.read()
-                            # text = text.split('\n')
-                            # text = '<br/>'.join(text)
                             data['text'] = text
                         return Response(data, status=status.HTTP_200_OK)
                     return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
@@ -198,8 +159,6 @@ class SaveAnnotation(APIView):
 
     def post(self, request, format=None):
 
-        # serialize all the data that was sent
-        # serializer = self.serializer_class(data=request.data)
         data = request.data
         if data:
             project, file = None, None
@@ -244,7 +203,6 @@ class GetAnnotation(APIView):
                 if project != None:
                     annotation_query = Annotation.objects.filter(
                         project=project)
-                    # logging("project id is: "+ project_id)
                     if len(annotation_query) > 0:
                         data = GetAnnotationSerializer(
                             annotation_query[0]).data

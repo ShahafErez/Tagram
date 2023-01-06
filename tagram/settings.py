@@ -107,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -131,57 +130,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-
-# User Registration and Login
-
-# AUTH_USER_MODEL = 'users.UserAccount'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'tagram.bgu@gmail.com'
-EMAIL_HOST_PASSWORD = 'bagapbufwkvprpol'
-EMAIL_USE_TLS = True
-
-# REST_FRAMEWORK = {
-#     'AUTH_HEADER_TYPES': ('Bearer',),
-
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated'
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ),
-# }
-
-SIMPLE_JWT = {
-    'USER_ID_FIELD': 'email',
-}
-
-# DJOSER = {
-#     'LOGIN_FIELD': 'email',
-#     'USER_CREATE_PASSWORD_RETYPE': True,
-#     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-#     'SEND_CONFIRMATION_EMAIL': True,
-#     'SET_PASSWORD_RETYPE': True,
-#     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
-#     'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}',
-#     # 'ACTIVATION_URL': 'activate/{uid}/{token}', 
-#     # 'SEND_ACTIVATION_EMAIL': True, # Sends email after registration
-#     # 'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-#     # 'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/google', 'http://localhost:8000/facebook'],
-#     'SERIALIZERS': {
-#         'user_create': 'api.users.serializers.UserCreateSerializer',
-#         'user': 'api.users.serializers.UserCreateSerializer',
-#         'current_user': 'api.users.serializers.UserCreateSerializer',
-#         'user_delete': 'djoser.serializers.UserDeleteSerializer',
-#     }
-# }
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        
+
     )
 }

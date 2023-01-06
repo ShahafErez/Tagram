@@ -1,8 +1,6 @@
 from django.urls import path
 from .views import ProjectView, CreateProjectView, GetProject, JoinProject, UploadFile, GetFile, SaveAnnotation, GetAnnotation
 
-# app_name = 'project'
-
 
 urlpatterns = [
     path('get-all', ProjectView.as_view()),

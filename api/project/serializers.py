@@ -20,13 +20,6 @@ class CreateProjectSerializer(serializers.ModelSerializer):
         fields = ('title', 'description', 'meta_tagging')
 
 
-# class EditProjectSerializer(serializers.ModelSerializer):
-#     description = serializers.CharField(allow_blank=True, default='')
-#     project_id = serializers.CharField(validators=[])
-#     class Meta:
-#         model = Project
-#         fields = ('title', 'description', 'project_id')
-
 class FileSerializer(serializers.ModelSerializer):
     file = forms.FileField()
     # project_id = serializers.CharField()
