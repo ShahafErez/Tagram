@@ -11,6 +11,8 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
+from api.users.views import CreateUserView
+import requests
 
 @login_required(login_url = 'login')
 def index(request, *args, **kwargs):
@@ -57,6 +59,8 @@ def register(request, *args, **kwargs):
                     login(request, user)
                     context ={}
                     request.session['username'] = username1
+                    post_data = {'username': username1}
+                    requests.post('http://127.0.0.1:8000/api/users/create-user', data=post_data)
                     return render(request, 'frontend/index.html',context)
                 messages.success(request, 'Hi ' + username1+"! You can start your annotation project now!")
                 context ={}
