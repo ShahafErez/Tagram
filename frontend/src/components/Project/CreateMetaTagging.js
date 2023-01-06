@@ -98,7 +98,6 @@ export default function CreateMetaTagging(props) {
 
         <div style={{ marginTop: "20px" }}>
           <h5>Create Meta-Model</h5>
-          <label>Please add your meta-model labels</label>
           <input
             class="form-control"
             type="text"
