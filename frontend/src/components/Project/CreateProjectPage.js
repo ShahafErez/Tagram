@@ -42,6 +42,7 @@ export default function CreateProjectPage() {
         title: title,
         description: description,
         meta_tagging: metaTaggingId,
+        project_manager: username
       }),
     })
       .then((response) => response.json())
