@@ -9,6 +9,7 @@ app_name = 'frontend'
 urlpatterns = [
     path('', index, name=''),
     path('create', index),
+    path('my-projects', index),
     path('project/<str:projectID>', index),
     path('login', loginpage),
     path('logout', logoutUser),
