@@ -19,7 +19,7 @@ def index(request, *args, **kwargs):
 @csrf_protect
 def loginpage(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return render(request, 'frontend/index.html')       
+        return redirect('/')       
     else:
         if request.method == 'POST':
             username1 = request.POST.get('username')
@@ -29,7 +29,7 @@ def loginpage(request, *args, **kwargs):
                 login(request, user)
                 context ={}
                 request.session['username'] = username1
-                return render(request, 'frontend/index.html',context)
+                return redirect('/')
             else:
                 messages.info(request, "Username or password is incorrect")
     context ={}
@@ -43,7 +43,7 @@ def logoutUser(request):
 @csrf_protect
 def register(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('/')
     else:
         form = CreateUserForm()
         if request.method == 'POST':
@@ -57,7 +57,7 @@ def register(request, *args, **kwargs):
                     login(request, user)
                     context ={}
                     request.session['username'] = username1
-                    return render(request, 'frontend/index.html',context)
+                    return redirect('/')
                 messages.success(request, 'Hi ' + username1+"! You can start your annotation project now!")
                 context ={}
                 return redirect('login')
