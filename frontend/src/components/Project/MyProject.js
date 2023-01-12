@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProjectPreview from "./ProjectPreview";
-export default function MyProjects() {
+export default function MyProjects2() {
+  console.log("my projects  ");
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   // getting projects
@@ -15,7 +16,12 @@ export default function MyProjects() {
   return (
     <div
       class="row row-cols-1 row-cols-md-3"
-      style={{ textAlign: "center", margin: "auto" }}
+      style={{
+        textAlign: "center",
+        margin: "auto",
+        paddingLeft: "20px",
+        paddingRight: "20px",
+      }}
     >
       {projects.length > 0 &&
         projects.map((project, index) => (
@@ -26,11 +32,7 @@ export default function MyProjects() {
             }}
             style={{ cursor: "pointer" }}
           >
-            <ProjectPreview
-              id={project.project_id}
-              title={project.title}
-              metaTagging={project.meta_tagging}
-            />
+            <ProjectPreview project={project} />
           </div>
         ))}
     </div>

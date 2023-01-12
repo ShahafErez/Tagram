@@ -117,9 +117,6 @@ export default function ProjectPage() {
   };
 
   const saveAnnotation = () => {
-    console.log("tagsSummary ", tagsSummary);
-    console.log("relationSummary ", relationSummary);
-    console.log("coOccurrenceSummary ", coOccurrenceSummary);
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
