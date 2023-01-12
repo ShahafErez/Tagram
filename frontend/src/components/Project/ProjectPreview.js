@@ -10,7 +10,6 @@ export default function PreojctPreview(props) {
     fetch("/api/meta-tagging/get?id=" + project.meta_tagging)
       .then((response) => response.json())
       .then((data) => {
-        console.log("data ", data);
         setMetaTaggingTitle(data.title);
       });
   }, []);
