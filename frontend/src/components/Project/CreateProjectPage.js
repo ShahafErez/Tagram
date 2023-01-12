@@ -33,8 +33,6 @@ export default function CreateProjectPage() {
     // prevent the page from re-loading after submit
     e.preventDefault();
 
-    console.log("meta taggin id :", metaTaggingId);
-
     fetch("/api/project/create", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -42,7 +40,7 @@ export default function CreateProjectPage() {
         title: title,
         description: description,
         meta_tagging: metaTaggingId,
-        project_manager: username
+        project_manager: username,
       }),
     })
       .then((response) => response.json())

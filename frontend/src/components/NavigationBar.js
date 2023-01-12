@@ -37,11 +37,11 @@ export default function NavigationBar() {
             Create a Project
           </a>
         </li>
-        {/* <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link " href="/my-projects">
             My Projects
           </a>
-        </li> */}
+        </li>
       </ul>
 
       <ul class="navbar-nav" style={{ position: "absolute", right: "0px" }}>
