@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateMetaTagging from "./CreateMetaTagging";
 import BrowseMetaTagging from "./BrowseMetaTagging";
@@ -25,6 +25,18 @@ export default function CreateProjectPage() {
 
   // file
   const [selectedFile, setSelectedFile] = useState(null);
+
+  // users
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    console.log("getting uers");
+    fetch("/api/users/get-all")
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data);
+      });
+  }, []);
 
   /** Handeles saving the project deatil
    * Sends details to the backend
@@ -167,13 +179,53 @@ export default function CreateProjectPage() {
               </p>
             )}
           </div>
-          <div>
-            {/* TODO- add when users are added */}
-            <label>Add Members</label>
-            <i
-              class="bi bi-person-add fa-6x"
-              style={{ fontSize: "25px", marginLeft: "8px" }}
-            ></i>
+
+          <div
+            class="accordion"
+            id="accordionExample"
+            style={{ marginTop: "15px" }}
+          >
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingThree">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseThree"
+                  aria-expanded="false"
+                  aria-controls="collapseThree"
+                >
+                  Add taggers to your project
+                  <i
+                    class="bi bi-person-add fa-6x"
+                    style={{ fontSize: "25px", marginLeft: "8px" }}
+                  ></i>
+                </button>
+              </h2>
+              <div
+                id="collapseThree"
+                class="accordion-collapse collapse"
+                aria-labelledby="headingThree"
+                data-bs-parent="#accordionExample"
+              >
+                <div class="accordion-body">
+                  {users.length > 0 &&
+                    users.map((user, index) => (
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          value=""
+                          id="flexCheckDefault"
+                        />
+                        <label class="form-check-label" for="flexCheckDefault">
+                          {user.username}
+                        </label>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* TODO- check if meta tagging is selected */}
