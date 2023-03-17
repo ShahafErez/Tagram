@@ -1,0 +1,3 @@
+As a project manager I want to be able to add projects
+As a user I want to be able to save my username
+As a manager I want to be able to add users to projects
