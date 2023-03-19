@@ -11,6 +11,7 @@ urlpatterns = [
     path('create', index),
     path('my-projects', index),
     path('project/<str:projectID>', index),
+    path('correct', index),
     path('login', loginpage),
     path('logout', logoutUser),
     path('register', register,  name='register'),

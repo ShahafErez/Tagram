@@ -28,5 +28,4 @@ urlpatterns = [
     path('home', index,  name='home'),
     path('', include('frontend.urls'), name='home'),
 
-
 ]
