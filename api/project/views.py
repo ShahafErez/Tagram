@@ -104,7 +104,7 @@ class UploadFile(APIView):
                 file = File(file=request.FILES['myFile'],
                             project=project)
                 file.save()
-                return Response("test", status=status.HTTP_200_OK)
+                return Response("File saved", status=status.HTTP_200_OK)
 
 
 class GetFile(APIView):

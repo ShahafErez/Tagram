@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ReactSession } from "react-client-session";
 import CreateMetaTagging from "./CreateMetaTagging";
 import BrowseMetaTagging from "./BrowseMetaTagging";
-import { ReactSession } from "react-client-session";
+import CorrectnessPage from "./CorrectnessPage";
 
 export default function CreateProjectPage() {
   let username = ReactSession.get("username");
@@ -18,6 +19,7 @@ export default function CreateProjectPage() {
   // page state
   const [isCreateMetaTagging, setIsCreateMetaTagging] = useState(false);
   const [isBrowseMetaTagging, setIsBrowseMetaTagging] = useState(false);
+  const [isCheckingCorrectness, setIsCheckingCorrectness] = useState(false);
 
   // meta tagging
   const [metaTaggingId, setMetaTaggingId] = useState("");
@@ -65,7 +67,7 @@ export default function CreateProjectPage() {
         formData.append("project_id", project_id);
         console.log(selectedFile);
         console.log(formData);
-        //Request made to the backend api Send formData object
+        // Request made to the backend api Send formData object
         fetch("/api/project/uploadfile", {
           method: "POST",
           headers: {
@@ -76,6 +78,16 @@ export default function CreateProjectPage() {
       })
       .then(() => navigate("/project/" + project_id));
   };
+
+  function setCurrentFile(selectedFile) {
+    console.log("1 ", selectedFile);
+    const formData = new FormData();
+    formData.append("myFile", selectedFile, selectedFile.name);
+    formData.append("project_id", project_id);
+    console.log(formData);
+    let textArray = formData.text.split("\n");
+    console.log("textArray ", textArray);
+  }
 
   /** Function that called when the meta tagging is being saved
    */
@@ -90,6 +102,7 @@ export default function CreateProjectPage() {
     console.log("back to page without saving");
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
+    setIsCheckingCorrectness(false);
   }
 
   return (
@@ -97,10 +110,16 @@ export default function CreateProjectPage() {
       class="card"
       style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
     >
-      {/* If we're in the create meta-tagging or browse meta-tagging -> 
+      {/* If we're in the create meta-tagging or browse meta-tagging or check correctness -> 
         we set the className to be 'hide', and we hide the content in style.css
       */}
-      <div className={isCreateMetaTagging || isBrowseMetaTagging ? "hide" : ""}>
+      <div
+        className={
+          isCreateMetaTagging || isBrowseMetaTagging || isCheckingCorrectness
+            ? "hide"
+            : ""
+        }
+      >
         <h2>Create a new project</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
@@ -128,9 +147,28 @@ export default function CreateProjectPage() {
           </div>
           <input
             type="file"
-            onChange={(e) => setSelectedFile(e.target.files[0])}
+            onChange={(e) => {
+              setCurrentFile(e.target.files[0]);
+
+              setSelectedFile(e.target.files[0]);
+            }}
             style={{ marginTop: "15px" }}
           />
+          {selectedFile != null && (
+            <div style={{ marginTop: "10px" }}>
+              <button
+                type="submit"
+                class="btn btn-outline-success"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsCheckingCorrectness(true);
+                }}
+              >
+                Check user stories correctness
+                <i class="bi bi-check-circle" style={{ marginLeft: "8px" }}></i>
+              </button>
+            </div>
+          )}
           <div style={{ marginTop: "15px" }}>
             <label>Add Meta-Tagging</label>
             <div style={{ marginTop: "5px" }}>
@@ -239,13 +277,15 @@ export default function CreateProjectPage() {
         </form>
       </div>
 
-      {/* If we're in create or browse- we'll call that component */}
+      {/* Calling the component the user has clicked on */}
+      {isCheckingCorrectness && (
+        <CorrectnessPage file={selectedFile} onBack={backToPage} />
+      )}
       {isCreateMetaTagging && (
         <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
       )}
       {isBrowseMetaTagging && (
         <div>
-          <div style={{ display: "none" }}>createProjectForm()</div>
           <BrowseMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
         </div>
       )}
