@@ -74,7 +74,18 @@ export default function CreateProjectPage() {
           body: formData,
         });
       })
+      .then((data) => { 
+        fetch("/api/users/create-user-project-mapping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json ; charset=utf-8" },
+        body: JSON.stringify({
+          project: "bj",  
+          user: ["noa"],
+        }),
+      });
+    })
       .then(() => navigate("/project/" + project_id));
+      
   };
 
   /** Function that called when the meta tagging is being saved

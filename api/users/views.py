@@ -76,15 +76,6 @@ class CreateUserProjectView(APIView):
 
         if serializer.is_valid():
             username = serializer.data.get('user')
-
-            if username != None:
-                # getting user object by username
-                user = User.objects.filter(username=username)
-                if (len(user)) > 0:
-                    user = user[0]
-                else:
-                    user = None
-
             project_id = serializer.data.get('project')
 
             if project_id != None:
@@ -95,15 +86,17 @@ class CreateUserProjectView(APIView):
                 else:
                     project = None
 
-            user_in_project = UsersInProject(user=user, project=project)
-            user_in_project.save()
+            if username != None:
+                # getting user object by username
+                users_array = User.objects.filter(username=username)
+                for current_user in users_array:
+                    user_in_project = UsersInProject(user=current_user, project=project)
+                    user_in_project.save()
+
 
             # returns the code to the user
             return Response(UsersInProjectSerializer(user_in_project).data, status=status.HTTP_201_CREATED)
-        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-
+        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST) 
 
 
 class GetProjectsByUsername(APIView):

@@ -29,7 +29,7 @@ class UsersInProjectSerializer(serializers.ModelSerializer):
 
 
 class CreateUsersInProjectSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(allow_blank=False)
+    user = serializers.ListField(child=serializers.CharField(allow_blank=False))
     project = serializers.CharField(allow_blank=False)
 
     class Meta:
