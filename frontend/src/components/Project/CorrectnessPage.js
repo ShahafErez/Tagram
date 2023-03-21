@@ -23,23 +23,29 @@ export default function CorrectnessPage(props) {
 
   return (
     <div>
-      <ul class="list-group">
+      <ol class="list-group" style={{ marginLeft: "25px" }}>
         {textArray.map((element, index) =>
           duplicatesArray.has(index) ? (
             // list item has duplication
-            <li class="list-group-item-warning">
+            <li
+              class="list-group-item-warning"
+              style={{ paddingLeft: "5px", color: "black" }}
+            >
               {textArray.in}
-              {index} | {element}
+              {element}
             </li>
           ) : (
             // list item does not have duplication
-            <li class="list-group-item-light">
+            <li
+              class="list-group-item-light"
+              style={{ paddingLeft: "5px", color: "black" }}
+            >
               {textArray.in}
-              {index} | {element}
+              {element}
             </li>
           )
         )}
-      </ul>
+      </ol>
     </div>
   );
 }
