@@ -75,7 +75,7 @@ class CreateUserProjectView(APIView):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            username = serializer.data.get('user')
+            users_array = serializer.data.get('user')
             project_id = serializer.data.get('project')
 
             if project_id != None:
@@ -86,10 +86,12 @@ class CreateUserProjectView(APIView):
                 else:
                     project = None
 
-            if username != None:
+            if users_array != None:
                 # getting user object by username
-                users_array = User.objects.filter(username=username)
                 for current_user in users_array:
+                    current_user = User.objects.filter(username=current_user)
+                    if (len(current_user)) > 0:
+                        current_user = current_user[0]
                     user_in_project = UsersInProject(user=current_user, project=project)
                     user_in_project.save()
 
