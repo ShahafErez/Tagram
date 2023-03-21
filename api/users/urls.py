@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateUserProjectView, CreateUserView, GetProjectsByUsername, GetSessionDetails, UserProjectView, UserView
+from .views import GetUsersByProject, CreateUserProjectView, CreateUserView, GetProjectsByUsername, GetSessionDetails, UserProjectView, UserView
 
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('create-user', CreateUserView.as_view()),
     path('create-user-project-mapping', CreateUserProjectView.as_view()),
     path('projects-by-username/', GetProjectsByUsername.as_view()),
+    path('users-by-project/', GetUsersByProject.as_view()),
 ]
