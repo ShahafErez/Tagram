@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export default function PreojctPreview(props) {
   let project = props.project;
-
+  console.log(project)
   const [metaTaggingTitle, setMetaTaggingTitle] = useState();
 
   // getting all the labels gouped by meta tagging id on loading

@@ -47,8 +47,11 @@ class CreateUserView(APIView):
         # serialize all the data that was sent
         serializer = self.serializer_class(data=request.data)
 
+
         if serializer.is_valid():
             username = serializer.data.get('username')
+            if (len(User.objects.filter(username=username)) == 1):
+                return Response({'Conflict': 'User already exists'}, status=status.HTTP_200_OK)
             user = User(username=username)
             user.save()
 
