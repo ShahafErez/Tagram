@@ -6,16 +6,15 @@ import BrowseMetaTagging from "./BrowseMetaTagging";
 import CorrectnessPage from "./CorrectnessPage";
 
 export default function CreateProjectPage() {
-  let username = ReactSession.get("username");
-
   const navigate = useNavigate();
+  let username = ReactSession.get("username");
   let project_id;
 
   // project details
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // page state
+  // page states
   const [isCreateMetaTagging, setIsCreateMetaTagging] = useState(false);
   const [isBrowseMetaTagging, setIsBrowseMetaTagging] = useState(false);
   const [isCheckingCorrectness, setIsCheckingCorrectness] = useState(false);
@@ -31,7 +30,6 @@ export default function CreateProjectPage() {
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
   useEffect(() => {
-    console.log("getting uers");
     fetch("/api/users/get-all")
       .then((response) => response.json())
       .then((data) => {
@@ -77,13 +75,9 @@ export default function CreateProjectPage() {
   };
 
   /** Getting the text of the new uploaded file
-   * Sending request to the backend- doesn't save in table
+   * Doesn't save file in database
    */
   function getFileContent(file) {
-    // TODO- later will be used for edit
-    // const file = new Blob(["shahaf new file"], {
-    //   type: "text/plain",
-    // });
     const formData = new FormData();
     formData.append("myFile", file, "new_file");
 
@@ -100,21 +94,37 @@ export default function CreateProjectPage() {
         data.split("\n").map((element, index) => {
           textArray.push(element.trim());
         });
-        console.log("00 ", textArray);
         setFileContent(textArray);
       });
   }
 
   /** Meta tagging is being saved */
-  function savedMetaTagging(metaTagging) {
+  function saveMetaTagging(metaTagging) {
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
     setMetaTaggingTitle(metaTagging.title);
     setMetaTaggingId(metaTagging.meta_tagging_id);
   }
 
+  /** Updated file content is being saved
+   * This function will be called from the "CorrectnessPage" component
+   */
+  function saveFileContent(newFileContent) {
+    let newFileArray = [];
+    newFileContent.textArray.map((story, index) => {
+      if (story != "") {
+        newFileArray.push(story + "\n");
+      }
+    });
+    const newFile = new Blob(newFileArray, {
+      type: "text/plain",
+    });
+    setFileContent(newFileArray);
+    setSelectedFile(newFile);
+    setIsCheckingCorrectness(false);
+  }
+
   function backToPage() {
-    console.log("back to page without saving");
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
     setIsCheckingCorrectness(false);
@@ -135,6 +145,7 @@ export default function CreateProjectPage() {
             : ""
         }
       >
+        {/* Create a new project form */}
         <h2>Create a new project</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
@@ -168,7 +179,7 @@ export default function CreateProjectPage() {
             }}
             style={{ marginTop: "15px" }}
           />
-          {/* if file exist- showingn it in accordion display */}
+          {/* if file exist- showing it in accordion display */}
           {fileContent != null && (
             <div
               class="accordion"
@@ -230,6 +241,7 @@ export default function CreateProjectPage() {
               </button>
             </div>
           )}
+
           <div style={{ marginTop: "15px" }}>
             <label>Add Meta-Tagging</label>
             <div style={{ marginTop: "5px" }}>
@@ -255,6 +267,7 @@ export default function CreateProjectPage() {
                 Create new meta-tagging
               </button>
             </div>
+            {/* Displaying a message that states if mega-tagging was selected */}
             {metaTaggingTitle == "" && (
               <p
                 style={{
@@ -279,6 +292,7 @@ export default function CreateProjectPage() {
             )}
           </div>
 
+          {/* Displaying a list of all users */}
           <div
             class="accordion"
             id="accordionExample"
@@ -327,27 +341,41 @@ export default function CreateProjectPage() {
             </div>
           </div>
 
-          {/* TODO- check if meta tagging is selected */}
-          <button
-            type="submit"
-            class="btn btn-primary"
-            style={{ marginTop: "15px" }}
-          >
-            Save
-          </button>
+          {/* Saving is only enabled if all required fields are inserted */}
+          {title != "" && metaTaggingId != "" && selectedFile ? (
+            <button
+              type="submit"
+              class="btn btn-primary"
+              style={{ marginTop: "15px" }}
+            >
+              Save
+            </button>
+          ) : (
+            <button
+              type="submit"
+              class="btn btn-primary disabled"
+              style={{ marginTop: "15px" }}
+            >
+              Save
+            </button>
+          )}
         </form>
       </div>
 
       {/* Calling the component the user has clicked on */}
       {isCheckingCorrectness && (
-        <CorrectnessPage file={fileContent} onBack={backToPage} />
+        <CorrectnessPage
+          file={fileContent}
+          onSave={saveFileContent}
+          onBack={backToPage}
+        />
       )}
       {isCreateMetaTagging && (
-        <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
+        <CreateMetaTagging onSave={saveMetaTagging} onBack={backToPage} />
       )}
       {isBrowseMetaTagging && (
         <div>
-          <BrowseMetaTagging onSave={savedMetaTagging} onBack={backToPage} />
+          <BrowseMetaTagging onSave={saveMetaTagging} onBack={backToPage} />
         </div>
       )}
     </div>

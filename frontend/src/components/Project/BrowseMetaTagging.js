@@ -64,12 +64,7 @@ export default function BrowseMetaTagging(props) {
           Back
         </button>
         {/* no meta tagging selected */}
-        {!metaTaggingId && (
-          <button type="submit" class="btn btn-primary disabled">
-            Save
-          </button>
-        )}
-        {metaTaggingId && (
+        {metaTaggingId ? (
           <button
             type="submit"
             class="btn btn-primary"
@@ -80,6 +75,10 @@ export default function BrowseMetaTagging(props) {
               });
             }}
           >
+            Save
+          </button>
+        ) : (
+          <button type="submit" class="btn btn-primary disabled">
             Save
           </button>
         )}
