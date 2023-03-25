@@ -7,7 +7,6 @@ import CorrectnessPage from "./CorrectnessPage";
 
 export default function CreateProjectPage() {
   let username = ReactSession.get("username");
-  console.log("create project page, username: ", username);
 
   const navigate = useNavigate();
   let project_id;
@@ -27,10 +26,10 @@ export default function CreateProjectPage() {
 
   // file
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fileContent, setFileContent] = useState(null);
 
-  // users
+  // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
-
   useEffect(() => {
     console.log("getting uers");
     fetch("/api/users/get-all")
@@ -40,7 +39,7 @@ export default function CreateProjectPage() {
       });
   }, []);
 
-  /** Handeles saving the project deatil
+  /** Saving the project deatil
    * Sends details to the backend
    */
   const handleSubmit = (e) => {
@@ -57,17 +56,14 @@ export default function CreateProjectPage() {
         project_manager: username,
       }),
     })
+      // Adding the new file to the project
       .then((response) => response.json())
       .then((data) => {
         project_id = data.project_id;
-        console.log("project_id: " + project_id);
         // Create an object of formData
         const formData = new FormData();
         formData.append("myFile", selectedFile, selectedFile.name);
         formData.append("project_id", project_id);
-        console.log(selectedFile);
-        console.log(formData);
-        // Request made to the backend api Send formData object
         fetch("/api/project/uploadfile", {
           method: "POST",
           headers: {
@@ -76,21 +72,40 @@ export default function CreateProjectPage() {
           body: formData,
         });
       })
+      // Automaticly navigating to the new project page
       .then(() => navigate("/project/" + project_id));
   };
 
-  function setCurrentFile(selectedFile) {
-    console.log("1 ", selectedFile);
+  /** Getting the text of the new uploaded file
+   * Sending request to the backend- doesn't save in table
+   */
+  function getFileContent(file) {
+    // TODO- later will be used for edit
+    // const file = new Blob(["shahaf new file"], {
+    //   type: "text/plain",
+    // });
     const formData = new FormData();
-    formData.append("myFile", selectedFile, selectedFile.name);
-    formData.append("project_id", project_id);
-    console.log(formData);
-    let textArray = formData.text.split("\n");
-    console.log("textArray ", textArray);
+    formData.append("myFile", file, "new_file");
+
+    fetch("/api/project/get-file-content", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let textArray = [];
+        data.split("\n").map((element, index) => {
+          textArray.push(element.trim());
+        });
+        console.log("00 ", textArray);
+        setFileContent(textArray);
+      });
   }
 
-  /** Function that called when the meta tagging is being saved
-   */
+  /** Meta tagging is being saved */
   function savedMetaTagging(metaTagging) {
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
@@ -110,7 +125,7 @@ export default function CreateProjectPage() {
       class="card"
       style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
     >
-      {/* If we're in the create meta-tagging or browse meta-tagging or check correctness -> 
+      {/* If we're in: create meta-tagging, browse meta-tagging or check correctness -> 
         we set the className to be 'hide', and we hide the content in style.css
       */}
       <div
@@ -148,24 +163,70 @@ export default function CreateProjectPage() {
           <input
             type="file"
             onChange={(e) => {
-              setCurrentFile(e.target.files[0]);
-
+              getFileContent(e.target.files[0]);
               setSelectedFile(e.target.files[0]);
             }}
             style={{ marginTop: "15px" }}
           />
-          {selectedFile != null && (
+          {/* if file exist- showingn it in accordion display */}
+          {fileContent != null && (
+            <div
+              class="accordion"
+              id="accordionExample"
+              style={{ marginTop: "15px" }}
+            >
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne"
+                    aria-expanded="true"
+                    aria-controls="collapseOne"
+                  >
+                    Uploaded user stories
+                  </button>
+                </h2>
+                <div
+                  id="collapseOne"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="headingOne"
+                  data-bs-parent="#accordionExample"
+                >
+                  <div class="accordion-body">
+                    <div>
+                      <ol class="list-group" style={{ marginLeft: "10px" }}>
+                        {fileContent.map((element, index) => (
+                          <li
+                            style={{ paddingLeft: "4px", paddingRight: "6px" }}
+                          >
+                            {element}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {fileContent != null && (
             <div style={{ marginTop: "10px" }}>
               <button
                 type="submit"
-                class="btn btn-outline-success"
+                class="btn btn-outline-primary"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsCheckingCorrectness(true);
                 }}
               >
-                Check user stories correctness
-                <i class="bi bi-check-circle" style={{ marginLeft: "8px" }}></i>
+                Edit stories & Check correctness
+                <i
+                  class="bi bi-pencil-square"
+                  style={{ marginLeft: "8px" }}
+                ></i>
               </button>
             </div>
           )}
@@ -279,7 +340,7 @@ export default function CreateProjectPage() {
 
       {/* Calling the component the user has clicked on */}
       {isCheckingCorrectness && (
-        <CorrectnessPage file={selectedFile} onBack={backToPage} />
+        <CorrectnessPage file={fileContent} onBack={backToPage} />
       )}
       {isCreateMetaTagging && (
         <CreateMetaTagging onSave={savedMetaTagging} onBack={backToPage} />

@@ -22,11 +22,10 @@ class CreateProjectSerializer(serializers.ModelSerializer):
 
 class FileSerializer(serializers.ModelSerializer):
     file = forms.FileField()
-    # project_id = serializers.CharField()
 
     class Meta:
         model = File
-        fields = ['file_id', 'file', 'project']
+        fields = ('file_id', 'file', 'project')
 
 
 class SaveAnnotationSerializer(serializers.ModelSerializer):

@@ -10,11 +10,6 @@ import logging
 from .forms import UploadFile
 import json
 
-PROJECT_ID_NOT_FOUNT_MESSAGE = {'Project Not Found': 'Invalid Project Id.'}
-PROJECT_ID_NOT_IN_PATH_MESSAGE = {
-    'Bad Request': 'Invalid post data, did not find a project id'}
-
-
 class ProjectView(generics.ListAPIView):
     """
         Gets all of the active projects in the database
@@ -65,7 +60,6 @@ class CreateProjectView(APIView):
 
             # returns the code to the user
             return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
-
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -86,28 +80,40 @@ class GetProject(APIView):
                 # checking if the current request sender is the project manager
                 data['is_project_manager'] = self.request.session.session_key == project_query[0].project_manager
                 return Response(data, status=status.HTTP_200_OK)
-            return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
-        return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid post data, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadFile(APIView):
     """
-    save file
+    Saving a file and related it to an existing project id
     """
-
     def post(self, request, format=None):
         project_id = request.POST['project_id']
         if project_id != None:
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
-                file = File(file=request.FILES['myFile'],
-                            project=project)
+                file = File(file=request.FILES['myFile'], project=project)
                 file.save()
                 return Response("File saved", status=status.HTTP_200_OK)
 
 
+class GetProcessedFile(APIView):
+    """
+    Reciving a file and returning processed text
+    """
+    def post(self, request, format=None):
+        new_file = file=request.FILES['myFile']
+        f = new_file.open('r')
+        text = f.read()
+        return Response(text, status=status.HTTP_200_OK)
+
+
 class GetFile(APIView):
+    """
+        Getting a file by a given project id
+    """
     serializer_class = FileSerializer
     lookup_url_kwarg = 'project_id'
 
@@ -117,7 +123,6 @@ class GetFile(APIView):
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
-
                 if project != None:
                     project_query = File.objects.filter(project=project)
                     if len(project_query) > 0:
@@ -126,18 +131,17 @@ class GetFile(APIView):
                             text = f.read()
                             data['text'] = text
                         return Response(data, status=status.HTTP_200_OK)
-                    return Response(PROJECT_ID_NOT_FOUNT_MESSAGE, status=status.HTTP_404_NOT_FOUND)
-        return Response(PROJECT_ID_NOT_IN_PATH_MESSAGE, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid post data, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SaveAnnotation(APIView):
     """
-    saving annotation to DB
+    Saving annotations relates to a given project id
     """
     serializer_class = SaveAnnotationSerializer
 
     def post(self, request, format=None):
-
         data = request.data
         if data:
             project, file = None, None
@@ -170,6 +174,9 @@ class SaveAnnotation(APIView):
 
 
 class GetAnnotation(APIView):
+    """
+        Getting annotations by a given project id
+    """
     lookup_url_kwarg = 'project_id'
 
     def get(self, request, format=None):
@@ -178,7 +185,6 @@ class GetAnnotation(APIView):
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
-
                 if project != None:
                     annotation_query = Annotation.objects.filter(
                         project=project)
