@@ -22,13 +22,6 @@ export default function HomePage() {
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
         Welcome to Tagram
       </h2>
-      <div>
-        <Link to="/create">
-          <button type="button" class="btn btn-primary">
-            Create a new project
-          </button>
-        </Link>
-      </div>
     </div>
   );
 }

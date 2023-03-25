@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index
+from .views import index, admin_index
 from .views import loginpage, logoutUser
 from .views import register
 
@@ -8,7 +8,7 @@ app_name = 'frontend'
 
 urlpatterns = [
     path('', index, name=''),
-    path('create', index),
+    path('create', admin_index),
     path('my-projects', index),
     path('project/<str:projectID>', index),
     path('login', loginpage),
