@@ -16,6 +16,8 @@ export default function AnnotationTag(props) {
    * the size of the array will be the number of lines in the file
    */
   const [currentState, setCurrentState] = useState(props.tagCurrentState);
+  console.log("currentState ", currentState);
+
   const file = props.file;
   const [tagsSummary, setTagsSummary] = useState(props.tagsSummary);
 

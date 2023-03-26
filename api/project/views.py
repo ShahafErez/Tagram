@@ -190,5 +190,5 @@ class GetAnnotation(APIView):
                         data['co_occcurrence'] = json.loads(
                             data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
-                    return Response("no annotation found", status=status.HTTP_404_NOT_FOUND)
+                    return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)

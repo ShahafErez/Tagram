@@ -2,15 +2,22 @@ import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
 
 export default function AnnotationCoOccurrence(props) {
-  let color = "#fcc727";
   const file = props.file;
+  let TAG_COLOR = "#fcc727";
 
-  const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
-    props.coOccurrenceSummary
-  );
+  /** saving the current selected values of each story
+   * This array states what tags will be shown on text
+   */
   const [currentState, setCurrentState] = useState(
     props.coOccurrenceCurrentState
   );
+
+  // saving the saved values of each story
+  const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
+    props.coOccurrenceSummary
+  );
+  console.log("coOccurrenceSummary ", coOccurrenceSummary);
+  // The current values being changed
   const [currentlySelectedArray, setCurrentlySelectedArray] = useState([]);
 
   /**
@@ -111,7 +118,7 @@ export default function AnnotationCoOccurrence(props) {
                 getSpan={(span) => ({
                   ...span,
                   tag: "",
-                  color: color,
+                  color: TAG_COLOR,
                 })}
               />
             );
