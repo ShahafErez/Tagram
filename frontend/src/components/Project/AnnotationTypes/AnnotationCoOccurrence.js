@@ -2,21 +2,23 @@ import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
 
 export default function AnnotationCoOccurrence(props) {
-  let color = "#fcc727";
   const file = props.file;
+  let TAG_COLOR = "#fcc727";
 
-  const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
-    props.coOccurrenceSummary
-  );
+  /* The current values being selected. Displaying the select on text.
+    Each line in file will be a separate array */
   const [currentState, setCurrentState] = useState(
     props.coOccurrenceCurrentState
   );
+  /* The saved relations. Will be saved in db
+   * Saving all values in a single array */
+  const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
+    props.coOccurrenceSummary
+  );
+  /* The current values being selected
+   * Saving all values in a single array */
   const [currentlySelectedArray, setCurrentlySelectedArray] = useState([]);
 
-  /**
-   * Saving a value select in the current state
-   * And in currently selected array
-   */
   const handleValueChange = (key, selectedValue) => {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
@@ -111,7 +113,7 @@ export default function AnnotationCoOccurrence(props) {
                 getSpan={(span) => ({
                   ...span,
                   tag: "",
-                  color: color,
+                  color: TAG_COLOR,
                 })}
               />
             );
