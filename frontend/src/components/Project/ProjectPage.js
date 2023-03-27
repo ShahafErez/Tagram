@@ -23,29 +23,24 @@ export default function ProjectPage() {
     text: "",
   });
 
-  // settings arrays for labels & labels types
+  // setting the meta tagging values
   const [metaTaggingLabels, setMetaTaggingLabels] = useState([]);
   const [tagsLabels, setTagsLabels] = useState([]);
   const [relationsLabels, setRelationsLabels] = useState([]);
 
-  const [isAnnotateTags, setIsAnnotateTags] = useState(false);
-  const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
-  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
-
-  const [fileArrayLength, setFileArrayLength] = useState();
-  // setting the summary and current state for each annotation type
-  // const [tagsSummary, setTagsSummary] = useState();
+  // setting the annotations values
   const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState();
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
   const [coOccurrenceCurrentState, setCoOccurrenceCurrentState] = useState();
-  // console.log("summmary ", coOccurrenceSummary);
 
-  let textArrayLength;
+  // optional states
+  const [isAnnotateTags, setIsAnnotateTags] = useState(false);
+  const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
+  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
-  function getProjcetDetails() {
-    console.log("staring getProjcetDetails");
+  function getMetaTaggingDetails() {
     let meta_tagging_id = "";
     fetch("/api/project/get?project_id=" + id)
       .then((response) => response.json())
@@ -64,7 +59,6 @@ export default function ProjectPage() {
         let tags = [];
         let relations = [];
         data.forEach(function (label, index) {
-          // adding the labels to the correct type
           if (label["type"] == "Tag") {
             tags.push(label);
           }
@@ -74,13 +68,11 @@ export default function ProjectPage() {
         });
         setTagsLabels(tags);
         setRelationsLabels(relations);
-        console.log("finish getProjcetDetails");
       })
-      .then(() => getProjcetFile());
+      .then(() => getFileDetails());
   }
 
-  function getProjcetFile() {
-    console.log("staring getProjcetFile");
+  function getFileDetails() {
     fetch("/api/project/get-file?project_id=" + id)
       .then((response) => {
         if (!response.ok) {
@@ -89,68 +81,41 @@ export default function ProjectPage() {
         return response.json();
       })
       .then((data) => {
-        // setting file details
         let textArray = data.text.split("\n");
-        console.log("!!!!!!!!!!!!!!!!!!! ", textArray.length);
-
-        textArrayLength = textArray.length;
-        setFileArrayLength(textArray.length);
         setFile({
           file_id: data.file_id,
           file: data.file,
           text: textArray,
         });
-        console.log("finish getProjcetFile");
         return textArray.length;
       })
-      .then((arrayLength) => getAnnotations(arrayLength));
+      .then((arrayLength) => getAnnotationsDetails(arrayLength));
   }
 
-  function getAnnotations(arrayLength) {
-    console.log("starting getAnnotations");
+  function getAnnotationsDetails(arrayLength) {
     fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
-      // console.log("11 ", fileArrayLength);
-      // console.log("22 ", textArrayLength);
-      // let arrayLength = textArrayLength;
-      console.log("33 ", arrayLength);
-      // checking if the projcet has saved annotation
       if (response.status == 204) {
         // annotations not found, setting empty arrays
-        console.log("not found");
-        console.log("arrayLength ", arrayLength);
         setTagCurrentState(new Array(arrayLength).fill([]));
         setRelationCurrentState(new Array(arrayLength).fill([]));
         setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
-        // setTagsSummary(new Array(arrayLength).fill([]));
-        // let a = new Array(arrayLength).fill([]);
-        // console.log("a!!!!!!!!1 ", a.length > 0);
-        // console.log("222 ", coOccurrenceSummary);
       } else if (response.status == 200) {
         // annotations found
         return response.json().then((data) => {
-          console.log("annotatio tags: ", data.tags);
-          console.log("annotatio relations: ", data.relations);
-          console.log("annotatio co_occcurrence: ", data.co_occcurrence);
           setTagCurrentState(data.tags);
-          // setTagsSummary(data.tags);
-          console.log("data.relations ", data.relations);
+
           setRelationSummary(data.relations);
           setCoOccurrenceSummary(data.co_occcurrence);
+          setRelationCurrentState(new Array(arrayLength).fill([]));
+          setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
         });
       }
-      console.log("finish getAnnotations");
     });
   }
 
-  // getting project details
+  // getting all project details by a chain of .then() function calls
   useEffect(() => {
-    // getProjcetDetails().then(() => {
-    //   console.log("finish use effect");
-    // });
-    getProjcetDetails();
-    // .then(() => getProjcetFile())
-    // .then(() => getAnnotations());
-    // console.log("finish use effect");
+    getMetaTaggingDetails();
   }, []);
 
   const exportToFile = () => {
@@ -167,7 +132,7 @@ export default function ProjectPage() {
     link.click();
   };
 
-  const saveAnnotation = () => {
+  const saveAnnotations = () => {
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -186,12 +151,9 @@ export default function ProjectPage() {
     });
   };
 
-  console.log("44 ", coOccurrenceSummary);
-
   return (
     <div>
       {file.text != "" && (
-        // {file.text != "" && coOccurrenceSummary.length > 0 && (
         <div
           class="card project-page"
           style={{
@@ -252,10 +214,8 @@ export default function ProjectPage() {
                 <AnnotationTag
                   file={file.text}
                   labels={tagsLabels}
-                  // tagsSummary={tagsSummary}
                   tagCurrentState={tagCurrentState}
                   onChangeTags={(newValueCurrentState) => {
-                    // setTagsSummary(newValueSummary);
                     setTagCurrentState(newValueCurrentState);
                   }}
                 />
@@ -289,11 +249,12 @@ export default function ProjectPage() {
                 />
               )}
             </div>
+            {/* save of export the selected annotations */}
             <div>
               <button
                 class="btn btn-primary"
                 id="saveAllTaggingBtn"
-                onClick={saveAnnotation}
+                onClick={saveAnnotations}
               >
                 Save All Tagging In System
               </button>

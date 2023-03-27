@@ -5,25 +5,20 @@ export default function AnnotationCoOccurrence(props) {
   const file = props.file;
   let TAG_COLOR = "#fcc727";
 
-  /** saving the current selected values of each story
-   * This array states what tags will be shown on text
-   */
+  /* The current values being selected. Displaying the select on text.
+    Each line in file will be a separate array */
   const [currentState, setCurrentState] = useState(
     props.coOccurrenceCurrentState
   );
-
-  // saving the saved values of each story
+  /* The saved relations. Will be saved in db
+   * Saving all values in a single array */
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
     props.coOccurrenceSummary
   );
-  console.log("coOccurrenceSummary ", coOccurrenceSummary);
-  // The current values being changed
+  /* The current values being selected
+   * Saving all values in a single array */
   const [currentlySelectedArray, setCurrentlySelectedArray] = useState([]);
 
-  /**
-   * Saving a value select in the current state
-   * And in currently selected array
-   */
   const handleValueChange = (key, selectedValue) => {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
