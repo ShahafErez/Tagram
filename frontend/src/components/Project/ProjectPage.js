@@ -28,262 +28,134 @@ export default function ProjectPage() {
   const [tagsLabels, setTagsLabels] = useState([]);
   const [relationsLabels, setRelationsLabels] = useState([]);
 
-  const [isAnnotateTags, setIsAnnotateTags] = useState(true);
+  const [isAnnotateTags, setIsAnnotateTags] = useState(false);
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
   const [fileArrayLength, setFileArrayLength] = useState();
   // setting the summary and current state for each annotation type
-  const [tagsSummary, setTagsSummary] = useState();
+  // const [tagsSummary, setTagsSummary] = useState();
   const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState();
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
   const [coOccurrenceCurrentState, setCoOccurrenceCurrentState] = useState();
-  console.log("summmary ", coOccurrenceSummary);
+  // console.log("summmary ", coOccurrenceSummary);
 
   let textArrayLength;
+
+  function getProjcetDetails() {
+    console.log("staring getProjcetDetails");
+    let meta_tagging_id = "";
+    fetch("/api/project/get?project_id=" + id)
+      .then((response) => response.json())
+      .then((data) => {
+        setProject(data);
+        meta_tagging_id = data.meta_tagging;
+      })
+      .then(() =>
+        fetch(
+          "/api/meta-tagging/labels-by-id?meta-tagging-id=" + meta_tagging_id
+        )
+      )
+      .then((response) => response.json())
+      .then((data) => {
+        setMetaTaggingLabels(data);
+        let tags = [];
+        let relations = [];
+        data.forEach(function (label, index) {
+          // adding the labels to the correct type
+          if (label["type"] == "Tag") {
+            tags.push(label);
+          }
+          if (label["type"] == "Relation") {
+            relations.push(label);
+          }
+        });
+        setTagsLabels(tags);
+        setRelationsLabels(relations);
+        console.log("finish getProjcetDetails");
+      })
+      .then(() => getProjcetFile());
+  }
+
+  function getProjcetFile() {
+    console.log("staring getProjcetFile");
+    fetch("/api/project/get-file?project_id=" + id)
+      .then((response) => {
+        if (!response.ok) {
+          console.log("response not OK");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // setting file details
+        let textArray = data.text.split("\n");
+        console.log("!!!!!!!!!!!!!!!!!!! ", textArray.length);
+
+        textArrayLength = textArray.length;
+        setFileArrayLength(textArray.length);
+        setFile({
+          file_id: data.file_id,
+          file: data.file,
+          text: textArray,
+        });
+        console.log("finish getProjcetFile");
+        return textArray.length;
+      })
+      .then((arrayLength) => getAnnotations(arrayLength));
+  }
+
+  function getAnnotations(arrayLength) {
+    console.log("starting getAnnotations");
+    fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
+      // console.log("11 ", fileArrayLength);
+      // console.log("22 ", textArrayLength);
+      // let arrayLength = textArrayLength;
+      console.log("33 ", arrayLength);
+      // checking if the projcet has saved annotation
+      if (response.status == 204) {
+        // annotations not found, setting empty arrays
+        console.log("not found");
+        console.log("arrayLength ", arrayLength);
+        setTagCurrentState(new Array(arrayLength).fill([]));
+        setRelationCurrentState(new Array(arrayLength).fill([]));
+        setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
+        // setTagsSummary(new Array(arrayLength).fill([]));
+        // let a = new Array(arrayLength).fill([]);
+        // console.log("a!!!!!!!!1 ", a.length > 0);
+        // console.log("222 ", coOccurrenceSummary);
+      } else if (response.status == 200) {
+        // annotations found
+        return response.json().then((data) => {
+          console.log("annotatio tags: ", data.tags);
+          console.log("annotatio relations: ", data.relations);
+          console.log("annotatio co_occcurrence: ", data.co_occcurrence);
+          setTagCurrentState(data.tags);
+          // setTagsSummary(data.tags);
+          console.log("data.relations ", data.relations);
+          setRelationSummary(data.relations);
+          setCoOccurrenceSummary(data.co_occcurrence);
+        });
+      }
+      console.log("finish getAnnotations");
+    });
+  }
+
   // getting project details
   useEffect(() => {
-    console.log("FUNCTION SHOULD BE NUMBER 1");
-    async function getProjcetDetails() {
-      let meta_tagging_id = "";
-      fetch("/api/project/get?project_id=" + id)
-        .then((response) => response.json())
-        .then((data) => {
-          setProject(data);
-          meta_tagging_id = data.meta_tagging;
-        })
-        .then(() =>
-          fetch(
-            "/api/meta-tagging/labels-by-id?meta-tagging-id=" + meta_tagging_id
-          )
-        )
-        .then((response) => response.json())
-        .then((data) => {
-          setMetaTaggingLabels(data);
-          let tags = [];
-          let relations = [];
-          data.forEach(function (label, index) {
-            // adding the labels to the correct type
-            if (label["type"] == "Tag") {
-              tags.push(label);
-            }
-            if (label["type"] == "Relation") {
-              relations.push(label);
-            }
-          });
-          setTagsLabels(tags);
-          setRelationsLabels(relations);
-        });
-    }
-    async function getProjcetFile() {
-      fetch("/api/project/get-file?project_id=" + id)
-        .then((response) => {
-          if (!response.ok) {
-            console.log("response not OK");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          // setting file details
-          let textArray = data.text.split("\n");
-          console.log("!!!!!!!!!!!!!!!!!!! ", textArray.length);
-
-          textArrayLength = textArray.length;
-          setFileArrayLength(textArray.length);
-          setFile({
-            file_id: data.file_id,
-            file: data.file,
-            text: textArray,
-          });
-        });
-    }
-
-    async function getAnnotations() {
-      fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
-        console.log("11 ", fileArrayLength);
-        console.log("22 ", textArrayLength);
-        let arrayLength = textArrayLength;
-        // checking if the projcet has saved annotation
-        if (response.status == 204) {
-          // annotations not found, setting empty arrays
-          console.log("not found");
-          console.log("arrayLength ", arrayLength);
-          setTagCurrentState(new Array(arrayLength).fill([]));
-          setTagsSummary(new Array(arrayLength).fill([]));
-          setRelationCurrentState(new Array(arrayLength).fill([]));
-          setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
-          let a = new Array(arrayLength).fill([]);
-          console.log("a!!!!!!!!1 ", a.length > 0);
-          console.log("222 ", coOccurrenceSummary);
-        } else if (response.status == 200) {
-          // annotations found
-          return response.json().then((data) => {
-            console.log("annotatio tags: ", data.tags);
-            console.log("annotatio relations: ", data.relations);
-            console.log("annotatio co_occcurrence: ", data.co_occcurrence);
-            setTagCurrentState(data.tags);
-            setTagsSummary(data.tags);
-            setRelationSummary(data.relations);
-            setCoOccurrenceSummary(data.co_occcurrence);
-          });
-        }
-      });
-    }
-
-    console.log("SHOULD CALL 1");
+    // getProjcetDetails().then(() => {
+    //   console.log("finish use effect");
+    // });
     getProjcetDetails();
-    console.log("SHOULD CALL 2");
-    getProjcetFile();
-    console.log("SHOULD CALL 3");
-    getAnnotations();
     // .then(() => getProjcetFile())
     // .then(() => getAnnotations());
-    // .then(() => getAnnotations());
-    // [] is the second argument, to render this function only once
+    // console.log("finish use effect");
   }, []);
-
-  // useEffect(() => {
-  //   fetch("/api/project/get-file?project_id=" + id)
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         console.log("response not OK");
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       // setting file details
-  //       let textArray = data.text.split("\n");
-  //       textArrayLength = textArray.length;
-  //       setFileArrayLength(textArray.length);
-  //       console.log("textArray ", textArray.length);
-  //       console.log("FileArrayLength ", fileArrayLength);
-  //       setFile({
-  //         file_id: data.file_id,
-  //         file: data.file,
-  //         text: textArray,
-  //       });
-  //     });
-  // }, []);
-
-  useEffect(() => {
-    console.log("FUNCTION SHOULD BE NUMBER 2");
-    async function getProjcetFile() {
-      fetch("/api/project/get-file?project_id=" + id)
-        .then((response) => {
-          if (!response.ok) {
-            console.log("response not OK");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          // setting file details
-          let textArray = data.text.split("\n");
-          console.log("!!!!!!!!!!!!!!!!!!! ", textArray.length);
-
-          textArrayLength = textArray.length;
-          setFileArrayLength(textArray.length);
-          setFile({
-            file_id: data.file_id,
-            file: data.file,
-            text: textArray,
-          });
-        });
-    }
-    // getProjcetFile();
-  }, []);
-
-  useEffect(() => {
-    console.log("FUNCTION SHOULD BE NUMBER 3");
-    async function getAnnotations() {
-      fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
-        console.log("11 ", fileArrayLength);
-        console.log("22 ", textArrayLength);
-        let arrayLength = textArrayLength;
-        // checking if the projcet has saved annotation
-        if (response.status == 204) {
-          // annotations not found, setting empty arrays
-          console.log("not found");
-          console.log("arrayLength ", arrayLength);
-          setTagCurrentState(new Array(arrayLength).fill([]));
-          setTagsSummary(new Array(arrayLength).fill([]));
-          setRelationCurrentState(new Array(arrayLength).fill([]));
-          setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
-          let a = new Array(arrayLength).fill([]);
-          console.log("a!!!!!!!!1 ", a.length > 0);
-          console.log("222 ", coOccurrenceSummary);
-        } else if (response.status == 200) {
-          // annotations found
-          return response.json().then((data) => {
-            console.log("annotatio tags: ", data.tags);
-            console.log("annotatio relations: ", data.relations);
-            console.log("annotatio co_occcurrence: ", data.co_occcurrence);
-            setTagCurrentState(data.tags);
-            setTagsSummary(data.tags);
-            setRelationSummary(data.relations);
-            setCoOccurrenceSummary(data.co_occcurrence);
-          });
-        }
-      });
-    }
-    // getAnnotations();
-  }, []);
-
-  // // getting project file from database
-  // async function getProjcetFile() {
-  //   fetch("/api/project/get-file?project_id=" + id)
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         console.log("response not OK");
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       // setting file details
-  //       let textArray = data.text.split("\n");
-  //       setFile({
-  //         file_id: data.file_id,
-  //         file: data.file,
-  //         text: textArray,
-  //       });
-  //     });
-  // }
-
-  // // getting annotation details from database
-  // async function getAnnotations() {
-  //   fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
-  //     let arrayLength = textArray.length;
-  //     // checking if the projcet has saved annotation
-  //     if (response.status == 204) {
-  //       // annotations not found, setting empty arrays
-  //       console.log("not found");
-  //       console.log("arrayLength ", arrayLength);
-  //       setTagCurrentState(new Array(arrayLength).fill([]));
-  //       setTagsSummary(new Array(arrayLength).fill([]));
-  //       setRelationCurrentState(new Array(arrayLength).fill([]));
-  //       setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
-  //       let a = new Array(arrayLength).fill([]);
-  //       console.log("a!!!!!!!!1 ", a.length > 0);
-  //       console.log("222 ", coOccurrenceSummary);
-  //     } else if (response.status == 200) {
-  //       // annotations found
-  //       return response.json().then((data) => {
-  //         console.log("annotatio tags: ", data.tags);
-  //         console.log("annotatio relations: ", data.relations);
-  //         console.log("annotatio co_occcurrence: ", data.co_occcurrence);
-  //         setTagCurrentState(data.tags);
-  //         setTagsSummary(data.tags);
-  //         setRelationSummary(data.relations);
-  //         setCoOccurrenceSummary(data.co_occcurrence);
-  //       });
-  //     }
-  //   });
-  // }
 
   const exportToFile = () => {
     const fileData = JSON.stringify({
-      tags: tagsSummary,
+      tags: tagCurrentState,
       relations: relationSummary,
       coOccurr: coOccurrenceSummary,
     });
@@ -302,7 +174,7 @@ export default function ProjectPage() {
       body: JSON.stringify({
         project_id: id,
         file_id: file.file_id,
-        tags: tagsSummary,
+        tags: tagCurrentState,
         relations: relationSummary,
         co_occcurrence: coOccurrenceSummary,
       }),
@@ -314,11 +186,12 @@ export default function ProjectPage() {
     });
   };
 
-  console.log("44 ", coOccurrenceSummary.length);
+  console.log("44 ", coOccurrenceSummary);
 
   return (
     <div>
-      {file.text != "" && coOccurrenceSummary.length > 0 && (
+      {file.text != "" && (
+        // {file.text != "" && coOccurrenceSummary.length > 0 && (
         <div
           class="card project-page"
           style={{
@@ -379,10 +252,10 @@ export default function ProjectPage() {
                 <AnnotationTag
                   file={file.text}
                   labels={tagsLabels}
-                  tagsSummary={tagsSummary}
+                  // tagsSummary={tagsSummary}
                   tagCurrentState={tagCurrentState}
-                  onChangeTags={(newValueSummary, newValueCurrentState) => {
-                    setTagsSummary(newValueSummary);
+                  onChangeTags={(newValueCurrentState) => {
+                    // setTagsSummary(newValueSummary);
                     setTagCurrentState(newValueCurrentState);
                   }}
                 />
