@@ -14,4 +14,5 @@ urlpatterns = [
     path('login', loginpage),
     path('logout', logoutUser),
     path('register', register,  name='register'),
+    path('dashboard/<str:username>', index),
 ]
