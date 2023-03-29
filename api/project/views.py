@@ -178,7 +178,6 @@ class GetAnnotation(APIView):
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
-
                 if project != None:
                     annotation_query = Annotation.objects.filter(
                         project=project)
@@ -191,4 +190,32 @@ class GetAnnotation(APIView):
                             data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
                     return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+class GetStatistics(APIView):
+    lookup_url_kwarg = 'project_id'
+
+    def get(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg)
+        logging.DEBUG(project_id)
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                if project != None:
+                    annotation_query = Annotation.objects.filter(
+                        project=project)
+                    if len(annotation_query) > 0:
+                        all_data = []
+                        for item in annotation_query:
+                            data = GetAnnotationSerializer(
+                                annotation_query[0]).data
+                            data['tags'] = json.loads(data['tags'])
+                            data['relations'] = json.loads(data['relations'])
+                            data['co_occcurrence'] = json.loads(
+                                data['co_occcurrence'])
+                            print(data)
+                            all_data.append(data)
+                        return Response(all_data, status=status.HTTP_200_OK)
+                    return Response("no statistics found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)

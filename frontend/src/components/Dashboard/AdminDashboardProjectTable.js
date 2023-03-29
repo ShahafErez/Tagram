@@ -8,19 +8,14 @@ export default function AdminDashboardProjectTable({ data }) {
         console.log(data);
       }, []);
 
-      const showProjectStatistics = (id) => {
-        // fetch("/api/project/get-statistics", {
-        //   method: "GET",
-        //   headers: { "Content-Type": "application/json ; charset=utf-8" },
-        //   body: JSON.stringify({
-        //     project_id: id,
-        //   }),
-        // }).then((response) => response.json())
-        // .then((data) => {
-        //   setCurrentProjectStatistics(data);
-        //   console.log(data);
-        // });
-      };
+    const showProjectStatistics = (id) => {
+    fetch("/api/project/get-statistics?project_id="+id)
+    .then((response) => response.json())
+    .then((data) => {
+        setCurrentProjectStatistics(data);
+        console.log(data);
+    });
+    };
 
   return (
     <table>
@@ -44,7 +39,7 @@ export default function AdminDashboardProjectTable({ data }) {
             <td>{item.meta_tagging}</td>
             <td>{item.project_manager}</td>
             <td>{item.created_at}</td>
-            <td><button onClick={showProjectStatistics(item.project_id)}>Show</button></td>
+            <td><button onClick={()=>showProjectStatistics(item.project_id)}>Show</button></td>
           </tr>
         ))}
       </tbody>
