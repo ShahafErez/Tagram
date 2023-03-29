@@ -11,6 +11,7 @@ export default function MyProjects2() {
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
+        console.log(data);
       });
   }, []);
   return (
