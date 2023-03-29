@@ -2,10 +2,25 @@ import React, { useEffect, useState } from "react";
 
 export default function AdminDashboardProjectTable({ data }) {
 
+    const[currentProjectStatistics, setCurrentProjectStatistics] = useState([]);
     useEffect(() => {
         console.log("in AdminDashboardProjectTable");
         console.log(data);
       }, []);
+
+      const showProjectStatistics = (id) => {
+        // fetch("/api/project/get-statistics", {
+        //   method: "GET",
+        //   headers: { "Content-Type": "application/json ; charset=utf-8" },
+        //   body: JSON.stringify({
+        //     project_id: id,
+        //   }),
+        // }).then((response) => response.json())
+        // .then((data) => {
+        //   setCurrentProjectStatistics(data);
+        //   console.log(data);
+        // });
+      };
 
   return (
     <table>
@@ -29,7 +44,7 @@ export default function AdminDashboardProjectTable({ data }) {
             <td>{item.meta_tagging}</td>
             <td>{item.project_manager}</td>
             <td>{item.created_at}</td>
-            <td><button>Show</button></td>
+            <td><button onClick={showProjectStatistics(item.project_id)}>Show</button></td>
           </tr>
         ))}
       </tbody>
