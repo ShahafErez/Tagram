@@ -47,8 +47,11 @@ class CreateUserView(APIView):
         # serialize all the data that was sent
         serializer = self.serializer_class(data=request.data)
 
+
         if serializer.is_valid():
             username = serializer.data.get('username')
+            if (len(User.objects.filter(username=username)) == 1):
+                return Response({'Conflict': 'User already exists'}, status=status.HTTP_200_OK)
             user = User(username=username)
             user.save()
 
@@ -75,16 +78,7 @@ class CreateUserProjectView(APIView):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            username = serializer.data.get('user')
-
-            if username != None:
-                # getting user object by username
-                user = User.objects.filter(username=username)
-                if (len(user)) > 0:
-                    user = user[0]
-                else:
-                    user = None
-
+            users_array = serializer.data.get('user')
             project_id = serializer.data.get('project')
 
             if project_id != None:
@@ -95,15 +89,19 @@ class CreateUserProjectView(APIView):
                 else:
                     project = None
 
-            user_in_project = UsersInProject(user=user, project=project)
-            user_in_project.save()
+            if users_array != None:
+                # getting user object by username
+                for current_user in users_array:
+                    current_user = User.objects.filter(username=current_user)
+                    if (len(current_user)) > 0:
+                        current_user = current_user[0]
+                    user_in_project = UsersInProject(user=current_user, project=project)
+                    user_in_project.save()
+
 
             # returns the code to the user
             return Response(UsersInProjectSerializer(user_in_project).data, status=status.HTTP_201_CREATED)
-        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-
+        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST) 
 
 
 class GetProjectsByUsername(APIView):
@@ -124,4 +122,26 @@ class GetProjectsByUsername(APIView):
                 return Response(projects, status=status.HTTP_200_OK)
 
             return Response({"This user does not have any projects."}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid get data, did not find a project'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': 'Invalid get data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetUsersByProject(APIView):
+    """
+        Get all projects for a given username
+    """
+    lookup_url_kwarg = 'project'
+    def get(self, request, format=None):
+        project = request.GET.get(self.lookup_url_kwarg)
+        if project != None:
+            users_query = UsersInProject.objects.filter(project=project)
+            if len(users_query) > 0:               
+                # getting all the projects for the username
+                users = []
+                for user in users_query:
+                    users.append(UsersInProjectSerializer(user).data)
+
+                return Response(users, status=status.HTTP_200_OK)
+
+            return Response({"This project does not have any taggers."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid get data'}, status=status.HTTP_400_BAD_REQUEST)
+

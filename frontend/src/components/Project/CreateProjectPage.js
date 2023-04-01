@@ -28,6 +28,7 @@ export default function CreateProjectPage() {
 
   // users
   const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
     console.log("getting uers");
@@ -74,7 +75,18 @@ export default function CreateProjectPage() {
           body: formData,
         });
       })
+      .then(() => { 
+        fetch("/api/users/create-user-project-mapping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json ; charset=utf-8" },
+        body: JSON.stringify({
+          project: project_id,  
+          user: selectedUsers,
+        }),
+      });
+    })
       .then(() => navigate("/project/" + project_id));
+      
   };
 
   /** Function that called when the meta tagging is being saved
@@ -85,6 +97,18 @@ export default function CreateProjectPage() {
     setMetaTaggingTitle(metaTagging.title);
     setMetaTaggingId(metaTagging.meta_tagging_id);
   }
+
+    function SelectUser(username) {
+        let temp_users = JSON.parse(JSON.stringify(selectedUsers));
+        // add/remove
+        if (temp_users.includes(username)) {
+          temp_users.splice(temp_users.indexOf(username), 1);
+        } else {
+          temp_users.push(username);
+        }
+        console.log("usernames", temp_users);
+        setSelectedUsers(temp_users);
+      }
 
   function backToPage() {
     console.log("back to page without saving");
@@ -217,7 +241,10 @@ export default function CreateProjectPage() {
                           type="checkbox"
                           value=""
                           id="flexCheckDefault"
-                        />
+                          onClick={() => {
+                            SelectUser(user.username);
+                            }}
+                            />
                         <label class="form-check-label" for="flexCheckDefault">
                           {user.username}
                         </label>

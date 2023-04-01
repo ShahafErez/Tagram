@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ProjectPreview from "./ProjectPreview";
+import ProjectPreview_id from "./ProjectPreview_id";
+import { ReactSession } from "react-client-session";
+
+
 export default function MyProjects2() {
-  console.log("my projects  ");
+  let username = ReactSession.get("username");
+  console.log("my project page, username: ", username);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   // getting projects
   useEffect(() => {
-    fetch("/api/project/get-all")
+    fetch(`/api/users/projects-by-username/?user=${username}`)
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
@@ -28,11 +32,12 @@ export default function MyProjects2() {
           <div
             class="col mb-2"
             onClick={() => {
-              navigate("/project/" + project.project_id);
+              let project_id = project.project.split(' ')[2].replace("(","").replace(")","")
+              navigate("/project/" + project_id);
             }}
             style={{ cursor: "pointer" }}
           >
-            <ProjectPreview project={project} />
+            <ProjectPreview_id project={project} />
           </div>
         ))}
     </div>
