@@ -16,7 +16,7 @@ export default function AdminDashboardPage() {
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
-        console.log(data);
+        // console.log(data);
       });
   }, []);
 

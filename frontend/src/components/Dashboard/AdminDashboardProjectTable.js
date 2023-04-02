@@ -6,7 +6,7 @@ export default function AdminDashboardProjectTable({ data }) {
     const[currentProjectStatistics, setCurrentProjectStatistics] = useState([]);
     useEffect(() => {
         console.log("in AdminDashboardProjectTable");
-        console.log(data);
+        // console.log(data);
       }, []);
 
     const showProjectStatistics = (id) => {
@@ -14,6 +14,7 @@ export default function AdminDashboardProjectTable({ data }) {
     .then((response) =>response.json())
     .then((data) => {
         setCurrentProjectStatistics(data);
+        console.log("get-statistics?project_id="+id +"  response:");
         console.log(data);
     });
     };
