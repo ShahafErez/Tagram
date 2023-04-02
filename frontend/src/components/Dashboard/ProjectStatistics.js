@@ -4,9 +4,9 @@ import "../../../static/css/ProjectStatistics.css";
 import Badge from "react-bootstrap/Badge";
 
 export default function ProjectStatistics({ data }) {
-  const [allTags, setAllTags] = useState([]);
-  const [allRelations, setAllRelations] = useState([]);
-  const [allCoOccurrence, setAllCoOccurence] = useState([]);
+  const [allTags, setAllTags] = useState({});
+  const [allRelations, setAllRelations] = useState({});
+  const [allCoOccurrence, setAllCoOccurence] = useState({});
   //TODO: after projects will be save by user, add "User consent range" to each label (chen)
   const project_id = data.length > 0 ? data[0].project_id : null;
   const tagMap = new Map();
@@ -49,6 +49,16 @@ export default function ProjectStatistics({ data }) {
       });
   };
 
+  function getAllTags() {
+    return Object.keys(allTags)
+      .map((key) => `${key}:${JSON.stringify(Array.from(allTags[key]))}`)
+      .join(", ");
+  }
+
+  const getAlgorithmInputPreview = () => {
+    return getAllTags();
+  };
+
   // const accordionItems = Array.from(tagMap.values()).map((tagObj) => (
   //   <AccordionItem key={tagObj.tag} title={tagObj.tag}>
   //     <ul>
@@ -70,6 +80,22 @@ export default function ProjectStatistics({ data }) {
 
   const aboveThreshold = (token_, category, tag_, thres) => {
     // TODO: change to be by user
+    // TODO: check threshold
+
+    // add to arrays
+    if (category === "Tags") {
+      let val = allTags[tag_];
+      if (val) {
+        if (!val.has(token_)) {
+          const temp = val.add(token_);
+          setAllTags({ ...allTags, [tag_]: temp });
+        }
+      } else {
+        const newSet = new Set();
+        newSet.add(token_);
+        setAllTags({ ...allTags, [tag_]: newSet });
+      }
+    }
     return true;
   };
 
@@ -124,11 +150,14 @@ export default function ProjectStatistics({ data }) {
           Algorithm Input Preview
         </h4>
         <input
+          id="Algorithm_Input_Preview"
+          class="Algorithm_Input_Preview"
           type="text"
-          placeholder={[allTags, allRelations, allCoOccurrence]}
+          placeholder={getAlgorithmInputPreview()}
           disabled="true"
         />
       </div>
+      <br></br>
       <div class="container bg-light">
         <div class="col-md-12 text-center">
           <button

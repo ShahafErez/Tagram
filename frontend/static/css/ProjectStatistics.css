@@ -1,11 +1,16 @@
 .accordion {
-    width: 60%;
-    max-width: 800px;
-    margin: 0 auto;
-  }
+  width: 60%;
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-  .sendData{
-    margin-top: "5px";
-    margin-bottom: "20px";
-    align-self: center;
-  }
+.sendData {
+  margin-top: "5px";
+  margin-bottom: "20px";
+  align-self: center;
+}
+
+.Algorithm_Input_Preview {
+  width: 800px;
+  height: 400px;
+}
