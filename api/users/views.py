@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from api.project.models import Project
+from api.project.serializers import ProjectSerializer
 
 from api.users.models import User, UsersInProject
 from api.users.serializers import CreateUserSerializer, CreateUsersInProjectSerializer, UserSerializer, UsersInProjectSerializer
@@ -76,8 +77,6 @@ class CreateUserProjectView(APIView):
         # serialize all the data that was sent
         serializer = self.serializer_class(data=request.data)
 
-        user_in_project = None
-
         if serializer.is_valid():
             users_array = serializer.data.get('user')
             project_id = serializer.data.get('project')
@@ -114,16 +113,18 @@ class GetProjectsByUsername(APIView):
     def get(self, request, format=None):
         user = request.GET.get(self.lookup_url_kwarg)
         if user != None:
-            project_query = UsersInProject.objects.filter(user=user)
-            if len(project_query) > 0:
+            user_project_mapping_query = UsersInProject.objects.filter(
+                user=user)
+            if len(user_project_mapping_query) > 0:
                 # getting all the projects for the username
-                projects = []
-                for project in project_query:
-                    projects.append(UsersInProjectSerializer(project).data)
+                user_project_mapping = []
+                for user_project_object in user_project_mapping_query:
+                    user_project_mapping.append(
+                        UsersInProjectSerializer(user_project_object).data)
 
-                return Response(projects, status=status.HTTP_200_OK)
+                return Response(user_project_mapping, status=status.HTTP_200_OK)
 
-            return Response({"This user does not have any projects."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({""}, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Invalid get data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
