@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ProjectStatistics from "./ProjectStatistics";
 
 export default function AdminDashboardProjectTable({ data }) {
 
@@ -10,7 +11,7 @@ export default function AdminDashboardProjectTable({ data }) {
 
     const showProjectStatistics = (id) => {
     fetch("/api/project/get-statistics?project_id="+id)
-    .then((response) => response.json())
+    .then((response) =>response.json())
     .then((data) => {
         setCurrentProjectStatistics(data);
         console.log(data);
@@ -18,6 +19,8 @@ export default function AdminDashboardProjectTable({ data }) {
     };
 
   return (
+    <div>
+        <div>
     <table>
       <thead>
         <tr>
@@ -44,6 +47,12 @@ export default function AdminDashboardProjectTable({ data }) {
         ))}
       </tbody>
     </table>
+    </div>
+    <div>
+        <br></br>
+        {currentProjectStatistics.length>0 && <ProjectStatistics data={currentProjectStatistics}/>}
+    </div>
+    </div>
   );
 }
 

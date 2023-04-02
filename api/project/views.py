@@ -197,7 +197,7 @@ class GetStatistics(APIView):
 
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg)
-        logging.DEBUG(project_id)
+        # logging.DEBUG(project_id)
         if project_id != None:
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
