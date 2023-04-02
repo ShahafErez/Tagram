@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ProjectPreview_id from "./ProjectPreview_id";
+import ProjectPreview from "./ProjectPreview";
 import { ReactSession } from "react-client-session";
-
 
 export default function MyProjects2() {
   let username = ReactSession.get("username");
@@ -32,12 +31,15 @@ export default function MyProjects2() {
           <div
             class="col mb-2"
             onClick={() => {
-              let project_id = project.project.split(' ')[2].replace("(","").replace(")","")
+              let project_id = project.project
+                .split(" ")[2]
+                .replace("(", "")
+                .replace(")", "");
               navigate("/project/" + project_id);
             }}
             style={{ cursor: "pointer" }}
           >
-            <ProjectPreview_id project={project} />
+            <ProjectPreview project={project} />
           </div>
         ))}
     </div>
