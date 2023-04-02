@@ -16,7 +16,7 @@ def index(request, *args, **kwargs):
 @csrf_protect
 def loginpage(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return redirect('/')       
+        return redirect('/')
     else:
         if request.method == 'POST':
             username1 = request.POST.get('username')
@@ -59,7 +59,8 @@ def register(request, *args, **kwargs):
                     context = {}
                     request.session['username'] = username1
                     return redirect('/')
-                messages.success(request, 'Hi ' + username1+"! You can start your annotation project now!")
-                context ={}
+                messages.success(request, 'Hi ' + username1 +
+                                 "! You can start your annotation project now!")
+                context = {}
                 return redirect('login')
         return render(request, 'frontend/register.html', {'form': form})

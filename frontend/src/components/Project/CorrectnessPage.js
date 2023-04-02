@@ -38,6 +38,7 @@ export default function CorrectnessPage(props) {
 
   return (
     <div class="form-group">
+      <h4>Edit stories & Check correctness</h4>
       {textArray.map(
         (element, index) =>
           element != "" && (

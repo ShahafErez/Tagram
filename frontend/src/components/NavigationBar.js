@@ -6,7 +6,7 @@ export default function NavigationBar() {
 
   return (
     <nav
-      class="navbar navbar-expand-lg border-bottom border border-secondary"
+      class="navbar navbar-expand-lg border-bottom border-secondary"
       style={{
         backgroundColor: "white",
         padding: "0 0 0px 12px",
