@@ -4,6 +4,7 @@ import { Accordion, Card, Button } from "react-bootstrap";
 // import Card from 'react-bootstrap/Card';
 // import Button from 'react-bootstrap/Button';
 import "../../../static/css/ProjectStatistics.css";
+import Badge from 'react-bootstrap/Badge';
 
 export default function ProjectStatistics({ data }) {
 
@@ -21,7 +22,7 @@ export default function ProjectStatistics({ data }) {
         }
       }
     }
-    console.log(tagMap);
+    console.log(tagMap.get("Class").tokens);
   
     function AccordionItem({ title, children }) {
         const [isOpen, setIsOpen] = useState(false);
@@ -36,15 +37,40 @@ export default function ProjectStatistics({ data }) {
         );
       }
       
-    const accordionItems = Array.from(tagMap.values()).map((tagObj) => (
-      <AccordionItem key={tagObj.tag} title={tagObj.tag}>
-        <ul>
-          {tagObj.tokens.map((token, index) => (
-            <li key={index}>{token}</li>
-          ))}
-        </ul>
-      </AccordionItem>
-    ));
+    // const accordionItems = Array.from(tagMap.values()).map((tagObj) => (
+    //   <AccordionItem key={tagObj.tag} title={tagObj.tag}>
+    //     <ul>
+    //       {tagObj.tokens.map((token, index) => (
+    //         <li key={index}>{token}</li>
+    //       ))}
+    //     </ul>
+    //   </AccordionItem>
+    // ));
+
+    const getTotalTagsByLabel = (tag,token) => {
+        const val = tagMap.get(tag).tokens;
+        console.log("val is: "+val);
+        if(val){
+            return val.filter(x => x==token).length;
+        }
+        return 0;
+        };
+    const accordionItems = Array.from(tagMap.values()).map((tagObj) => {
+        // Create a new set of unique tokens
+        const uniqueTokens = [...new Set(tagObj.tokens)];
+        
+        return (
+          <AccordionItem key={tagObj.tag} title={tagObj.tag}>
+            <ul>
+              {uniqueTokens.map((token, index) => (
+                <li key={index}>{token} <Badge bg="primary" pill>
+                {getTotalTagsByLabel(tagObj.tag,token)}
+              </Badge></li>
+              ))}
+            </ul>
+          </AccordionItem>
+        );
+      });
   
     return (
         <div style={{ margintTop: "5px", marginBottom: "20px" }}>
