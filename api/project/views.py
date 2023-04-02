@@ -219,3 +219,7 @@ class GetStatistics(APIView):
                         return Response(all_data, status=status.HTTP_200_OK)
                     return Response("no statistics found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetAlgorithmOutput(APIView):
+    lookup_url_kwarg = 'project_id'

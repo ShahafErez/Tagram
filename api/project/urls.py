@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, SaveAnnotation, GetAnnotation, GetStatistics
+from .views import ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, SaveAnnotation, GetAnnotation, GetStatistics, GetAlgorithmOutput
 
 
 urlpatterns = [
@@ -14,5 +14,7 @@ urlpatterns = [
     # annotations
     path('save-annotation', SaveAnnotation.as_view()),
     path('get-annotation', GetAnnotation.as_view()),
+    # algorithm
+    path('get-algorithm-output', GetAlgorithmOutput.as_view()),
 
 ]

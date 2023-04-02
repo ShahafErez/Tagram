@@ -3,3 +3,9 @@
     max-width: 800px;
     margin: 0 auto;
   }
+
+  .sendData{
+    margin-top: "5px";
+    margin-bottom: "20px";
+    align-self: center;
+  }
