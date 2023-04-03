@@ -9,10 +9,18 @@ export default function ProjectStatistics({ data }) {
   const [relArray, setRelArray] = useState([]);
   const [tagsArray, settagsArray] = useState([]);
   const [allTags, setAllTags] = useState({});
-  const [allRelations, setAllRelations] = useState({});
+  const [allRelations, setAllRelations] = useState([]);
   const [allCoOccurrence, setAllCoOccurence] = useState({});
   const [inputForAlgorithm, setInputForAlgorithm] = useState("");
 
+  const setTagsPreview = (msg) => {
+    console.log(msg);
+  };
+
+  const updateRelationsPreview = (newRelations) => {
+    console.log(newRelations);
+    setAllRelations(newRelations);
+  };
   useEffect(() => {
     let tempRelArray = [];
     for (const item of data) {
@@ -61,7 +69,7 @@ export default function ProjectStatistics({ data }) {
   };
 
   const getAlgorithmInputPreview = () => {
-    return getAllTags();
+    return getAllRelations();
   };
 
   const checkChange = (category, index, title) => {
@@ -216,6 +224,10 @@ export default function ProjectStatistics({ data }) {
 
   /* ****************************** Relations ****************************** */
 
+  function getAllRelations() {
+    return JSON.stringify(allRelations);
+  }
+
   //   let tempRelArray = [];
   //   for (const item of data) {
   //     for (const rel of item.relations) {
@@ -233,10 +245,13 @@ export default function ProjectStatistics({ data }) {
       <h2>Annotation Information about Project {project_id}</h2> <br></br>
       <h2>Tags</h2>
       {/* <Accordion>{accordionItemsTags}</Accordion> */}
-      <ProjectTagsTable data={tagMap} />
+      <ProjectTagsTable data={tagMap} setTagsPreview={setTagsPreview} />
       <br></br>
       <h2>Relations</h2>
-      <ProjectRelationsTable data={relArray} />
+      <ProjectRelationsTable
+        data={relArray}
+        updateRelationsPreview={updateRelationsPreview}
+      />
       <br></br>
       <h2>TODO: Co-Occcurrence</h2>
       <br></br>

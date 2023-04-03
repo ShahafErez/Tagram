@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import "../../../static/css/ProjectStatistics.css";
+import { Button } from "react-bootstrap";
 
-export default function ProjectTagsTable({ data }) {
+export default function ProjectTagsTable({ data, setTagsPreview }) {
   return (
     <div>
       {Array.from(data).map(([key, value]) => (
         <div key={key}>
-          <h3>{key}</h3>
+          <h3 class="table-titles">{key}</h3>
           <table>
             <thead>
               <tr>
@@ -28,6 +30,7 @@ export default function ProjectTagsTable({ data }) {
           </table>
         </div>
       ))}
+      <Button onClick={() => setTagsPreview("hello")}>Click Child</Button>
     </div>
   );
 }

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-export default function ProjectRelationsTable({ data }) {
+export default function ProjectRelationsTable({
+  data,
+  updateRelationsPreview,
+}) {
   const [checkedRows, setCheckedRows] = useState([]);
   const [fromToTokens, setFromToTokens] = useState({});
+  const [relationsPreview, setRelationPreview] = useState({});
 
   useEffect(() => {
     const fromToTokensDict = {};
@@ -19,12 +23,25 @@ export default function ProjectRelationsTable({ data }) {
     setFromToTokens(fromToTokensDict);
   }, [data]);
 
-  const handleCheckboxChange = (event, index) => {
+  useEffect(() => {
+    updateRelationsPreview(Object.values(relationsPreview)); //TODO: check if ok without async
+  }, [relationsPreview]);
+
+  const handleCheckboxChange = (event, index, row) => {
     if (event.target.checked) {
       setCheckedRows([...checkedRows, index]);
+      setRelationPreview({
+        ...relationsPreview,
+        [index]: { From: row.from, To: row.to },
+      });
     } else {
       setCheckedRows(checkedRows.filter((rowIndex) => rowIndex !== index));
+      const copyRelationPreview = { ...relationsPreview };
+      delete copyRelationPreview[index];
+      setRelationPreview(copyRelationPreview);
     }
+    // console.log(relationsPreview);
+    // updateRelationsPreview(Object.values(relationsPreview));
   };
 
   const calculateCombinationCount = (fromTokens, toTokens) => {
@@ -70,7 +87,7 @@ export default function ProjectRelationsTable({ data }) {
               <input
                 type="checkbox"
                 checked={checkedRows.includes(index)}
-                onChange={(event) => handleCheckboxChange(event, index)}
+                onChange={(event) => handleCheckboxChange(event, index, row)}
               />
             </td>
             <td>{row.from}</td>
