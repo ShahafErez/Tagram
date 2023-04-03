@@ -5,13 +5,19 @@ export default function ProjectRelationsTable({ data }) {
   const [fromToTokens, setFromToTokens] = useState({});
 
   useEffect(() => {
-    console.log("in ProjectRelationsTable");
-    console.log(data);
-    for (const element in data) {
-      console.log(element);
-      console.log(element.From.tokens);
-    }
-  }, []);
+    const fromToTokensDict = {};
+    data.forEach((element) => {
+      const { From, To } = element;
+      const fromTokens = From.tokens.join("-");
+      const toTokens = To.tokens;
+      if (fromToTokensDict[fromTokens]) {
+        fromToTokensDict[fromTokens].push(...toTokens);
+      } else {
+        fromToTokensDict[fromTokens] = [...toTokens];
+      }
+    });
+    setFromToTokens(fromToTokensDict);
+  }, [data]);
 
   const handleCheckboxChange = (event, index) => {
     if (event.target.checked) {
@@ -22,16 +28,30 @@ export default function ProjectRelationsTable({ data }) {
   };
 
   const calculateCombinationCount = (fromTokens, toTokens) => {
-    let count = 0;
-    fromTokens.forEach((fromToken) => {
-      toTokens.forEach((toToken) => {
-        if (fromToken === toToken) {
-          count++;
-        }
-      });
-    });
-    return count;
+    //   return fromToTokens[fromTokens].length;
+    if (fromToTokens[fromTokens]) {
+      return fromToTokens[fromTokens].length;
+    }
+    return 1;
   };
+
+  const rows = [];
+  const seenRows = new Set();
+  data.forEach((element, index) => {
+    const { From, To } = element;
+    const fromTokens = From.tokens.join("-");
+    const toTokens = To.tokens.join("-");
+    const rowKey = `${fromTokens}-${toTokens}`;
+    if (!seenRows.has(rowKey)) {
+      seenRows.add(rowKey);
+      rows.push({
+        key: rowKey,
+        from: fromTokens,
+        to: toTokens,
+        combinationCount: calculateCombinationCount(fromTokens, toTokens),
+      });
+    }
+  });
 
   return (
     <table>
@@ -40,12 +60,12 @@ export default function ProjectRelationsTable({ data }) {
           <th>Select</th>
           <th>From</th>
           <th>To</th>
-          <th>Total Combination Count</th>
+          <th>Combination Count</th>
         </tr>
       </thead>
       <tbody>
-        {data.map((element, index) => (
-          <tr key={index}>
+        {rows.map((row, index) => (
+          <tr key={row.key}>
             <td>
               <input
                 type="checkbox"
@@ -53,14 +73,9 @@ export default function ProjectRelationsTable({ data }) {
                 onChange={(event) => handleCheckboxChange(event, index)}
               />
             </td>
-            <td>{element.From.tokens.join(", ")}</td>
-            <td>{element.To.tokens.join(", ")}</td>
-            <td>
-              {calculateCombinationCount(
-                element.From.tokens,
-                element.To.tokens
-              )}
-            </td>
+            <td>{row.from}</td>
+            <td>{row.to}</td>
+            <td>{row.combinationCount}</td>
           </tr>
         ))}
       </tbody>
