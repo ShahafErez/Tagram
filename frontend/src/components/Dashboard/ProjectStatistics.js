@@ -8,13 +8,13 @@ import ProjectTagsTable from "./ProjectTagsTable";
 export default function ProjectStatistics({ data }) {
   const [relArray, setRelArray] = useState([]);
   const [tagsArray, settagsArray] = useState([]);
-  const [allTags, setAllTags] = useState({});
+  const [allTags, setAllTags] = useState([]);
   const [allRelations, setAllRelations] = useState([]);
   const [allCoOccurrence, setAllCoOccurence] = useState({});
   const [inputForAlgorithm, setInputForAlgorithm] = useState("");
 
-  const setTagsPreview = (msg) => {
-    console.log(msg);
+  const updateTagsPreview = (newTags) => {
+    setAllTags(newTags);
   };
 
   const updateRelationsPreview = (newRelations) => {
@@ -69,7 +69,13 @@ export default function ProjectStatistics({ data }) {
   };
 
   const getAlgorithmInputPreview = () => {
-    return getAllRelations();
+    let str = "";
+    str += "Tags: ";
+    str += getAllTags();
+    str += "     "; //TODO: remove
+    str += "\nRelations: ";
+    str += getAllRelations();
+    return str;
   };
 
   const checkChange = (category, index, title) => {
@@ -135,9 +141,7 @@ export default function ProjectStatistics({ data }) {
   }
 
   function getAllTags() {
-    return Object.keys(allTags)
-      .map((key) => `${key}:${JSON.stringify(Array.from(allTags[key]))}`)
-      .join(", ");
+    return allTags.join(", ");
   }
 
   // const accordionItems = Array.from(tagMap.values()).map((tagObj) => (
@@ -245,7 +249,7 @@ export default function ProjectStatistics({ data }) {
       <h2>Annotation Information about Project {project_id}</h2> <br></br>
       <h2>Tags</h2>
       {/* <Accordion>{accordionItemsTags}</Accordion> */}
-      <ProjectTagsTable data={tagMap} setTagsPreview={setTagsPreview} />
+      <ProjectTagsTable data={tagMap} updateTagsPreview={updateTagsPreview} />
       <br></br>
       <h2>Relations</h2>
       <ProjectRelationsTable

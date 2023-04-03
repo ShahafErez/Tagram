@@ -2,7 +2,22 @@ import React, { useEffect, useState } from "react";
 import "../../../static/css/ProjectStatistics.css";
 import { Button } from "react-bootstrap";
 
-export default function ProjectTagsTable({ data, setTagsPreview }) {
+export default function ProjectTagsTable({ data, updateTagsPreview }) {
+  const [checkedRows, setCheckedRows] = useState([]);
+
+  const handleCheckboxChange = (event, token) => {
+    if (event.target.checked) {
+      setCheckedRows([...checkedRows, token]);
+    } else {
+      setCheckedRows(checkedRows.filter((t) => t !== token));
+    }
+    // console.log(relationsPreview);
+    // updateRelationsPreview(Object.values(relationsPreview));
+  };
+
+  useEffect(() => {
+    updateTagsPreview(checkedRows);
+  }, [checkedRows]);
   return (
     <div>
       {Array.from(data).map(([key, value]) => (
@@ -20,7 +35,11 @@ export default function ProjectTagsTable({ data, setTagsPreview }) {
               {Array.from(new Set(value.tokens)).map((token) => (
                 <tr key={token}>
                   <td>
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={checkedRows.includes(token)}
+                      onChange={(event) => handleCheckboxChange(event, token)}
+                    />
                   </td>
                   <td>{token}</td>
                   <td>{value.tokens.filter((t) => t === token).length}</td>
@@ -30,7 +49,6 @@ export default function ProjectTagsTable({ data, setTagsPreview }) {
           </table>
         </div>
       ))}
-      <Button onClick={() => setTagsPreview("hello")}>Click Child</Button>
     </div>
   );
 }

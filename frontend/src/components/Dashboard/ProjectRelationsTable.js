@@ -24,7 +24,7 @@ export default function ProjectRelationsTable({
   }, [data]);
 
   useEffect(() => {
-    updateRelationsPreview(Object.values(relationsPreview)); //TODO: check if ok without async
+    updateRelationsPreview(Object.values(relationsPreview));
   }, [relationsPreview]);
 
   const handleCheckboxChange = (event, index, row) => {
