@@ -3,9 +3,11 @@ import { Accordion, Card, Button } from "react-bootstrap";
 import "../../../static/css/ProjectStatistics.css";
 import Badge from "react-bootstrap/Badge";
 import ProjectRelationsTable from "./ProjectRelationsTable";
+import ProjectTagsTable from "./ProjectTagsTable";
 
 export default function ProjectStatistics({ data }) {
   const [relArray, setRelArray] = useState([]);
+  const [tagsArray, settagsArray] = useState([]);
   const [allTags, setAllTags] = useState({});
   const [allRelations, setAllRelations] = useState({});
   const [allCoOccurrence, setAllCoOccurence] = useState({});
@@ -20,6 +22,14 @@ export default function ProjectStatistics({ data }) {
       }
     }
     setRelArray(tempRelArray);
+    let tempTagsArray = [];
+    for (const item of data) {
+      for (const tag of item.tags) {
+        //   setRelArray([...relArray, rel]);
+        tempTagsArray.push(tag);
+      }
+    }
+    settagsArray(tempTagsArray);
   }, []);
   //TODO: after projects will be save by user, add "User consent range" to each label (chen)
 
@@ -168,7 +178,7 @@ export default function ProjectStatistics({ data }) {
   const accordionItemsTags = Array.from(tagMap.values()).map((tagObj) => {
     // Create a new set of unique tokens
     const uniqueTokens = [...new Set(tagObj.tokens)];
-
+    console.log(tagMap);
     return (
       <AccordionItem key={tagObj.tag} title={tagObj.tag}>
         <ul>
@@ -222,7 +232,8 @@ export default function ProjectStatistics({ data }) {
       <br></br>
       <h2>Annotation Information about Project {project_id}</h2> <br></br>
       <h2>Tags</h2>
-      <Accordion>{accordionItemsTags}</Accordion>
+      {/* <Accordion>{accordionItemsTags}</Accordion> */}
+      <ProjectTagsTable data={tagMap} />
       <br></br>
       <h2>Relations</h2>
       <ProjectRelationsTable data={relArray} />
