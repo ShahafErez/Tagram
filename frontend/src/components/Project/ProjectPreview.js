@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function PreojctPreview(props) {
+export default function ProjectPreview(props) {
   let project = props.project;
   console.log(project);
 
