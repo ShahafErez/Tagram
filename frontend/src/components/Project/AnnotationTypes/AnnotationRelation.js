@@ -2,23 +2,27 @@ import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
 
 export default function AnnotationRelation(props) {
+  const file = props.file;
   let TAG_COLORS = {};
   let tag_options = [];
+
+  // The current tag the user choose
+  const [tag, setTag] = useState(tag_options[0]);
+  const [tagSelectingError, setTagSelectingError] = useState("");
 
   props.labels.forEach(function (label, index) {
     TAG_COLORS[label["name"]] = label["color"];
     tag_options.push(label["name"] + "");
   });
 
+  /* The current values being selected. Displaying the select on text.
+    Each line in file will be a separate array */
   const [currentState, setCurrentState] = useState(props.relationCurrentState);
-  /**
-   * To support multi-lines files, we set the below variable to be an array
-   * the size of the array will be the number of lines in the file
-   */
-  const file = props.file;
+  /* The saved relations. Will be saved in db
+   * Saving all values in a single array */
   const [relationSummary, setRelationSummary] = useState(props.relationSummary);
 
-  // saving the first and second element that was choosen
+  // the first and second element that were selected
   const [firstElement, setFirstElement] = useState({
     selected: false,
     start: null,
@@ -31,9 +35,6 @@ export default function AnnotationRelation(props) {
     end: null,
     tokens: [],
   });
-  // The current tag the user choose
-  const [tag, setTag] = useState(tag_options[0]);
-  const [tagSelectingError, setTagSelectingError] = useState("");
 
   const handleValueChange = (key, selectedValue) => {
     // saving the current state after relation selection
@@ -60,7 +61,7 @@ export default function AnnotationRelation(props) {
         index: key,
       });
     }
-    // sending the new state
+    // sending the updated variables to project page
     props.onChangeRelation(relationSummary, temp_current_state);
   };
 
@@ -90,8 +91,6 @@ export default function AnnotationRelation(props) {
       end: null,
       tokens: [],
     });
-
-    // sending the updated variables to project page
     props.onChangeRelation(temp_relation_summary, now_current_state);
   };
 

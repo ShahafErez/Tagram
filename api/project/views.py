@@ -10,6 +10,7 @@ import logging
 from .forms import UploadFile
 import json
 
+
 class ProjectView(generics.ListAPIView):
     """
         Gets all of the active projects in the database
@@ -88,6 +89,7 @@ class UploadFile(APIView):
     """
     Saving a file and related it to an existing project id
     """
+
     def post(self, request, format=None):
         project_id = request.POST['project_id']
         if project_id != None:
@@ -103,8 +105,9 @@ class GetProcessedFile(APIView):
     """
     Reciving a file and returning processed text
     """
+
     def post(self, request, format=None):
-        new_file = file=request.FILES['myFile']
+        new_file = file = request.FILES['myFile']
         f = new_file.open('r')
         text = f.read()
         return Response(text, status=status.HTTP_200_OK)
@@ -196,5 +199,5 @@ class GetAnnotation(APIView):
                         data['co_occcurrence'] = json.loads(
                             data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
-                    return Response("no annotation found", status=status.HTTP_404_NOT_FOUND)
+                    return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)

@@ -29,6 +29,8 @@ export default function CreateProjectPage() {
 
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
   useEffect(() => {
     fetch("/api/users/get-all")
       .then((response) => response.json())
@@ -70,7 +72,16 @@ export default function CreateProjectPage() {
           body: formData,
         });
       })
-      // Automaticly navigating to the new project page
+      .then(() => {
+        fetch("/api/users/create-user-project-mapping", {
+          method: "POST",
+          headers: { "Content-Type": "application/json ; charset=utf-8" },
+          body: JSON.stringify({
+            project: project_id,
+            user: selectedUsers,
+          }),
+        });
+      })
       .then(() => navigate("/project/" + project_id));
   };
 
@@ -122,6 +133,18 @@ export default function CreateProjectPage() {
     setFileContent(newFileArray);
     setSelectedFile(newFile);
     setIsCheckingCorrectness(false);
+  }
+
+  function SelectUser(username) {
+    let temp_users = JSON.parse(JSON.stringify(selectedUsers));
+    // add/remove
+    if (temp_users.includes(username)) {
+      temp_users.splice(temp_users.indexOf(username), 1);
+    } else {
+      temp_users.push(username);
+    }
+    console.log("usernames", temp_users);
+    setSelectedUsers(temp_users);
   }
 
   function backToPage() {
@@ -330,6 +353,9 @@ export default function CreateProjectPage() {
                           type="checkbox"
                           value=""
                           id="flexCheckDefault"
+                          onClick={() => {
+                            SelectUser(user.username);
+                          }}
                         />
                         <label class="form-check-label" for="flexCheckDefault">
                           {user.username}

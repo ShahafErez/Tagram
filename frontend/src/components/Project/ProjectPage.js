@@ -7,10 +7,9 @@ import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
 import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
 
 export default function ProjectPage() {
-  let { id } = useParams();
-
+  // TODO- check if the user has permissions for this project
   let username = ReactSession.get("username");
-  console.log("project page, username: ", username);
+  let { id } = useParams();
 
   const [project, setProject] = useState({
     title: "",
@@ -24,27 +23,25 @@ export default function ProjectPage() {
     text: "",
   });
 
-  // settings arrays for labels & labels types
+  // setting the meta tagging values
   const [metaTaggingLabels, setMetaTaggingLabels] = useState([]);
   const [tagsLabels, setTagsLabels] = useState([]);
   const [relationsLabels, setRelationsLabels] = useState([]);
 
-  const [isAnnotateTags, setIsAnnotateTags] = useState(true);
-  const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
-  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
-
-  // setting the summary and current state for each annotation type
-  const [tagsSummary, setTagsSummary] = useState();
+  // setting the annotations values
   const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState();
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
   const [coOccurrenceCurrentState, setCoOccurrenceCurrentState] = useState();
 
-  // getting project details
-  useEffect(() => {
-    let meta_tagging_id = "";
+  // optional states
+  const [isAnnotateTags, setIsAnnotateTags] = useState(false);
+  const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
+  const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
 
+  function getMetaTaggingDetails() {
+    let meta_tagging_id = "";
     fetch("/api/project/get?project_id=" + id)
       .then((response) => response.json())
       .then((data) => {
@@ -62,7 +59,6 @@ export default function ProjectPage() {
         let tags = [];
         let relations = [];
         data.forEach(function (label, index) {
-          // adding the labels to the correct type
           if (label["type"] == "Tag") {
             tags.push(label);
           }
@@ -73,12 +69,10 @@ export default function ProjectPage() {
         setTagsLabels(tags);
         setRelationsLabels(relations);
       })
-      .then(() => getProjcetFile());
-    // we need to put [] as the second argument, if we want to render only once
-  }, []);
+      .then(() => getFileDetails());
+  }
 
-  // getting project file
-  function getProjcetFile() {
+  function getFileDetails() {
     fetch("/api/project/get-file?project_id=" + id)
       .then((response) => {
         if (!response.ok) {
@@ -87,24 +81,46 @@ export default function ProjectPage() {
         return response.json();
       })
       .then((data) => {
-        // saving the file as array of lines
         let textArray = data.text.split("\n");
-        setTagCurrentState(new Array(textArray.length).fill([]));
-        setRelationCurrentState(new Array(textArray.length).fill([]));
-        setCoOccurrenceCurrentState(new Array(textArray.length).fill([]));
-        setTagsSummary(new Array(textArray.length).fill([]));
-
         setFile({
           file_id: data.file_id,
           file: data.file,
           text: textArray,
         });
-      });
+        return textArray.length;
+      })
+      .then((arrayLength) => getAnnotationsDetails(arrayLength));
   }
+
+  function getAnnotationsDetails(arrayLength) {
+    fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
+      if (response.status == 204) {
+        // annotations not found, setting empty arrays
+        setTagCurrentState(new Array(arrayLength).fill([]));
+        setRelationCurrentState(new Array(arrayLength).fill([]));
+        setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
+      } else if (response.status == 200) {
+        // annotations found
+        return response.json().then((data) => {
+          setTagCurrentState(data.tags);
+
+          setRelationSummary(data.relations);
+          setCoOccurrenceSummary(data.co_occcurrence);
+          setRelationCurrentState(new Array(arrayLength).fill([]));
+          setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
+        });
+      }
+    });
+  }
+
+  // getting all project details by a chain of .then() function calls
+  useEffect(() => {
+    getMetaTaggingDetails();
+  }, []);
 
   const exportToFile = () => {
     const fileData = JSON.stringify({
-      tags: tagsSummary,
+      tags: tagCurrentState,
       relations: relationSummary,
       coOccurr: coOccurrenceSummary,
     });
@@ -116,19 +132,18 @@ export default function ProjectPage() {
     link.click();
   };
 
-  const saveAnnotation = () => {
+  const saveAnnotations = () => {
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         project_id: id,
         file_id: file.file_id,
-        tags: tagsSummary,
+        tags: tagCurrentState,
         relations: relationSummary,
         co_occcurrence: coOccurrenceSummary,
       }),
     }).then((response) => {
-      console.log(response);
       if (response.status == 201) {
         alert("Annotation information saved");
       }
@@ -199,10 +214,8 @@ export default function ProjectPage() {
                 <AnnotationTag
                   file={file.text}
                   labels={tagsLabels}
-                  tagsSummary={tagsSummary}
                   tagCurrentState={tagCurrentState}
-                  onChangeTags={(newValueSummary, newValueCurrentState) => {
-                    setTagsSummary(newValueSummary);
+                  onChangeTags={(newValueCurrentState) => {
                     setTagCurrentState(newValueCurrentState);
                   }}
                 />
@@ -236,11 +249,12 @@ export default function ProjectPage() {
                 />
               )}
             </div>
+            {/* save of export the selected annotations */}
             <div>
               <button
                 class="btn btn-primary"
                 id="saveAllTaggingBtn"
-                onClick={saveAnnotation}
+                onClick={saveAnnotations}
               >
                 Save All Tagging In System
               </button>
