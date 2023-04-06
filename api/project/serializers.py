@@ -17,7 +17,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('title', 'description', 'meta_tagging')
+        fields = ('title', 'description', 'meta_tagging', 'project_manager')
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -31,10 +31,12 @@ class FileSerializer(serializers.ModelSerializer):
 class SaveAnnotationSerializer(serializers.ModelSerializer):
     project_id = serializers.CharField(allow_blank=False)
     file_id = serializers.CharField(allow_blank=False)
+    tagger = serializers.CharField(allow_blank=False)
+
 
     class Meta:
         model = Annotation
-        fields = ('project_id', 'file_id', 'tags',
+        fields = ('project_id', 'file_id', 'tagger', 'tags',
                   'relations', 'co_occcurrence')
 
 
@@ -45,5 +47,5 @@ class GetAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Annotation
-        fields = ('project_id', 'file_id', 'tags',
+        fields = ('project_id', 'file_id', 'tagger', 'tags',
                   'relations', 'co_occcurrence')

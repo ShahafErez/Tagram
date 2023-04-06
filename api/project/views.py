@@ -50,7 +50,7 @@ class CreateProjectView(APIView):
 
             title = serializer.data.get('title')
             description = serializer.data.get('description')
-            project_manager = self.request.session.session_key
+            project_manager = serializer.data.get('project_manager')
 
             project = Project(project_manager=project_manager, title=title,
                               description=description, meta_tagging=meta_tagging)
@@ -166,9 +166,10 @@ class SaveAnnotation(APIView):
             tags = json.dumps(data['tags'])
             relations = json.dumps(data['relations'])
             co_occcurrence = json.dumps(data['co_occcurrence'])
+            tagger = data['tagger']
 
             annotation = Annotation(
-                project=project, file=file, tags=tags, relations=relations, co_occcurrence=co_occcurrence)
+                project=project, file=file, tags=tags, tagger=tagger, relations=relations, co_occcurrence=co_occcurrence)
             annotation.save()
 
             # return feedback to user
@@ -180,17 +181,19 @@ class GetAnnotation(APIView):
     """
         Getting annotations by a given project id
     """
-    lookup_url_kwarg = 'project_id'
+    lookup_url_kwarg_project_id = 'project_id'
+    lookup_url_kwarg_tagger = 'tagger'
 
     def get(self, request, format=None):
-        project_id = request.GET.get(self.lookup_url_kwarg)
+        project_id = request.GET.get(self.lookup_url_kwarg_project_id)
+        tagger = request.GET.get(self.lookup_url_kwarg_tagger)
         if project_id != None:
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
                 if project != None:
                     annotation_query = Annotation.objects.filter(
-                        project=project)
+                        project=project, tagger=tagger)
                     if len(annotation_query) > 0:
                         data = GetAnnotationSerializer(
                             annotation_query[0]).data
@@ -199,5 +202,26 @@ class GetAnnotation(APIView):
                         data['co_occcurrence'] = json.loads(
                             data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
+                    return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+class GetAllAnnotation(APIView):
+    lookup_url_kwarg_project_id = 'project_id'
+    def get(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg_project_id)
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                if project != None:
+                    annotation_query = Annotation.objects.filter(project=project)
+                    if len(annotation_query) > 0:
+                         data = GetAnnotationSerializer(
+                             annotation_query[0]).data
+                         data['tags'] = json.loads(data['tags'])
+                         data['relations'] = json.loads(data['relations'])
+                         data['co_occcurrence'] = json.loads(
+                             data['co_occcurrence'])
+                         return Response(data, status=status.HTTP_200_OK)
                     return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)

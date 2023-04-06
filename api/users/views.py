@@ -96,7 +96,7 @@ class CreateUserProjectView(APIView):
                     if (len(current_user)) > 0:
                         current_user = current_user[0]
                     user_in_project = UsersInProject(
-                        user=current_user, project=project)
+                        user=current_user, project=project, project_manager=project.project_manager)
                     user_in_project.save()
 
             # returns the code to the user
