@@ -93,7 +93,7 @@ export default function ProjectPage() {
   }
 
   function getAnnotationsDetails(arrayLength) {
-    fetch("/api/project/get-annotation?project_id=" + id).then((response) => {
+    fetch("/api/project/get-annotation-of-tagger?project_id=" + id +"&tagger=" + username).then((response) => {
       if (response.status == 204) {
         // annotations not found, setting empty arrays
         setTagCurrentState(new Array(arrayLength).fill([]));
@@ -139,6 +139,7 @@ export default function ProjectPage() {
       body: JSON.stringify({
         project_id: id,
         file_id: file.file_id,
+        tagger: username,
         tags: tagCurrentState,
         relations: relationSummary,
         co_occcurrence: coOccurrenceSummary,

@@ -10,4 +10,5 @@ urlpatterns = [
     path('create-user-project-mapping', CreateUserProjectView.as_view()),
     path('projects-by-username/', GetProjectsByUsername.as_view()),
     path('users-by-project/', GetUsersByProject.as_view()),
+    #path('projects-by-manager/', GetProjectsByManager.as_view())
 ]

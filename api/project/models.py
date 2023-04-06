@@ -62,3 +62,4 @@ class Annotation(models.Model):
     tags = models.CharField(max_length=4096, null=True)
     relations = models.CharField(max_length=4096, null=True)
     co_occcurrence = models.CharField(max_length=4096, null=True)
+    tagger = models.CharField(max_length=20, null=False)
