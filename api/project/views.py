@@ -216,12 +216,11 @@ class GetAllAnnotation(APIView):
                 if project != None:
                     annotation_query = Annotation.objects.filter(project=project)
                     if len(annotation_query) > 0:
-                         data = GetAnnotationSerializer(
-                             annotation_query[0]).data
-                         data['tags'] = json.loads(data['tags'])
-                         data['relations'] = json.loads(data['relations'])
-                         data['co_occcurrence'] = json.loads(
-                             data['co_occcurrence'])
-                         return Response(data, status=status.HTTP_200_OK)
+                        data = [GetAnnotationSerializer(annotation).data for annotation in annotation_query]
+                        for annotation_data in data:
+                            annotation_data['tags'] = json.loads(annotation_data['tags'])
+                            annotation_data['relations'] = json.loads(annotation_data['relations'])
+                            annotation_data['co_occcurrence'] = json.loads(annotation_data['co_occcurrence'])
+                        return Response(data, status=status.HTTP_200_OK)
                     return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
