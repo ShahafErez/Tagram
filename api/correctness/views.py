@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from api.correctness.aqusa.aqusacore import getConnextra
 
 
-class test(APIView):
+class GetConnextra(APIView):
     def get(self, request, format=None):
         file_name = request.GET.get("file_name")
         # the folder all input files will be located at

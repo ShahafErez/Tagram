@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import test
+from .views import GetConnextra
 
 urlpatterns = [
-    path('test', test.as_view()),
+    path('connextra', GetConnextra.as_view()),
 ]

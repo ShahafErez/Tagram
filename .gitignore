@@ -51,4 +51,4 @@ Thumbs.db
 
 .vscode/
 /uploads
-/api/aqusa/output
+/api/correctness/aqusa/input

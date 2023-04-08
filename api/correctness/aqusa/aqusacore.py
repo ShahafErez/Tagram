@@ -1,16 +1,13 @@
 import os
 import sys
-import getopt
-import django
 
 from api.correctness.aqusa.corefiles.wellformed import *
 from api.correctness.aqusa.corefiles.analyzer import *
 from api.correctness.aqusa.corefiles.globals import *
 from api.correctness.aqusa.corefiles.stories import *
-from argparse import ArgumentParser
 
 
-def getConnextra(inputfilePath, outputfile='', outputformat="txt"):
+def getConnextra(inputfilePath):
     print('======================================================\n' +
           '                     AQUSA-Core\n' +
           '    Requirements Engineering Lab, Utrecht University\n' +
@@ -24,8 +21,9 @@ def getConnextra(inputfilePath, outputfile='', outputformat="txt"):
         print('The input file "input/' + inputfilePath + '" does not exist')
         sys.exit(2)
 
+    defects.clear()
     allStories = Stories(None)
-    init_format(outputformat)
+    init_format("txt")
 
     i = 0
     for r in raw:
@@ -45,42 +43,8 @@ def getConnextra(inputfilePath, outputfile='', outputformat="txt"):
     for story in allStories.stories:
         Analyzer.uniform(story, allStories)
 
-    output_text = ""
     output_array = []
+    for defect in defects:
+        output_array.append(defect.print_txt())
 
-    if outputformat == 'html':
-        with tag('html'):
-            with tag('head'):
-                with tag('script', src='sorttable.js', type='text/javascript'):
-                    pass
-                with tag('link', rel='stylesheet', href='styles.css'):
-                    pass
-            with tag('body'):
-                with tag('table', klass='sortable'):
-                    with tag('thead'):
-                        with tag('tr'):
-                            with tag('th'):
-                                text('ID')
-                            with tag('th'):
-                                text('User Story')
-                            with tag('th'):
-                                text('Defect kind')
-                            with tag('th'):
-                                text('Subkind')
-                            with tag('th'):
-                                text('Message')
-                    with tag('tbody'):
-                        for defect in defects:
-                            defect.print_html(doc, tag, text)
-        output_text = doc.getvalue()
-    else:
-        for defect in defects:
-            # output_text = output_text + defect.print_txt()
-            output_array.append(defect.print_txt())
-
-    if outputfile == '':
-        # return output_text
-        return output_array
-    else:
-        f = open("output/" + outputfile + "." + outputformat, "w")
-        f.write(output_text)
+    return output_array
