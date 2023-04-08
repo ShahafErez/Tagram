@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'api.project.apps.ProjectConfig',
     'api.meta_tagging.apps.MetaTaggingConfig',
     'api.users.apps.UsersConfig',
+    'api.correctness.apps.CorrectnessConfig',
 ]
 
 MIDDLEWARE = [
