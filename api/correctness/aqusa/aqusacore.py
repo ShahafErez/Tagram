@@ -28,7 +28,6 @@ def getConnextra(fileText):
         WellFormedAnalyzer.well_formed(story)
         Analyzer.atomic(story)
         MinimalAnalyzer.minimal(story)
-        Analyzer.unique(story, allStories)
         allStories.add_story(story)
 
     allStories = Analyzer.get_common_format(allStories)
@@ -36,8 +35,8 @@ def getConnextra(fileText):
     for story in allStories.stories:
         Analyzer.uniform(story, allStories)
 
-    output_array = []
+    output_dict = {}
     for defect in defects:
-        output_array.append(defect.print_txt())
+        output_dict.update({defect.story_id: defect.print_txt()})
 
-    return output_array
+    return output_dict

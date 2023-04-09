@@ -153,22 +153,6 @@ export default function CreateProjectPage() {
     setIsCheckingCorrectness(false);
   }
 
-  function test() {
-    console.log("fileContent ", fileContent);
-
-    fetch("/api/correctness/connextra", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        text: fileContent,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-  }
-
   return (
     <div
       class="card"
@@ -185,7 +169,6 @@ export default function CreateProjectPage() {
         }
       >
         {/* Create a new project form */}
-        <button onClick={test}>hello</button>
         <h2>Create a new project</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>

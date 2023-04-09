@@ -10,12 +10,12 @@ class Defect:
         self.story_title = story_title
 
     def print_txt(self):
-        return {"story id": self.story_id,
-                "Defect kind": self.kind,
-                "Defect subkind": self.subkind,
-                "Message": self.message
-                }
-        # return self.story_id + ':' + 'Defect type: ' + self.kind + '.' + self.subkind + '\n' + '   Message: ' + self.message + '\n'
+        values = {"story id": self.story_id,
+                  "Defect kind": self.kind,
+                  "Defect subkind": self.subkind,
+                  "Message": self.message
+                  }
+        return values
 
     def print_html(self, doc, tag, text):
         with tag('tr'):

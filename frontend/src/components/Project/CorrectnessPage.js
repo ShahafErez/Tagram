@@ -4,6 +4,7 @@ export default function CorrectnessPage(props) {
   const [textArray, setTextArray] = useState(props.file);
   const [textArrayEdit, setTextArrayEdit] = useState(props.file);
   const [newStory, setNewStory] = useState("");
+  const [connextraInfo, setConnextraInfo] = useState(null);
 
   // checking for duplications
   let duplicatesArray = new Set();
@@ -36,16 +37,59 @@ export default function CorrectnessPage(props) {
     setTextArray(tempTextArray);
   }
 
+  function checkConnextra() {
+    fetch("/api/correctness/connextra", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        text: textArray,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setConnextraInfo(data);
+      });
+  }
+
+  function checkStoryConnextra(index) {
+    let value = connextraInfo["" + index];
+    if (value != null) {
+      return (
+        <div>
+          <p style={{ color: "#e56000", marginBottom: "0px" }}>
+            <i
+              class="bi bi-exclamation-triangle"
+              style={{
+                marginTop: "0px",
+                marginBottom: "0px",
+              }}
+            ></i>{" "}
+            faild connextra check. defect type: {value["Defect kind"]}
+            {", "}
+            {value["Defect subkind"]}
+          </p>
+        </div>
+      );
+    }
+  }
+
   return (
     <div class="form-group">
       <h4>Edit stories & Check correctness</h4>
+      <button class="btn btn-secondary" onClick={checkConnextra}>
+        Check Connextra
+      </button>
       {textArray.map(
         (element, index) =>
           element != "" && (
             <div style={{ marginTop: "15px" }}>
+              {/* Showing a message if the story failed connextra check */}
+              {connextraInfo != null && checkStoryConnextra(index + 1)}
               {/* Showing a message if the story is duplicated */}
               {duplicatesArray.has(index) ? (
-                <p style={{ color: "#ca4c10", marginBottom: "0px" }}>
+                <p style={{ color: "#c8480b", marginBottom: "0px" }}>
                   <i
                     class="bi bi-exclamation-triangle"
                     style={{
@@ -58,7 +102,6 @@ export default function CorrectnessPage(props) {
               ) : (
                 <div></div>
               )}
-
               <span>
                 <textarea
                   spellCheck="true"

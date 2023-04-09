@@ -35,10 +35,6 @@ ERROR_KINDS = {'well_formed_content': [
     {'subkind': 'conjunctions', 'rule': "Analyzer.atomic_rule(getattr(story,chunk), chunk)",
      'severity': 'high', 'highlight': "Analyzer.highlight_text(story, CONJUNCTIONS, 'high')"}
 ],
-    'unique': [
-    {'subkind': 'identical', 'rule': "Analyzer.identical_rule(story,allStories)",
-     'severity': 'high', 'highlight': 'str("Remove all duplicate user stories")'}
-],
     'uniform': [
     {'subkind': 'uniform', 'rule': "Analyzer.uniform_rule(story,allStories)", 'severity': 'medium',
      'highlight': '"Use the most common template: %s" % allStories.format'}
