@@ -7,26 +7,19 @@ from api.correctness.aqusa.corefiles.globals import *
 from api.correctness.aqusa.corefiles.stories import *
 
 
-def getConnextra(inputfilePath):
+def getConnextra(fileText):
     print('======================================================\n' +
           '                     AQUSA-Core\n' +
           '    Requirements Engineering Lab, Utrecht University\n' +
           '           Fabiano Dalpiaz, Garm Lucassen\n' +
           '======================================================\n')
 
-    if os.path.exists(inputfilePath):
-        with open(inputfilePath) as f:
-            raw = f.readlines()
-    else:
-        print('The input file "input/' + inputfilePath + '" does not exist')
-        sys.exit(2)
-
     defects.clear()
     allStories = Stories(None)
     init_format("txt")
 
     i = 0
-    for r in raw:
+    for r in fileText:
         i = i + 1
         if r.strip() == "":
             continue
