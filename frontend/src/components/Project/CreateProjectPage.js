@@ -368,7 +368,7 @@ export default function CreateProjectPage() {
           </div>
 
           {/* Saving is only enabled if all required fields are inserted */}
-          {title != "" && metaTaggingId != "" && selectedFile ? (
+          {title != "" && metaTaggingId != "" && selectedFile && selectedUsers.length>0 ? (
             <button
               type="submit"
               class="btn btn-primary"
