@@ -23,3 +23,4 @@ class UsersInProject(models.Model):
     mapping_id = models.CharField(max_length=8, default=generate_unique_code, unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project_manager = models.CharField(max_length=20, default='')

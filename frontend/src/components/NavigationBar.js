@@ -6,8 +6,8 @@ export default function NavigationBar() {
   let is_admin = ReactSession.get("is_admin");
   if(is_admin){    
   return (
-      <nav
-      class="navbar navbar-expand-lg border-bottom border border-secondary"
+    <nav
+      class="navbar navbar-expand-lg border-bottom border-secondary"
       style={{
         backgroundColor: "white",
         padding: "0 0 0px 12px",

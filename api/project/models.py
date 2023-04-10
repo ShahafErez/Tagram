@@ -4,7 +4,7 @@ import string
 import random
 
 
-def generate_unique_code():  # TODO: make 1 method that recives table name and genarates unique id
+def generate_project_unique_code():
     length = 6
 
     while True:
@@ -17,11 +17,10 @@ def generate_unique_code():  # TODO: make 1 method that recives table name and g
 
 class Project(models.Model):
     project_id = models.CharField(
-        max_length=8, default=generate_unique_code, unique=True, primary_key=True)
+        max_length=8, default=generate_project_unique_code, unique=True, primary_key=True)
     title = models.CharField(max_length=500)
     description = models.CharField(max_length=5000, blank=True, default='')
-    meta_tagging = models.ForeignKey(
-        MetaTagging, on_delete=models.SET_NULL, null=True)
+    meta_tagging = models.ForeignKey(MetaTagging, on_delete=models.SET_NULL, null=True)
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -40,8 +39,7 @@ class File(models.Model):
     file_id = models.CharField(
         max_length=8, default=generate_file_unique_code, unique=True, primary_key=True)
     file = models.FileField(upload_to='./uploads')
-    project = models.ForeignKey(
-        Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 def generate_annotation_unique_code():
@@ -64,3 +62,4 @@ class Annotation(models.Model):
     tags = models.CharField(max_length=4096, null=True)
     relations = models.CharField(max_length=4096, null=True)
     co_occcurrence = models.CharField(max_length=4096, null=True)
+    tagger = models.CharField(max_length=20, null=False)

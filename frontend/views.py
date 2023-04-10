@@ -19,19 +19,22 @@ def admin_index(request, *args, **kwargs):
 
 @csrf_protect
 def loginpage(request, *args, **kwargs):
-    if request.method == 'POST':
-        username1 = request.POST.get('username')
-        password1 = request.POST.get('password')
-        user = authenticate(
-            request, username=username1, password=password1)
-        if user is not None:
-            login(request, user)
-            context = {}
-            request.session['username'] = username1
-            request.session['is_admin'] = is_admin(request)
-            return redirect('/')
-        else:
-            messages.info(request, "Username or password is incorrect")
+    if request.user.is_authenticated:
+        return redirect('/')       
+    else:
+        if request.method == 'POST':
+            username1 = request.POST.get('username')
+            password1 = request.POST.get('password')
+            user = authenticate(
+                request, username=username1, password=password1)
+            if user is not None:
+                login(request, user)
+                context = {}
+                request.session['username'] = username1
+                request.session['is_admin'] = is_admin(request)
+                return redirect('/')
+            else:
+                messages.info(request, "Username or password is incorrect")
     context = {}
     return render(request, 'frontend/login.html', context)
 
@@ -45,22 +48,26 @@ def logoutUser(request):
 @csrf_protect
 @unauthenticated_user
 def register(request, *args, **kwargs):
-    form = CreateUserForm()
-    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username1 = form.cleaned_data.get('username')
-            password1 = form.cleaned_data.get('password1')
-            user = authenticate(
-                request, username=username1, password=password1)
-            if user is not None:
-                login(request, user)
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        form = CreateUserForm()
+        if request.method == 'POST':
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                form.save()
+                username1 = form.cleaned_data.get('username')
+                password1 = form.cleaned_data.get('password1')
+                user = authenticate(
+                    request, username=username1, password=password1)
+                if user is not None:
+                    login(request, user)
+                    context = {}
+                    request.session['username'] = username1
+                    request.session['is_admin'] = is_admin(request)
+                    return redirect('/')
+                messages.success(request, 'Hi ' + username1 +
+                                 "! You can start your annotation project now!")
                 context = {}
-                request.session['username'] = username1
-                request.session['is_admin'] = is_admin(request)
-                return redirect('/')
-            messages.success(request, 'Hi ' + username1+"! You can start your annotation project now!")
-            context ={}
-            return redirect('login')
-    return render(request, 'frontend/register.html', {'form': form})
+                return redirect('login')
+        return render(request, 'frontend/register.html', {'form': form})
