@@ -11,9 +11,20 @@ export default function HomePage() {
       })
       .then((data) => {
         ReactSession.set("username", data);
+        console.log(data);
+        fetch("/api/users/create-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify({
+            username: data
+          }), 
+        });
+      })
+      .catch((error) => {
+        console.log("Error:", error);
       });
-    // we need to put [] as the second argument, if we want to render only once
   }, []);
+  
 
   return (
     <div style={{ textAlign: "center" }}>

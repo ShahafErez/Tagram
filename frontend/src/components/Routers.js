@@ -5,6 +5,7 @@ import CreateProjectPage from "./Project/CreateProjectPage";
 import ProjectPage from "./Project/ProjectPage";
 import MyProjects from "./Project/MyProjects";
 import AdminDashboardPage from "./Dashboard/AdminDashboardPage";
+import CorrectnessPage from "./Project/CorrectnessPage";
 
 export default function Routers() {
   return (
@@ -14,6 +15,7 @@ export default function Routers() {
       <Route path="/my-projects" element={<MyProjects />} />
       <Route path="/project/:id" element={<ProjectPage />} />
       <Route path="/dashboard/:username" element={<AdminDashboardPage />} />
+      <Route path="/correct" element={<CorrectnessPage />} />
     </Routes>
   );
 }
