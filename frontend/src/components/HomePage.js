@@ -10,7 +10,8 @@ export default function HomePage() {
         return response.json();
       })
       .then((data) => {
-        ReactSession.set("username", data);
+        ReactSession.set("username", data[0]);
+        ReactSession.set("is_admin", data[1]);
       });
     // we need to put [] as the second argument, if we want to render only once
   }, []);

@@ -13,10 +13,13 @@ class GetSessionDetails(APIView):
         Get project details by a given path param
     """
     def get(self, request, format=None):
+        username = ""
+        is_admin = False
         if 'username' in request.session:
             username = request.session['username']
-            return Response(username, status=status.HTTP_200_OK)
-
+        if 'is_admin' in request.session: 
+            is_admin = request.session['is_admin']
+        return Response([username,is_admin], status=status.HTTP_200_OK)
 
 class UserView(generics.ListAPIView):
     """

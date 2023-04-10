@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from .forms import CreateUserForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, is_admin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
 from .decorators import unauthenticated_user, allowed_users
@@ -28,6 +28,7 @@ def loginpage(request, *args, **kwargs):
             login(request, user)
             context = {}
             request.session['username'] = username1
+            request.session['is_admin'] = is_admin(request)
             return redirect('/')
         else:
             messages.info(request, "Username or password is incorrect")
@@ -57,6 +58,7 @@ def register(request, *args, **kwargs):
                 login(request, user)
                 context = {}
                 request.session['username'] = username1
+                request.session['is_admin'] = is_admin(request)
                 return redirect('/')
             messages.success(request, 'Hi ' + username1+"! You can start your annotation project now!")
             context ={}
