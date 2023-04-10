@@ -19,6 +19,5 @@ def allowed_users(allowed_roles=[]):
                 return view_func(request, *args, **kwargs)
             else:
                 return redirect('/')
-                return HttpResponse('You are not authorised, Admin permissions are needed')
         return wrapper_func
     return decorator
