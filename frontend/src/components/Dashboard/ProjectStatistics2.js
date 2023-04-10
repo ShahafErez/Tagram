@@ -37,7 +37,6 @@ export default function ProjectStatistics2({ project_id }) {
     fetch("/api/project/get-algorithm-output?project_id=" + project_id)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         // navigate to output page with project_id
       });
   };
@@ -74,12 +73,10 @@ export default function ProjectStatistics2({ project_id }) {
       }
       output[i] = objMap;
     }
-    console.log(output);
     return output;
   }
 
   function calcKappaForLabels() {
-    console.log(UsersAnnotationStatistics);
     let tagCounts = {};
     let numObjects = Object.keys(UsersAnnotationStatistics).length;
 
@@ -97,12 +94,10 @@ export default function ProjectStatistics2({ project_id }) {
       }
     }
 
-    console.log(tagCounts);
     setTagKappa(tagCounts);
   }
 
   function getUsersAnnotationStatistics() {
-    console.log(annotators);
     for (const u in annotators) {
       //get user annotations
       fetch(
@@ -129,7 +124,6 @@ export default function ProjectStatistics2({ project_id }) {
     fetch("/api/users/users-by-project/?project=" + project_id)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         // get users annotation
         setAnnotators(data.map((obj) => obj.username));
       });
@@ -146,9 +140,8 @@ export default function ProjectStatistics2({ project_id }) {
       <h2>Annotation Information about Project {project_id}</h2> <br></br>
       <h2>Tags</h2>
       <div>
-        {/* <ProjectTagsTable data={tagMap} updateTagsPreview={updateTagsPreview} /> */}
         {Object.keys(tagKappa).length > 0 && (
-          <ProjectTagsTable2 data={tagKappa} />
+          <ProjectTagsTable2 data={tagKappa} threshold={3} />
         )}
       </div>
       <h2>Relations</h2>
