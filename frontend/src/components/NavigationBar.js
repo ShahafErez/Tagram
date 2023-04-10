@@ -3,9 +3,9 @@ import { ReactSession } from "react-client-session";
 
 export default function NavigationBar() {
   let username = ReactSession.get("username");
-
-  return (
-    <nav
+    if('admins' == request.user.groups.all()[0].name){  
+      return (
+      <nav
       class="navbar navbar-expand-lg border-bottom border border-secondary"
       style={{
         backgroundColor: "white",
@@ -58,4 +58,5 @@ export default function NavigationBar() {
       </ul>
     </nav>
   );
+}
 }
