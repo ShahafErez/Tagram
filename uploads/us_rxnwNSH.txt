@@ -1,0 +1,6 @@
+As a player I want to login
+As a manager I want to send messages
+As a manager I want to call my employees
+As a player I want to logout
+As a manager I want to send data
+As a manager I want to call all employees

@@ -93,7 +93,12 @@ export default function ProjectPage() {
   }
 
   function getAnnotationsDetails(arrayLength) {
-    fetch("/api/project/get-annotation-of-tagger?project_id=" + id +"&tagger=" + username).then((response) => {
+    fetch(
+      "/api/project/get-annotation-of-tagger?project_id=" +
+        id +
+        "&tagger=" +
+        username
+    ).then((response) => {
       if (response.status == 204) {
         // annotations not found, setting empty arrays
         setTagCurrentState(new Array(arrayLength).fill([]));
@@ -102,6 +107,7 @@ export default function ProjectPage() {
       } else if (response.status == 200) {
         // annotations found
         return response.json().then((data) => {
+          console.log(data);
           setTagCurrentState(data.tags);
 
           setRelationSummary(data.relations);

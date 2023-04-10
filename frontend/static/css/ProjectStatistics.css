@@ -14,3 +14,21 @@
   width: 800px;
   height: 400px;
 }
+
+.grid-container {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 70%; /*Make the grid smaller than the container*/
+  gap: 30px;
+  /* background-color: #2196F3; */
+  padding: 10px;
+  /* margin-top: "5px";
+  margin-bottom: "20px"; */
+}
+
+.grid-container > div {
+  background-color: rgb(255, 250, 237);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}

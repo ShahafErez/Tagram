@@ -6,12 +6,14 @@ import ProjectRelationsTable from "./ProjectRelationsTable";
 import ProjectTagsTable from "./ProjectTagsTable";
 
 export default function ProjectStatistics({ data }) {
+  console.log(data);
   const [relArray, setRelArray] = useState([]);
   const [tagsArray, settagsArray] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [allRelations, setAllRelations] = useState([]);
   const [allCoOccurrence, setAllCoOccurence] = useState({});
   const [inputForAlgorithm, setInputForAlgorithm] = useState("");
+  const [newtagmap, setnewtagmap] = useState(new Map());
 
   const updateTagsPreview = (newTags) => {
     setAllTags(newTags);
@@ -38,24 +40,11 @@ export default function ProjectStatistics({ data }) {
       }
     }
     settagsArray(tempTagsArray);
+    getTagMap();
   }, []);
-  //TODO: after projects will be save by user, add "User consent range" to each label (chen)
 
   /* ****************************** General ****************************** */
   const project_id = data.length > 0 ? data[0].project_id : null;
-
-  function AccordionItem({ title, children }) {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-      <div className="accordion-item">
-        <div className="accordion-header" onClick={() => setIsOpen(!isOpen)}>
-          {title}
-        </div>
-        {isOpen && <div className="accordion-content">{children}</div>}
-      </div>
-    );
-  }
 
   const sendProjectToAlgorithm = () => {
     //TODO: add loading to button
@@ -78,50 +67,6 @@ export default function ProjectStatistics({ data }) {
     return str;
   };
 
-  const checkChange = (category, index, title) => {
-    if (category === "Tags") {
-      let checkBox = document.getElementById(getCheckboxIndex(category, index));
-      console.log(checkBox.id, checkBox.checked, title, checkBox.value);
-      //TODO: bug when checking something new
-      if (checkBox.checked == true) {
-        checkBox.checked = true;
-        // add to allTags
-        addToAllTags(title, checkBox.value);
-      } else {
-        // remove from allTags
-        checkBox.checked = false;
-        removeFromAllTags(title, checkBox.value);
-      }
-    }
-  };
-
-  const getCheckboxIndex = (category, index) => {
-    if (category === "Tags") {
-      return `${category}_${index}`;
-    }
-  };
-
-  const aboveThreshold = (token_, category, tag_, thres) => {
-    // TODO: change to be by user
-    // TODO: check threshold
-
-    // add to arrays
-    if (category === "Tags") {
-      let val = allTags[tag_];
-      if (val) {
-        if (!val.has(token_)) {
-          const temp = val.add(token_);
-          setAllTags({ ...allTags, [tag_]: temp });
-        }
-      } else {
-        const newSet = new Set();
-        newSet.add(token_);
-        setAllTags({ ...allTags, [tag_]: newSet });
-      }
-    }
-    return true;
-  };
-
   /* ****************************** Tags ****************************** */
 
   const tagMap = new Map();
@@ -140,91 +85,28 @@ export default function ProjectStatistics({ data }) {
     }
   }
 
+  const getUsersAnnotationStatistics = (users) => {
+    console.log(tagMap);
+    //get annotation for each user
+  };
+
+  const getTagMap = () => {
+    // get all annotators in project
+    fetch("/api/users/users-by-project/?project=" + project_id)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        // get users annotation
+        getUsersAnnotationStatistics(data.map((obj) => obj.user));
+      })
+      .then((data) => {
+        console.log(data);
+      });
+  };
+
   function getAllTags() {
     return allTags.join(", ");
   }
-
-  // const accordionItems = Array.from(tagMap.values()).map((tagObj) => (
-  //   <AccordionItem key={tagObj.tag} title={tagObj.tag}>
-  //     <ul>
-  //       {tagObj.tokens.map((token, index) => (
-  //         <li key={index}>{token}</li>
-  //       ))}
-  //     </ul>
-  //   </AccordionItem>
-  // ));
-
-  const getTotalTagsByLabel = (tag, token) => {
-    const val = tagMap.get(tag).tokens;
-    // console.log("val is: "+val);
-    if (val) {
-      return val.filter((x) => x == token).length;
-    }
-    return 0;
-  };
-
-  const addToAllTags = (title, value) => {
-    let val = allTags[title];
-    if (val && val.size > 0) {
-      if (!val.has(value)) {
-        const temp = val.add(value);
-        setAllTags({ ...allTags, [title]: temp });
-      }
-    } else {
-      const newSet = new Set();
-      newSet.add(value);
-      setAllTags({ ...allTags, [title]: newSet });
-    }
-  };
-
-  const removeFromAllTags = (title, value) => {
-    let val = allTags[title];
-    if (val) {
-      if (val.has(value)) {
-        const temp = val.delete(value);
-        setAllTags({ ...allTags, [title]: temp });
-      }
-    }
-  };
-
-  const accordionItemsTags = Array.from(tagMap.values()).map((tagObj) => {
-    // Create a new set of unique tokens
-    const uniqueTokens = [...new Set(tagObj.tokens)];
-    console.log(tagMap);
-    return (
-      <AccordionItem key={tagObj.tag} title={tagObj.tag}>
-        <ul>
-          {uniqueTokens.map((token, index) => (
-            <li key={index}>
-              {/* {token}  */}
-              {/* <Badge bg="primary" pill>
-                {getTotalTagsByLabel(tagObj.tag,token)}
-              </Badge> */}
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value={token}
-                id={getCheckboxIndex("Tags", index)}
-                // checked={aboveThreshold(token, "Tags", tagObj.tag, 0.6)}
-                onClick={() => {
-                  checkChange("Tags", index, tagObj.tag);
-                }}
-              />
-              <label
-                class="form-check-label"
-                for={getCheckboxIndex("Tags", index)}
-              >
-                {token}
-              </label>
-              <Badge bg="primary" pill>
-                {getTotalTagsByLabel(tagObj.tag, token)}
-              </Badge>
-            </li>
-          ))}
-        </ul>
-      </AccordionItem>
-    );
-  });
 
   /* ****************************** Relations ****************************** */
 
@@ -232,33 +114,28 @@ export default function ProjectStatistics({ data }) {
     return JSON.stringify(allRelations);
   }
 
-  //   let tempRelArray = [];
-  //   for (const item of data) {
-  //     for (const rel of item.relations) {
-  //       //   setRelArray([...relArray, rel]);
-  //       tempRelArray.push(rel);
-  //     }
-  //   }
-  //   setRelArray(tempRelArray);
-
+  /* ****************************** Return ****************************** */
   return (
-    <div style={{ margintTop: "5px", marginBottom: "20px" }}>
+    <div class="grid-container">
       <br></br>
       <hr class="hr" />
       <br></br>
       <h2>Annotation Information about Project {project_id}</h2> <br></br>
       <h2>Tags</h2>
       {/* <Accordion>{accordionItemsTags}</Accordion> */}
-      <ProjectTagsTable data={tagMap} updateTagsPreview={updateTagsPreview} />
-      <br></br>
+      <div>
+        <ProjectTagsTable data={tagMap} updateTagsPreview={updateTagsPreview} />
+      </div>
       <h2>Relations</h2>
-      <ProjectRelationsTable
-        data={relArray}
-        updateRelationsPreview={updateRelationsPreview}
-      />
-      <br></br>
-      <h2>TODO: Co-Occcurrence</h2>
-      <br></br>
+      <div>
+        <ProjectRelationsTable
+          data={relArray}
+          updateRelationsPreview={updateRelationsPreview}
+        />
+      </div>
+      <div>
+        <h2>TODO: Co-Occcurrence</h2>
+      </div>
       <div>
         <h4 style={{ margintTop: "5px", marginBottom: "20px" }}>
           Algorithm Input Preview

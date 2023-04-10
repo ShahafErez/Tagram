@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ProjectStatistics from "./ProjectStatistics";
+import ProjectStatistics2 from "./ProjectStatistics2";
 import { Button } from "react-bootstrap";
 
 export default function AdminDashboardProjectTable({ data }) {
   const [currentProjectStatistics, setCurrentProjectStatistics] = useState([]);
+  const [currentProject, setCurrentProject] = useState("");
   useEffect(() => {
     console.log("in AdminDashboardProjectTable");
     // console.log(data);
   }, []);
 
   const showProjectStatistics = (id) => {
+    setCurrentProject(id);
     fetch("/api/project/get-statistics?project_id=" + id)
       .then((response) => response.json())
       .then((data) => {
@@ -59,7 +62,8 @@ export default function AdminDashboardProjectTable({ data }) {
       <div>
         <br></br>
         {currentProjectStatistics.length > 0 && (
-          <ProjectStatistics data={currentProjectStatistics} />
+          // <ProjectStatistics data={currentProjectStatistics} />
+          <ProjectStatistics2 project_id={currentProject} />
         )}
       </div>
     </div>

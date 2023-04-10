@@ -5,6 +5,8 @@ import { Button } from "react-bootstrap";
 export default function ProjectTagsTable({ data, updateTagsPreview }) {
   const [checkedRows, setCheckedRows] = useState([]);
 
+  console.log("in ProjectTagsTable");
+  // console.log(data);
   const handleCheckboxChange = (event, token) => {
     if (event.target.checked) {
       setCheckedRows([...checkedRows, token]);
