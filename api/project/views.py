@@ -224,3 +224,20 @@ class GetAllAnnotation(APIView):
                         return Response(data, status=status.HTTP_200_OK)
                     return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
+    
+
+class GetByProjectManager(APIView):
+    """
+    Getting projects by project manager name
+    """
+    lookup_url_kwarg_project_manager = 'manager'
+
+    def get(self, request, format=None):
+        project_manager = request.GET.get(self.lookup_url_kwarg_project_manager)
+        if project_manager != None:
+            project_query = Project.objects.filter(project_manager=project_manager)
+            if len(project_query) > 0:
+                data = [ProjectSerializer(project).data for project in project_query]
+                return Response(data, status=status.HTTP_200_OK)
+            return Response("no projects found", status=status.HTTP_204_NO_CONTENT)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)

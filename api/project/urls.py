@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GetAllAnnotation, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation
+from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation
 
 
 urlpatterns = [
@@ -7,6 +7,7 @@ urlpatterns = [
     path('get-all', ProjectView.as_view()),
     path('create', CreateProjectView.as_view()),
     path('get', GetProject.as_view()),
+    path('get-by-project-manager', GetByProjectManager.as_view()),
     # file
     path('uploadfile', UploadFile.as_view()),
     path('get-file', GetFile.as_view()),
