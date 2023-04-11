@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation, UpdateAnnotationStatus, GetStatistics, SendToAlgorithm
+from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation, UpdateAnnotationStatus, SendToAlgorithm
 
 
 
@@ -9,8 +9,6 @@ urlpatterns = [
     path('get-all', ProjectView.as_view()),
     path('create', CreateProjectView.as_view()),
     path('get', GetProject.as_view()),
-
-    path('get-statistics', GetStatistics.as_view()),
 
     path('get-by-project-manager', GetByProjectManager.as_view()),
 
