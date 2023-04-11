@@ -3,8 +3,9 @@ from django.views.decorators.csrf import csrf_protect
 from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
+from .decorators import unauthenticated_user, allowed_users, is_admin
 import requests
 
 
@@ -12,11 +13,14 @@ import requests
 def index(request, *args, **kwargs):
     return render(request, 'frontend/index.html')
 
+@allowed_users(allowed_roles=['admins'])
+def admin_index(request, *args, **kwargs):
+    return render(request, 'frontend/index.html')
 
 @csrf_protect
 def loginpage(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return redirect('/')
+        return redirect('/')       
     else:
         if request.method == 'POST':
             username1 = request.POST.get('username')
@@ -27,6 +31,7 @@ def loginpage(request, *args, **kwargs):
                 login(request, user)
                 context = {}
                 request.session['username'] = username1
+                request.session['is_admin'] = is_admin(request)
                 return redirect('/')
             else:
                 messages.info(request, "Username or password is incorrect")
@@ -41,6 +46,7 @@ def logoutUser(request):
 
 
 @csrf_protect
+@unauthenticated_user
 def register(request, *args, **kwargs):
     if request.user.is_authenticated:
         return redirect('/')
@@ -58,6 +64,7 @@ def register(request, *args, **kwargs):
                     login(request, user)
                     context = {}
                     request.session['username'] = username1
+                    request.session['is_admin'] = is_admin(request)
                     return redirect('/')
                 messages.success(request, 'Hi ' + username1 +
                                  "! You can start your annotation project now!")

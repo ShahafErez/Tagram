@@ -10,13 +10,17 @@ export default function HomePage() {
         return response.json();
       })
       .then((data) => {
-        ReactSession.set("username", data);
+        ReactSession.set("username", data[0]);
+        ReactSession.set("is_admin", data[1]);
         console.log(data);
         fetch("/api/users/create-user", {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            username: data
+            username: data[0],
+            is_admin: data[1]
+            
+
           }), 
         });
       })
@@ -33,13 +37,6 @@ export default function HomePage() {
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
         Welcome to Tagram
       </h2>
-      <div>
-        <Link to="/create">
-          <button type="button" class="btn btn-primary">
-            Create a new project
-          </button>
-        </Link>
-      </div>
     </div>
   );
 }
