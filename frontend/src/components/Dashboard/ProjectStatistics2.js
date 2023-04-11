@@ -11,6 +11,8 @@ export default function ProjectStatistics2({ project_id }) {
   console.log("--- in ProjectStatistics2---");
 
   const [annotators, setAnnotators] = useState([]);
+  const [tagsForAlgorithm, setTagsForAlgorithm] = useState([]);
+  const [relationsForAlgorithm, setRelationsForAlgorithm] = useState([]);
   /*--- for tags ---*/
   const [UsersTagsAnnotationStatistics, setUsersTagsAnnotationStatistics] =
     useState({});
@@ -46,14 +48,48 @@ export default function ProjectStatistics2({ project_id }) {
 
   /* ****************************** General ****************************** */
 
+  //TODO: remove function after algorithm is ready.
+  function formatAlgorithmOutput(outputObj) {
+    let outputStr = "Algorithm Output: \n";
+    for (let key in outputObj) {
+      let pair = key
+        .replace(/[()]/g, "")
+        .split(",")
+        .map((x) => x.trim());
+      outputStr += `"${pair[0]}"<-->"${pair[1]}" : ${outputObj[key]} \n`;
+    }
+    return outputStr;
+  }
+
   const sendProjectToAlgorithm = () => {
     //TODO: add loading to button
     // send data to algorithm
-    fetch("/api/project/get-algorithm-output?project_id=" + project_id)
+    fetch("/api/project/send-to-algorithm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json ; charset=utf-8" },
+      body: JSON.stringify({
+        project_id: project_id,
+        tags: tagsForAlgorithm,
+        relations: relationsForAlgorithm,
+      }),
+    })
+      // Adding the new file to the project
       .then((response) => response.json())
       .then((data) => {
         // navigate to output page with project_id
+        console.log(data);
+        alert(formatAlgorithmOutput(data));
       });
+  };
+
+  const getAlgorithmInputPreview = () => {
+    let str = "";
+    str += "Tags: ";
+    str += tagsForAlgorithm.join(" , ");
+    str += "     "; //TODO: remove
+    str += "\nRelations: ";
+    str += relationsForAlgorithm.join(" , ");
+    return str;
   };
 
   /* ****************************** Tags ****************************** */
@@ -131,7 +167,6 @@ export default function ProjectStatistics2({ project_id }) {
   function calcKappaForRelations() {
     const relCounts = {};
     let totalCount = 0;
-
     // count occurrences of each relationship type
     for (const key in UsersRelationsAnnotationStatistics) {
       const innerObj = UsersRelationsAnnotationStatistics[key];
@@ -150,8 +185,9 @@ export default function ProjectStatistics2({ project_id }) {
     // calculate average of relationship type occurrences
     const avgRelCounts = {};
     for (const relType in relCounts) {
-      console.log(relType);
-      avgRelCounts[relType] = relCounts[relType] / totalCount;
+      if (relType !== "undefined") {
+        avgRelCounts[relType] = relCounts[relType] / totalCount;
+      }
     }
 
     setRelKappa(avgRelCounts);
@@ -246,16 +282,44 @@ export default function ProjectStatistics2({ project_id }) {
       <h2>Tags</h2>
       <div>
         {Object.keys(tagKappa).length > 0 && (
-          <ProjectTagsTable2 data={tagKappa} threshold={3} />
+          <ProjectTagsTable2
+            data={tagKappa}
+            threshold={3}
+            setTagsForAlgorithm={setTagsForAlgorithm}
+          />
         )}
       </div>
       <h2>Relations</h2>
       <div>
         {Object.keys(relKappa).length > 0 && (
-          <ProjectRelationsTable2 data={relKappa} threshold={0.7} />
+          <ProjectRelationsTable2
+            data={relKappa}
+            threshold={0.7}
+            setRelationsForAlgorithm={setRelationsForAlgorithm}
+          />
         )}
       </div>
-      <div>{/* <h2>TODO: Co-Occcurrence</h2> */}</div>
+      <h2>Algorithm Input Preview</h2>
+      <div>
+        <input
+          id="Algorithm_Input_Preview"
+          class="Algorithm_Input_Preview"
+          type="text"
+          placeholder={getAlgorithmInputPreview()}
+          disabled="true"
+        />
+      </div>
+      <div>
+        <div>
+          <button
+            type="button"
+            class="btn btn-info"
+            onClick={() => sendProjectToAlgorithm()}
+          >
+            Send Data to Algorithm!
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

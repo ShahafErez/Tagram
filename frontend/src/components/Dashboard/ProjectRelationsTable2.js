@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "../../../static/css/ProjectStatistics.css";
 
-export default function ProjectRelationsTable2({ data, threshold }) {
+export default function ProjectRelationsTable2({
+  data,
+  threshold,
+  setRelationsForAlgorithm,
+}) {
   const [checkedRows, setCheckedRows] = useState([]);
 
   useEffect(() => {
     setCheckedRows(Object.keys(data).filter((key) => data[key] > threshold));
   }, []);
+
+  useEffect(() => {
+    setRelationsForAlgorithm(checkedRows);
+  }, [checkedRows]);
 
   const handleCheckboxChange = (event, token) => {
     if (event.target.checked) {

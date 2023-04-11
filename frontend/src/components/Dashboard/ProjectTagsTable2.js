@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import "../../../static/css/ProjectStatistics.css";
 import { Button } from "react-bootstrap";
 
-export default function ProjectTagsTable2({ data, threshold }) {
+export default function ProjectTagsTable2({
+  data,
+  threshold,
+  setTagsForAlgorithm,
+}) {
   const [checkedRows, setCheckedRows] = useState([]);
 
   useEffect(() => {
     setCheckedRows(Object.keys(data).filter((key) => data[key] > threshold));
   }, []);
+
+  useEffect(() => {
+    setTagsForAlgorithm(checkedRows);
+  }, [checkedRows]);
 
   const handleCheckboxChange = (event, token) => {
     if (event.target.checked) {

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation, UpdateAnnotationStatus, GetStatistics, GetAlgorithmOutput
+from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation, UpdateAnnotationStatus, GetStatistics, SendToAlgorithm
 
 
 
@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('get-annotation', GetAnnotation.as_view()),
     # algorithm
-    path('get-algorithm-output', GetAlgorithmOutput.as_view()),
+    path('send-to-algorithm', SendToAlgorithm.as_view()),
 
 
     path('get-annotation-of-tagger', GetAnnotation.as_view()),
