@@ -17,7 +17,10 @@ export default function HomePage() {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            username: data
+            username: data[0],
+            is_admin: data[1]
+            
+
           }), 
         });
       })
