@@ -5,15 +5,24 @@ import Badge from "react-bootstrap/Badge";
 import ProjectRelationsTable from "./ProjectRelationsTable";
 import ProjectTagsTable from "./ProjectTagsTable";
 import ProjectTagsTable2 from "./ProjectTagsTable2";
+import ProjectRelationsTable2 from "./ProjectRelationsTable2";
 
 export default function ProjectStatistics2({ project_id }) {
   console.log("--- in ProjectStatistics2---");
-  const [annotators, setAnnotators] = useState([]);
-  const [UsersAnnotationStatistics, setUsersAnnotationStatistics] = useState(
-    {}
-  );
-  const [tagKappa, setTagKappa] = useState({});
 
+  const [annotators, setAnnotators] = useState([]);
+  /*--- for tags ---*/
+  const [UsersTagsAnnotationStatistics, setUsersTagsAnnotationStatistics] =
+    useState({});
+  const [tagKappa, setTagKappa] = useState({});
+  /*--- for relations ---*/
+  const [
+    UsersRelationsAnnotationStatistics,
+    setUsersRelationsAnnotationStatistics,
+  ] = useState({});
+  const [relKappa, setRelKappa] = useState({});
+
+  /* -- useEffects -- */
   useEffect(() => {
     //set project's annotators array
     getUsersByProject();
@@ -21,13 +30,19 @@ export default function ProjectStatistics2({ project_id }) {
 
   useEffect(() => {
     // get statistics: {user:{statistics}}
-    getUsersAnnotationStatistics();
+    getUsersTagsAnnotationStatistics();
+    getUsersRelationsAnnotationStatistics();
   }, [annotators]);
 
   useEffect(() => {
     //calc kappa for each label
     calcKappaForLabels();
-  }, [UsersAnnotationStatistics]);
+  }, [UsersTagsAnnotationStatistics]);
+
+  useEffect(() => {
+    //calc kappa for each label
+    calcKappaForRelations();
+  }, [UsersRelationsAnnotationStatistics]);
 
   /* ****************************** General ****************************** */
 
@@ -59,7 +74,7 @@ export default function ProjectStatistics2({ project_id }) {
   //     }
   //   }
 
-  function processUserAnnotation(input) {
+  function processUserTagAnnotation(input) {
     let output = {};
     for (let i = 0; i < input.length; i++) {
       let objArr = input[i];
@@ -76,12 +91,79 @@ export default function ProjectStatistics2({ project_id }) {
     return output;
   }
 
-  function calcKappaForLabels() {
-    let tagCounts = {};
-    let numObjects = Object.keys(UsersAnnotationStatistics).length;
+  function processUserRelationAnnotation(inp) {
+    const indexDict = {};
 
-    for (let key in UsersAnnotationStatistics) {
-      let obj = UsersAnnotationStatistics[key];
+    for (let i = 0; i < inp.length; i++) {
+      const { tag, From, To } = inp[i];
+      const { index: fromIndex } = From;
+      const { index: toIndex } = To;
+
+      if (!indexDict.hasOwnProperty(fromIndex)) {
+        indexDict[fromIndex] = {};
+      }
+      if (!indexDict.hasOwnProperty(toIndex)) {
+        indexDict[toIndex] = {};
+      }
+
+      if (!indexDict[fromIndex].hasOwnProperty(tag)) {
+        indexDict[fromIndex][tag] = [];
+      }
+      if (!indexDict[toIndex].hasOwnProperty(tag)) {
+        indexDict[toIndex][tag] = [];
+      }
+
+      indexDict[fromIndex][tag].push([
+        [From.start, From.end],
+        [To.start, To.end],
+      ]);
+      if (fromIndex !== toIndex) {
+        indexDict[toIndex][tag].push([
+          [From.start, From.end],
+          [To.start, To.end],
+        ]);
+      }
+    }
+
+    return indexDict;
+  }
+
+  function calcKappaForRelations() {
+    const relCounts = {};
+    let totalCount = 0;
+
+    // count occurrences of each relationship type
+    for (const key in UsersRelationsAnnotationStatistics) {
+      const innerObj = UsersRelationsAnnotationStatistics[key];
+      for (const innerKey in innerObj) {
+        for (const rel in innerObj[innerKey]) {
+          const relType = rel;
+          if (!relCounts[relType]) {
+            relCounts[relType] = 0;
+          }
+          relCounts[relType]++;
+          totalCount++;
+        }
+      }
+    }
+
+    // calculate average of relationship type occurrences
+    const avgRelCounts = {};
+    for (const relType in relCounts) {
+      console.log(relType);
+      avgRelCounts[relType] = relCounts[relType] / totalCount;
+    }
+
+    setRelKappa(avgRelCounts);
+  }
+
+  function calcKappaForLabels() {
+    //TODO: add the correct calculation for kappa
+    let tagCounts = {};
+    let numObjects = Object.keys(UsersTagsAnnotationStatistics).length;
+
+    for (let key in UsersTagsAnnotationStatistics) {
+      let obj = UsersTagsAnnotationStatistics[key];
       for (let objKey in obj) {
         let tagObj = obj[objKey];
         for (let tagKey in tagObj) {
@@ -97,7 +179,7 @@ export default function ProjectStatistics2({ project_id }) {
     setTagKappa(tagCounts);
   }
 
-  function getUsersAnnotationStatistics() {
+  function getUsersTagsAnnotationStatistics() {
     for (const u in annotators) {
       //get user annotations
       fetch(
@@ -108,17 +190,40 @@ export default function ProjectStatistics2({ project_id }) {
       )
         .then((response) => response.json())
         .then((data) => {
-          return processUserAnnotation(data.tags);
+          return processUserTagAnnotation(data.tags);
         })
         .then((data) => {
-          setUsersAnnotationStatistics({
-            ...UsersAnnotationStatistics,
+          setUsersTagsAnnotationStatistics({
+            ...UsersTagsAnnotationStatistics,
             [annotators[u]]: data,
           });
         });
     }
   }
 
+  function getUsersRelationsAnnotationStatistics() {
+    for (const u in annotators) {
+      //get user annotations
+      fetch(
+        "/api/project/get-annotation-of-tagger?project_id=" +
+          project_id +
+          "&tagger=" +
+          annotators[u]
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          return processUserRelationAnnotation(data.relations);
+        })
+        .then((data) => {
+          setUsersRelationsAnnotationStatistics(
+            (UsersRelationsAnnotationStatistics) => ({
+              ...UsersRelationsAnnotationStatistics,
+              [annotators[u]]: data,
+            })
+          );
+        });
+    }
+  }
   function getUsersByProject() {
     // get all annotators in project
     fetch("/api/users/users-by-project/?project=" + project_id)
@@ -145,10 +250,12 @@ export default function ProjectStatistics2({ project_id }) {
         )}
       </div>
       <h2>Relations</h2>
-      <div></div>
       <div>
-        <h2>TODO: Co-Occcurrence</h2>
+        {Object.keys(relKappa).length > 0 && (
+          <ProjectRelationsTable2 data={relKappa} threshold={0.7} />
+        )}
       </div>
+      <div>{/* <h2>TODO: Co-Occcurrence</h2> */}</div>
     </div>
   );
 }
