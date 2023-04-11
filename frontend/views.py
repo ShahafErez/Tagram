@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from .forms import CreateUserForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, is_admin
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
-from .decorators import unauthenticated_user, allowed_users
+from .decorators import unauthenticated_user, allowed_users, is_admin
 import requests
 
 

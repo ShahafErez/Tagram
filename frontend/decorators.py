@@ -21,3 +21,11 @@ def allowed_users(allowed_roles=[]):
                 return redirect('/')
         return wrapper_func
     return decorator
+
+def is_admin(request):
+        if request.user.groups.exists():
+            group = request.user.groups.all()[0].name
+            if 'admins' == request.user.groups.all()[0].name:
+                return True
+            else:
+                return False
