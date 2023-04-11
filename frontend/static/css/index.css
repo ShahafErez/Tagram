@@ -46,6 +46,11 @@ h2 {
   font-size: 18px;
 }
 
+.annotate .text {
+  text-align: left;
+  margin-left: 5px;
+}
+
 .card.project-preview h5 {
   font-weight: 400;
 }

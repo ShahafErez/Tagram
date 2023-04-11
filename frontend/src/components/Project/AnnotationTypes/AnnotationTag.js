@@ -66,32 +66,34 @@ export default function AnnotationTag(props) {
             class="border border-secondary rounded"
             style={{ marginTop: "15px" }}
           >
-            {file.map((sentence, key) => {
-              return (
-                <TokenAnnotator
-                  style={{
-                    padding: "5px",
-                    lineHeight: 1.5,
-                  }}
-                  tokens={sentence.split(" ")}
-                  value={currentState[key]}
-                  onChange={(e) => {
-                    // checking if a value was un-selected
-                    if (e.length < currentState[key].length) {
-                      unselectValue(key, e);
-                    } else {
-                      // new value was added
-                      handleValueChange(key, e);
-                    }
-                  }}
-                  getSpan={(span) => ({
-                    ...span,
-                    tag: tag,
-                    color: TAG_COLORS[tag],
-                  })}
-                />
-              );
-            })}
+            <div class="text">
+              {file.map((sentence, key) => {
+                return (
+                  <TokenAnnotator
+                    style={{
+                      padding: "5px",
+                      lineHeight: 1.5,
+                    }}
+                    tokens={sentence.split(" ")}
+                    value={currentState[key]}
+                    onChange={(e) => {
+                      // checking if a value was un-selected
+                      if (e.length < currentState[key].length) {
+                        unselectValue(key, e);
+                      } else {
+                        // new value was added
+                        handleValueChange(key, e);
+                      }
+                    }}
+                    getSpan={(span) => ({
+                      ...span,
+                      tag: tag,
+                      color: TAG_COLORS[tag],
+                    })}
+                  />
+                );
+              })}
+            </div>
           </div>
 
           <h4>Selected Tags</h4>
