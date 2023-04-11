@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation
+from .views import GetAllAnnotation, GetByProjectManager, ProjectView, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotation, UpdateAnnotationStatus
 
 
 urlpatterns = [
@@ -15,5 +15,7 @@ urlpatterns = [
     # annotations
     path('save-annotation', SaveAnnotation.as_view()),
     path('get-annotation-of-tagger', GetAnnotation.as_view()),
-    path('get-all-anotations', GetAllAnnotation.as_view())
+    path('get-all-anotations', GetAllAnnotation.as_view()),
+    path('edit-annotation-status', UpdateAnnotationStatus.as_view()),
+
 ]
