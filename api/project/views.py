@@ -1,13 +1,9 @@
-from django.shortcuts import render
 from rest_framework import generics, status
-from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer
+from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer
 from .models import Project, File, Annotation
 from api.meta_tagging.models import MetaTagging
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import JsonResponse
-import logging
-from .forms import UploadFile
 import json
 
 
@@ -82,7 +78,7 @@ class GetProject(APIView):
                 data['is_project_manager'] = self.request.session.session_key == project_query[0].project_manager
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid post data, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': 'Invalid path, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadFile(APIView):
@@ -98,7 +94,9 @@ class UploadFile(APIView):
                 project = project_query[0]
                 file = File(file=request.FILES['myFile'], project=project)
                 file.save()
-                return Response("File saved", status=status.HTTP_200_OK)
+                return Response("File saved", status=status.HTTP_201_CREATED)
+            return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetProcessedFile(APIView):
@@ -107,7 +105,7 @@ class GetProcessedFile(APIView):
     """
 
     def post(self, request, format=None):
-        new_file = file = request.FILES['myFile']
+        new_file = request.FILES['myFile']
         f = new_file.open('r')
         text = f.read()
         return Response(text, status=status.HTTP_200_OK)
@@ -126,16 +124,16 @@ class GetFile(APIView):
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
-                if project != None:
-                    project_query = File.objects.filter(project=project)
-                    if len(project_query) > 0:
-                        data = FileSerializer(project_query[0]).data
-                        with open(f".{data['file']}", 'r') as f:
-                            text = f.read()
-                            data['text'] = text
-                        return Response(data, status=status.HTTP_200_OK)
-                    return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid post data, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
+                file_query = File.objects.filter(project=project)
+                if len(file_query) > 0:
+                    data = FileSerializer(file_query[0]).data
+                    with open(f".{data['file']}", 'r') as f:
+                        text = f.read()
+                        data['text'] = text
+                    return Response(data, status=status.HTTP_200_OK)
+                return Response({'File Not Found': 'Invalid File Id.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SaveAnnotation(APIView):
@@ -146,35 +144,63 @@ class SaveAnnotation(APIView):
 
     def post(self, request, format=None):
         data = request.data
-        if data:
-            project, file = None, None
-            project_id = data['project_id']
-            if project_id != None:
-                project_query = Project.objects.filter(project_id=project_id)
-                if (len(project_query)) > 0:
-                    project = project_query[0]
-                else:
-                    return Response({'Bad Request': 'No project was found'}, status=status.HTTP_400_BAD_REQUEST)
-            file_id = data['file_id']
-            if file_id != None:
-                file_query = File.objects.filter(file_id=file_id)
-                if (len(file_query)) > 0:
-                    file = file_query[0]
-                else:
-                    return Response({'Bad Request': 'No file was found'}, status=status.HTTP_400_BAD_REQUEST)
+        project, file = None, None
+        project_id = data['project_id']
+        file_id = data['file_id']
+        if project_id != None and file_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            file_query = File.objects.filter(file_id=file_id)
+            if (len(project_query)) > 0 and (len(file_query)) > 0:
+                project = project_query[0]
+                file = file_query[0]
+                tagger = data['tagger']
 
-            tags = json.dumps(data['tags'])
-            relations = json.dumps(data['relations'])
-            co_occcurrence = json.dumps(data['co_occcurrence'])
-            tagger = data['tagger']
+                ''' 
+                checking if the project and tagger already has a saved annotation
+                if there is- deleting and overriding it
+                '''
+                annotation_query = Annotation.objects.filter(
+                    project=project, tagger=tagger)
+                if len(annotation_query) > 0:
+                    print("yes")
+                    annotation_query.delete()
 
-            annotation = Annotation(
-                project=project, file=file, tags=tags, tagger=tagger, relations=relations, co_occcurrence=co_occcurrence)
-            annotation.save()
+                tags = json.dumps(data['tags'])
+                relations = json.dumps(data['relations'])
+                co_occcurrence = json.dumps(data['co_occcurrence'])
 
-            # return feedback to user
-            return Response("Annotation saved successfully", status=status.HTTP_201_CREATED)
-        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+                annotation = Annotation(
+                    project=project, file=file, tags=tags, tagger=tagger, relations=relations, co_occcurrence=co_occcurrence)
+                annotation.save()
+                print("00 ", annotation.project)
+                print("11 ", annotation.tagger)
+
+                return Response("Annotation saved successfully", status=status.HTTP_201_CREATED)
+            return Response({'Project Or File Not Found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find a project or a file'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateAnnotationStatus(APIView):
+    serializer_class = EditAnnotationStatusSerializer
+    lookup_url_kwarg_project_id = 'project_id'
+    lookup_url_kwarg_tagger = 'tagger'
+
+    def put(self, request, format=None):
+        data = request.data
+        annotation_new_status = data['annotation_status']
+        project_id = request.GET.get(self.lookup_url_kwarg_project_id)
+        tagger = request.GET.get(self.lookup_url_kwarg_tagger)
+        if project_id != None and tagger != None:
+            project_query = Project.objects.filter(
+                project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                if project != None:
+                    Annotation.objects.filter(
+                        project=project, tagger=tagger).update(annotation_status=annotation_new_status)
+                    return Response("Annotation status updated successfully", status=status.HTTP_202_ACCEPTED)
+                return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find project or tagger'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetAnnotation(APIView):
@@ -187,7 +213,7 @@ class GetAnnotation(APIView):
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg_project_id)
         tagger = request.GET.get(self.lookup_url_kwarg_tagger)
-        if project_id != None:
+        if project_id != None and tagger != None:
             project_query = Project.objects.filter(project_id=project_id)
             if len(project_query) > 0:
                 project = project_query[0]
@@ -202,11 +228,14 @@ class GetAnnotation(APIView):
                         data['co_occcurrence'] = json.loads(
                             data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
-                    return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
-        return Response("error", status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'No Annotation Found'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find project or tagger'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class GetAllAnnotation(APIView):
     lookup_url_kwarg_project_id = 'project_id'
+
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg_project_id)
         if project_id != None:
@@ -214,17 +243,22 @@ class GetAllAnnotation(APIView):
             if len(project_query) > 0:
                 project = project_query[0]
                 if project != None:
-                    annotation_query = Annotation.objects.filter(project=project)
+                    annotation_query = Annotation.objects.filter(
+                        project=project)
                     if len(annotation_query) > 0:
-                        data = [GetAnnotationSerializer(annotation).data for annotation in annotation_query]
+                        data = [GetAnnotationSerializer(
+                            annotation).data for annotation in annotation_query]
                         for annotation_data in data:
-                            annotation_data['tags'] = json.loads(annotation_data['tags'])
-                            annotation_data['relations'] = json.loads(annotation_data['relations'])
-                            annotation_data['co_occcurrence'] = json.loads(annotation_data['co_occcurrence'])
+                            annotation_data['tags'] = json.loads(
+                                annotation_data['tags'])
+                            annotation_data['relations'] = json.loads(
+                                annotation_data['relations'])
+                            annotation_data['co_occcurrence'] = json.loads(
+                                annotation_data['co_occcurrence'])
                         return Response(data, status=status.HTTP_200_OK)
                     return Response("no annotation found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class GetByProjectManager(APIView):
     """
@@ -233,14 +267,18 @@ class GetByProjectManager(APIView):
     lookup_url_kwarg_project_manager = 'manager'
 
     def get(self, request, format=None):
-        project_manager = request.GET.get(self.lookup_url_kwarg_project_manager)
+        project_manager = request.GET.get(
+            self.lookup_url_kwarg_project_manager)
         if project_manager != None:
-            project_query = Project.objects.filter(project_manager=project_manager)
+            project_query = Project.objects.filter(
+                project_manager=project_manager)
             if len(project_query) > 0:
-                data = [ProjectSerializer(project).data for project in project_query]
+                data = [ProjectSerializer(
+                    project).data for project in project_query]
                 return Response(data, status=status.HTTP_200_OK)
             return Response("no projects found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
     
 class GetStatistics(APIView):
     lookup_url_kwarg = 'project_id'
@@ -264,7 +302,6 @@ class GetStatistics(APIView):
                             data['relations'] = json.loads(data['relations'])
                             data['co_occcurrence'] = json.loads(
                                 data['co_occcurrence'])
-                            print(data)
                             all_data.append(data)
                         return Response(all_data, status=status.HTTP_200_OK)
                     return Response("no statistics found", status=status.HTTP_204_NO_CONTENT)
@@ -273,3 +310,4 @@ class GetStatistics(APIView):
 
 class GetAlgorithmOutput(APIView):
     lookup_url_kwarg = 'project_id'
+

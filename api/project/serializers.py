@@ -33,11 +33,16 @@ class SaveAnnotationSerializer(serializers.ModelSerializer):
     file_id = serializers.CharField(allow_blank=False)
     tagger = serializers.CharField(allow_blank=False)
 
-
     class Meta:
         model = Annotation
         fields = ('project_id', 'file_id', 'tagger', 'tags',
                   'relations', 'co_occcurrence')
+
+
+class EditAnnotationStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Annotation
+        fields = ('annotation_status')
 
 
 class GetAnnotationSerializer(serializers.ModelSerializer):
@@ -48,4 +53,4 @@ class GetAnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Annotation
         fields = ('project_id', 'file_id', 'tagger', 'tags',
-                  'relations', 'co_occcurrence')
+                  'relations', 'co_occcurrence', 'annotation_status')

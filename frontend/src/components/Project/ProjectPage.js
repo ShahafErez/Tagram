@@ -35,10 +35,13 @@ export default function ProjectPage() {
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState([]);
   const [coOccurrenceCurrentState, setCoOccurrenceCurrentState] = useState();
 
-  // optional states
+  // annotation type selected
   const [isAnnotateTags, setIsAnnotateTags] = useState(false);
   const [isAnnotateRelations, setIsAnnotateRelations] = useState(false);
   const [isAnnotateCoOccurrence, setIsAnnotateCoOccurrence] = useState(false);
+
+  // annotation status
+  const [annotationStatus, setAnnotationStatus] = useState();
 
   function getMetaTaggingDetails() {
     let meta_tagging_id = "";
@@ -104,16 +107,17 @@ export default function ProjectPage() {
         setTagCurrentState(new Array(arrayLength).fill([]));
         setRelationCurrentState(new Array(arrayLength).fill([]));
         setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
+        setAnnotationStatus("not_submitted");
       } else if (response.status == 200) {
         // annotations found
         return response.json().then((data) => {
           console.log(data);
           setTagCurrentState(data.tags);
-
           setRelationSummary(data.relations);
           setCoOccurrenceSummary(data.co_occcurrence);
           setRelationCurrentState(new Array(arrayLength).fill([]));
           setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
+          setAnnotationStatus(data.annotation_status);
         });
       }
     });
@@ -124,7 +128,7 @@ export default function ProjectPage() {
     getMetaTaggingDetails();
   }, []);
 
-  const exportToFile = () => {
+  function exportToFile() {
     const fileData = JSON.stringify({
       tags: tagCurrentState,
       relations: relationSummary,
@@ -136,9 +140,9 @@ export default function ProjectPage() {
     link.download = "allTagging.json";
     link.href = url;
     link.click();
-  };
+  }
 
-  const saveAnnotations = () => {
+  function saveAnnotations(toSubmit) {
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -150,13 +154,41 @@ export default function ProjectPage() {
         relations: relationSummary,
         co_occcurrence: coOccurrenceSummary,
       }),
-    }).then((response) => {
-      if (response.status == 201) {
-        alert("Annotation information saved");
+    })
+      .then((response) => {
+        if (response.status == 201) {
+          alert("Annotation information saved");
+        }
+        return response.json();
+      })
+      .then(() => {
+        if (toSubmit) {
+          submitAnnotations();
+        }
+      });
+  }
+
+  function submitAnnotations() {
+    fetch(
+      "/api/project/edit-annotation-status?project_id=" +
+        id +
+        "&tagger=" +
+        username,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json ; charset=utf-8" },
+        body: JSON.stringify({
+          annotation_status: "submitted",
+        }),
+      }
+    ).then((response) => {
+      if (response.status == 202) {
+        alert("Annotations submitted");
+        setAnnotationStatus("submitted");
       }
       return response.json();
     });
-  };
+  }
 
   return (
     <div>
@@ -256,23 +288,51 @@ export default function ProjectPage() {
                 />
               )}
             </div>
-            {/* save of export the selected annotations */}
             <div>
+              <i
+                class="bi bi-download"
+                onClick={exportToFile}
+                style={{
+                  marginRight: "15px",
+                  fontSize: "20px",
+                  verticalAlign: "bottom",
+                  cursor: "pointer",
+                }}
+              ></i>
               <button
                 class="btn btn-primary"
                 id="saveAllTaggingBtn"
-                onClick={saveAnnotations}
+                onClick={() => saveAnnotations(false)}
               >
-                Save All Tagging In System
+                Save
               </button>
               <button
                 id="exportAllTaggingBtn"
-                class="btn btn-primary"
-                onClick={exportToFile}
+                class="btn btn-success"
+                onClick={() => saveAnnotations(true)}
                 style={{ marginLeft: "10px" }}
               >
-                Export All Tagging to File
+                Save & Submit
               </button>
+            </div>
+            <div style={{ marginTop: "10px", fontSize: "17px" }}>
+              {annotationStatus == "not_submitted" && (
+                <div>You haven't submitted the tagging yet</div>
+              )}
+              {annotationStatus == "submitted" && (
+                <div>You have submitted tagging</div>
+              )}
+              {annotationStatus == "changes_requested" && (
+                <div style={{ color: "#e56000" }}>
+                  <i
+                    class="bi bi-exclamation-triangle"
+                    style={{
+                      marginRight: "5px",
+                    }}
+                  ></i>
+                  Changes were requested on your tagging
+                </div>
+              )}
             </div>
           </div>
         </div>

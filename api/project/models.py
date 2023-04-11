@@ -20,7 +20,8 @@ class Project(models.Model):
         max_length=8, default=generate_project_unique_code, unique=True, primary_key=True)
     title = models.CharField(max_length=500)
     description = models.CharField(max_length=5000, blank=True, default='')
-    meta_tagging = models.ForeignKey(MetaTagging, on_delete=models.SET_NULL, null=True)
+    meta_tagging = models.ForeignKey(
+        MetaTagging, on_delete=models.SET_NULL, null=True)
     project_manager = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -63,3 +64,6 @@ class Annotation(models.Model):
     relations = models.CharField(max_length=4096, null=True)
     co_occcurrence = models.CharField(max_length=4096, null=True)
     tagger = models.CharField(max_length=20, null=False)
+    # optional statuses: not_submitted, submitted, changes_requested
+    annotation_status = models.CharField(
+        max_length=20, default="not_submitted")
