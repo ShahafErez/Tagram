@@ -278,3 +278,16 @@ class GetByProjectManager(APIView):
                 return Response(data, status=status.HTTP_200_OK)
             return Response("no projects found", status=status.HTTP_204_NO_CONTENT)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+    
+
+class SendToAlgorithm(APIView):
+    def post(self, request, format=None):
+        if(request.data['project_id']):
+            lst = request.data['tags']
+            ans = {f"({lst[i]}, {lst[j]})": 0.3 for i in range(len(lst)) for j in range(i+1, len(lst))}
+            # TODO: save in DB after the acctual code is ready
+            return Response(ans, status=status.HTTP_201_CREATED)
+        return Response({'Bad Request': 'No Project Id'}, status=status.HTTP_400_BAD_REQUEST)
+
+
