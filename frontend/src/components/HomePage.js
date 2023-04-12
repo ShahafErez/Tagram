@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
 import { ReactSession } from "react-client-session";
 // import loading from '../../static/frontend/'
 
@@ -18,17 +17,14 @@ export default function HomePage() {
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
             username: data[0],
-            is_admin: data[1]
-            
-
-          }), 
+            is_admin: data[1],
+          }),
         });
       })
       .catch((error) => {
         console.log("Error:", error);
       });
   }, []);
-  
 
   return (
     <div style={{ textAlign: "center" }}>
