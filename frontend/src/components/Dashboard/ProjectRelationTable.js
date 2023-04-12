@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../../static/css/ProjectStatistics.css";
 
 export default function ProjectRelationsTable2({
   data,
@@ -39,12 +38,12 @@ export default function ProjectRelationsTable2({
   ));
 
   return (
-    <table>
+    <table class="table">
       <thead>
         <tr>
-          <th></th>
-          <th>Relation</th>
-          <th>Score</th>
+          <th scope="col"></th>
+          <th scope="col">Relation</th>
+          <th scope="col">Score</th>
         </tr>
       </thead>
       <tbody>{rows}</tbody>

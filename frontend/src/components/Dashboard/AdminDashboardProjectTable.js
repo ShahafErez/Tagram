@@ -12,16 +12,16 @@ export default function AdminDashboardProjectTable({ data }) {
   return (
     <div>
       <div>
-        <table>
+        <table class="table">
           <thead>
             <tr>
-              <th>project_id</th>
-              <th>title</th>
-              <th>description</th>
-              <th>meta_tagging</th>
-              <th>project_manager</th>
-              <th>created_at</th>
-              <th>get statistics</th>
+              <th scope="col">project_id</th>
+              <th scope="col">title</th>
+              <th scope="col">description</th>
+              <th scope="col">meta_tagging</th>
+              <th scope="col">project_manager</th>
+              <th scope="col">created_at</th>
+              <th scope="col">get statistics</th>
             </tr>
           </thead>
           <tbody>
@@ -46,8 +46,7 @@ export default function AdminDashboardProjectTable({ data }) {
           </tbody>
         </table>
       </div>
-      <div>
-        <br></br>
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
         {currentProject && <ProjectStatistics project_id={currentProject} />}
       </div>
     </div>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, Card, Button } from "react-bootstrap";
-import "../../../static/css/ProjectStatistics.css";
 import Badge from "react-bootstrap/Badge";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
@@ -256,17 +255,14 @@ export default function ProjectStatistics2({ project_id }) {
 
   /* ****************************** Return ****************************** */
   return (
-    <div class="grid-container">
-      <br></br>
-      <hr class="hr" />
-      <br></br>
+    <div>
       <h2>Annotation Information about Project {project_id}</h2> <br></br>
       <h2>Tags</h2>
       <div>
         {Object.keys(tagKappa).length > 0 && (
           <ProjectTagTable
             data={tagKappa}
-            threshold={3}
+            threshold={0}
             setTagsForAlgorithm={setTagsForAlgorithm}
           />
         )}
@@ -276,7 +272,7 @@ export default function ProjectStatistics2({ project_id }) {
         {Object.keys(relKappa).length > 0 && (
           <ProjectRelationTable
             data={relKappa}
-            threshold={0.7}
+            threshold={0}
             setRelationsForAlgorithm={setRelationsForAlgorithm}
           />
         )}
@@ -289,14 +285,16 @@ export default function ProjectStatistics2({ project_id }) {
           type="text"
           placeholder={getAlgorithmInputPreview()}
           disabled="true"
+          style={{ width: "30%", height: "200px" }}
         />
       </div>
       <div>
         <div>
           <button
             type="button"
-            class="btn btn-info"
+            class="btn btn-secondary"
             onClick={() => sendProjectToAlgorithm()}
+            style={{ marginTop: "25px" }}
           >
             Send Data to Algorithm!
           </button>

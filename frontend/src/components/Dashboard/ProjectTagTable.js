@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../../static/css/ProjectStatistics.css";
 import { Button } from "react-bootstrap";
 
 export default function ProjectTagsTable2({
@@ -40,12 +39,12 @@ export default function ProjectTagsTable2({
   ));
 
   return (
-    <table>
+    <table class="table">
       <thead>
         <tr>
-          <th></th>
-          <th>Tag</th>
-          <th>Score</th>
+          <th scope="col"></th>
+          <th scope="col">Tag</th>
+          <th scope="col">Score</th>
         </tr>
       </thead>
       <tbody>{rows}</tbody>
