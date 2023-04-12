@@ -1,29 +1,11 @@
 import React, { useEffect } from "react";
-import { ReactSession } from "react-client-session";
-// import loading from '../../static/frontend/'
+import { SessionService } from "./SessionService";
 
 export default function HomePage() {
+  // updating the seesion service
+  let sessionService = new SessionService();
   useEffect(() => {
-    fetch("/api/users/getsession")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        ReactSession.set("username", data[0]);
-        ReactSession.set("is_admin", data[1]);
-        console.log(data);
-        fetch("/api/users/create-user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({
-            username: data[0],
-            is_admin: data[1],
-          }),
-        });
-      })
-      .catch((error) => {
-        console.log("Error:", error);
-      });
+    sessionService.updateSession();
   }, []);
 
   return (
