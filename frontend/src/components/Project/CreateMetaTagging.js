@@ -98,6 +98,7 @@ export default function CreateMetaTagging(props) {
 
         <div style={{ marginTop: "20px" }}>
           <h5>Create Meta-Model</h5>
+          <h6 style={{ fontWeight: "400" }}>Please enter all wanted lebals</h6>
           <input
             class="form-control"
             type="text"

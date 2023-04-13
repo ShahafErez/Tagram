@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 export default function ProjectPreview(props) {
   let project = props.project;
-  console.log(project);
 
   return (
     <div>
