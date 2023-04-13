@@ -8,8 +8,8 @@ app_name = 'frontend'
 
 urlpatterns = [
     path('', index, name=''),
-    # path('create', admin_index), //TODO: remove from comma in deploy !!
-    path('create', index),
+    path('create', admin_index),
+    # path('create', index), // todo- access to create
     path('my-projects', index),
     path('project/<str:projectID>', index),
     path('correct', index),
