@@ -5,10 +5,9 @@ from .views import GetUsersByProject, CreateUserProjectView, CreateUserView, Get
 urlpatterns = [
     path('getsession/', GetSessionDetails.as_view()),
     path('get-all', UserView.as_view()),
-    path('get-all-user-project-mapping', UserProjectView.as_view()),
+    path('get-all-user-project-mapping', UserProjectView.as_view()), #TODO: check if needed
     path('create-user', CreateUserView.as_view()),
     path('create-user-project-mapping', CreateUserProjectView.as_view()),
     path('projects-by-username/', GetProjectsByUsername.as_view()),
-    path('users-by-project/', GetUsersByProject.as_view()),
-    #path('projects-by-manager/', GetProjectsByManager.as_view())
+    path('users-by-project/', GetUsersByProject.as_view()), #TODO: check if needed
 ]
