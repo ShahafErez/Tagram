@@ -13,7 +13,8 @@ def generate_unique_code_meta_tagging():
     return id
 
 class MetaTagging(models.Model):
-    meta_tagging_id = models.CharField(max_length=8, default=generate_unique_code_meta_tagging, unique=True, primary_key=True)
+    meta_tagging_id = models.CharField(max_length=8, default=generate_unique_code_meta_tagging, 
+                                       unique=True, primary_key=True)
     title = models.CharField(max_length=500)
 
 

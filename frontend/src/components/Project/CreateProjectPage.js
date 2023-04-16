@@ -143,7 +143,6 @@ export default function CreateProjectPage() {
     } else {
       temp_users.push(username);
     }
-    console.log("usernames", temp_users);
     setSelectedUsers(temp_users);
   }
 
@@ -368,7 +367,10 @@ export default function CreateProjectPage() {
           </div>
 
           {/* Saving is only enabled if all required fields are inserted */}
-          {title != "" && metaTaggingId != "" && selectedFile && selectedUsers.length>0 ? (
+          {title != "" &&
+          metaTaggingId != "" &&
+          selectedFile &&
+          selectedUsers.length > 0 ? (
             <button
               type="submit"
               class="btn btn-primary"

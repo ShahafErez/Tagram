@@ -111,6 +111,7 @@ export default function ProjectPage() {
       } else if (response.status == 200) {
         // annotations found
         return response.json().then((data) => {
+          console.log(data);
           setTagCurrentState(data.tags);
           setRelationSummary(data.relations);
           setCoOccurrenceSummary(data.co_occcurrence);

@@ -21,6 +21,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 class UsersInProjectSerializer(serializers.ModelSerializer):
     user = serializers.CharField(allow_blank=False)
+    username = serializers.SerializerMethodField()
     project = serializers.CharField(allow_blank=False)
     project_title = serializers.SerializerMethodField()
     project_description = serializers.SerializerMethodField()
@@ -29,7 +30,7 @@ class UsersInProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UsersInProject
-        fields = ('mapping_id', 'user', 'project', 'project_title',
+        fields = ('mapping_id', 'user', 'username','project', 'project_title',
                   'project_description', 'project_created_at', 'project_manager')
 
     def get_project_title(self, obj):
@@ -57,6 +58,12 @@ class UsersInProjectSerializer(serializers.ModelSerializer):
         project = obj.project
         if project:
             return project.project_manager
+        else:
+            return None
+    def get_username(self, obj):
+        user = obj.user
+        if user:
+            return user.username
         else:
             return None
 
