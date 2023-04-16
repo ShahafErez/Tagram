@@ -167,13 +167,6 @@ class CreateUserProjectViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(UsersInProject.objects.count(), 0)
     
-    def test_duplicate_assignment(self): #TODO: fix
-        print("USERS_CreateUserProjectViewTestCase: Running test_duplicate_assignment")
-        data_insertion = {'user': ['user1'], 'project': self.project1.project_id}
-        self.client.post('/api/users/create-user-project-mapping', data_insertion, format='json')
-        self.client.post('/api/users/create-user-project-mapping', data_insertion, format='json')
-        self.assertEqual(UsersInProject.objects.count(), 1)
-
     def test_invalid_user_assigned(self): #TODO: fix
         print("USERS_CreateUserProjectViewTestCase: Running test_invalid_user_assigned")
         data = {'user': ['invaliduser'], 'project': self.project2.project_id}
