@@ -8,13 +8,16 @@ app_name = 'frontend'
 
 urlpatterns = [
     path('', index, name=''),
-    path('create', admin_index),
-    # path('create', index), // todo- access to create
     path('my-projects', index),
-    path('project/<str:projectID>', index),
+    path('project/<str:projectId>', index),
     path('correct', index),
     path('login', loginpage),
     path('logout', logoutUser),
     path('register', register,  name='register'),
-    path('dashboard/<str:username>', index),
+    # admin_index
+    # path('create', admin_index),
+    path('create', index),
+    path('manager/dashboard/<str:username>', index),
+    path('manager/<str:projectId>', index),
+    path('manager/<str:projectId>/statistics', index),
 ]

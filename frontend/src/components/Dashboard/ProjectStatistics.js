@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Accordion, Card, Button } from "react-bootstrap";
-import Badge from "react-bootstrap/Badge";
+import { useParams } from "react-router-dom";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
 
-export default function ProjectStatistics2({ project_id }) {
-  console.log("--- in ProjectStatistics2---");
+export default function ProjectStatistics() {
+  let { projectId } = useParams();
+
+  console.log("--- in ProjectStatistics---");
 
   const [annotators, setAnnotators] = useState([]);
   const [tagsForAlgorithm, setTagsForAlgorithm] = useState([]);
@@ -47,7 +48,7 @@ export default function ProjectStatistics2({ project_id }) {
 
   function getUsersByProject() {
     // get all annotators in project
-    fetch("/api/users/users-by-project/?project=" + project_id)
+    fetch("/api/users/users-by-project/?project=" + projectId)
       .then((response) => response.json())
       .then((data) => {
         // get users annotation
@@ -75,7 +76,7 @@ export default function ProjectStatistics2({ project_id }) {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        project_id: project_id,
+        project_id: projectId,
         tags: tagsForAlgorithm,
         relations: relationsForAlgorithm,
       }),
@@ -83,7 +84,7 @@ export default function ProjectStatistics2({ project_id }) {
       // Adding the new file to the project
       .then((response) => response.json())
       .then((data) => {
-        // navigate to output page with project_id
+        // navigate to output page with projectId
         console.log(data);
         alert(formatAlgorithmOutput(data));
       });
@@ -145,13 +146,19 @@ export default function ProjectStatistics2({ project_id }) {
       //get user annotations
       fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
-          project_id +
+          projectId +
           "&tagger=" +
           annotators[u]
       )
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status == 200) {
+            return response.json();
+          }
+        })
         .then((data) => {
-          return processUserTagAnnotation(data.tags);
+          if (data != undefined) {
+            return processUserTagAnnotation(data.tags);
+          }
         })
         .then((data) => {
           setUsersTagsAnnotationStatistics({
@@ -201,17 +208,24 @@ export default function ProjectStatistics2({ project_id }) {
   }
 
   function getUsersRelationsAnnotationStatistics() {
+    console.log("annotators ", annotators);
     for (const u in annotators) {
       //get user annotations
       fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
-          project_id +
+          projectId +
           "&tagger=" +
           annotators[u]
       )
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status == 200) {
+            return response.json();
+          }
+        })
         .then((data) => {
-          return processUserRelationAnnotation(data.relations);
+          if (data != undefined) {
+            return processUserRelationAnnotation(data.relations);
+          }
         })
         .then((data) => {
           setUsersRelationsAnnotationStatistics(
@@ -256,7 +270,7 @@ export default function ProjectStatistics2({ project_id }) {
   /* ****************************** Return ****************************** */
   return (
     <div>
-      <h2>Annotation Information about Project {project_id}</h2> <br></br>
+      <h2>Annotation Information about Project {projectId}</h2> <br></br>
       <h2>Tags</h2>
       <div>
         {Object.keys(tagKappa).length > 0 && (

@@ -27,8 +27,8 @@ export class SessionService {
       })
       .then((data) => {
         ReactSession.set("username", data[0]);
-        // data[1] = true; // TODO- delete
-        ReactSession.set("is_admin", data[1]);
+        data[1] = true; // TODO- delete
+        // ReactSession.set("is_admin", data[1]);
         this.sessionSubject.next(data);
 
         fetch("/api/users/create-user", {
