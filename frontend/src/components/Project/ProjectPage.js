@@ -8,7 +8,7 @@ import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
 
 export default function ProjectPage() {
   // TODO- check if the user has permissions for this project
-  let username = ReactSession.get("username");
+  let username = useQuery().get("username");
   let { id } = useParams();
 
   const [project, setProject] = useState({
@@ -42,6 +42,10 @@ export default function ProjectPage() {
 
   // annotation status
   const [annotationStatus, setAnnotationStatus] = useState();
+
+  function useQuery() {
+    return new URLSearchParams(window.location.search);
+  }
 
   function getMetaTaggingDetails() {
     let meta_tagging_id = "";

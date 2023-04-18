@@ -36,7 +36,7 @@ export default function MyProjects2() {
                 .split(" ")[2]
                 .replace("(", "")
                 .replace(")", "");
-              navigate("/project/" + project_id);
+              navigate("/project/" + project_id + "?username=" + username);
             }}
             style={{ cursor: "pointer" }}
           >
