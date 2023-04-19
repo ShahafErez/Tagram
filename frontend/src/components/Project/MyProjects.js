@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import ProjectPreview from "./ProjectPreview";
 import { ReactSession } from "react-client-session";
 
-export default function MyProjects2() {
+export default function MyProjects() {
   let username = ReactSession.get("username");
-  console.log("my project page, username: ", username);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   // getting projects
@@ -14,7 +13,6 @@ export default function MyProjects2() {
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
-        console.log(data);
       });
   }, []);
   return (

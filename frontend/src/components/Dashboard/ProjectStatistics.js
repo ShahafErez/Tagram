@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
 
-export default function ProjectStatistics() {
-  let { projectId } = useParams();
-
-  console.log("--- in ProjectStatistics---");
+export default function ProjectStatistics(props) {
+  let project_id = props.project_id;
 
   const [annotators, setAnnotators] = useState([]);
   const [tagsForAlgorithm, setTagsForAlgorithm] = useState([]);
   const [relationsForAlgorithm, setRelationsForAlgorithm] = useState([]);
-  /* ****************************** for tags ****************************** */
+
+  // tags
   const [UsersTagsAnnotationStatistics, setUsersTagsAnnotationStatistics] =
     useState({});
   const [tagKappa, setTagKappa] = useState({});
-  /* ****************************** for relations ****************************** */
+
+  // relations
   const [
     UsersRelationsAnnotationStatistics,
     setUsersRelationsAnnotationStatistics,
   ] = useState({});
   const [relKappa, setRelKappa] = useState({});
 
-  /* ****************************** useEffects ****************************** */
+  /* useEffects */
   useEffect(() => {
     //set project's annotators array
     getUsersByProject();
@@ -44,11 +43,10 @@ export default function ProjectStatistics() {
     calcKappaForRelations();
   }, [UsersRelationsAnnotationStatistics]);
 
-  /* ****************************** General ****************************** */
-
+  /* General */
   function getUsersByProject() {
     // get all annotators in project
-    fetch("/api/users/users-by-project/?project=" + projectId)
+    fetch("/api/users/users-by-project/?project=" + project_id)
       .then((response) => response.json())
       .then((data) => {
         // get users annotation
@@ -76,7 +74,7 @@ export default function ProjectStatistics() {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        project_id: projectId,
+        project_id: project_id,
         tags: tagsForAlgorithm,
         relations: relationsForAlgorithm,
       }),
@@ -100,7 +98,7 @@ export default function ProjectStatistics() {
     return str;
   };
 
-  /* ****************************** Tags ****************************** */
+  /* Tags */
 
   function processUserTagAnnotation(input) {
     let output = {};
@@ -146,7 +144,7 @@ export default function ProjectStatistics() {
       //get user annotations
       fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
-          projectId +
+          project_id +
           "&tagger=" +
           annotators[u]
       )
@@ -169,7 +167,7 @@ export default function ProjectStatistics() {
     }
   }
 
-  /* ****************************** Relations ****************************** */
+  /* Relations */
   function processUserRelationAnnotation(inp) {
     const indexDict = {};
 
@@ -213,7 +211,7 @@ export default function ProjectStatistics() {
       //get user annotations
       fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
-          projectId +
+          project_id +
           "&tagger=" +
           annotators[u]
       )
@@ -267,11 +265,10 @@ export default function ProjectStatistics() {
     setRelKappa(avgRelCounts);
   }
 
-  /* ****************************** Return ****************************** */
+  /* Return */
   return (
-    <div>
-      <h2>Annotation Information about Project {projectId}</h2> <br></br>
-      <h2>Tags</h2>
+    <div style={{ marginTop: "15px" }}>
+      <h5>Tags</h5>
       <div>
         {Object.keys(tagKappa).length > 0 && (
           <ProjectTagTable
@@ -281,7 +278,7 @@ export default function ProjectStatistics() {
           />
         )}
       </div>
-      <h2>Relations</h2>
+      <h5>Relations</h5>
       <div>
         {Object.keys(relKappa).length > 0 && (
           <ProjectRelationTable
@@ -291,7 +288,7 @@ export default function ProjectStatistics() {
           />
         )}
       </div>
-      <h2>Algorithm Input Preview</h2>
+      <h5>Algorithm Input Preview</h5>
       <div>
         <input
           id="Algorithm_Input_Preview"
@@ -302,17 +299,16 @@ export default function ProjectStatistics() {
           style={{ width: "30%", height: "200px" }}
         />
       </div>
+
       <div>
-        <div>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            onClick={() => sendProjectToAlgorithm()}
-            style={{ marginTop: "25px" }}
-          >
-            Send Data to Algorithm!
-          </button>
-        </div>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onClick={() => sendProjectToAlgorithm()}
+          style={{ marginTop: "25px" }}
+        >
+          Send Data to Algorithm
+        </button>
       </div>
     </div>
   );

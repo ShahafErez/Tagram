@@ -19,6 +19,7 @@ export default function ProjectPreview(props) {
           {project.project_created_at ? (
             <span>{project.project_created_at.slice(0, 10)}</span>
           ) : null}
+          <button style={{ marginTop: "5px" }}>Go To Project Page</button>
         </div>
       ) : null}
     </div>

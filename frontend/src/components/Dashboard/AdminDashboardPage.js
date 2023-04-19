@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ProjectPreviewAdmin from "./AdminProjectPreview";
+import { useNavigate } from "react-router-dom";
 import "../../../static/css/AdminDashboardProjectTable.css";
 
 export default function AdminDashboardPage() {
   let { username } = useParams();
+  const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
   // getting projects
@@ -34,7 +36,13 @@ export default function AdminDashboardPage() {
       >
         {projects.length > 0 &&
           projects.map((project, index) => (
-            <div class="col mb-2" style={{ cursor: "pointer" }}>
+            <div
+              class="col mb-2"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                navigate("/manager/" + project.project_id);
+              }}
+            >
               <ProjectPreviewAdmin project={project} />
             </div>
           ))}

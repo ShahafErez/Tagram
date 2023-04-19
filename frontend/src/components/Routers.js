@@ -19,7 +19,7 @@ export default function Routers() {
         path="/manager/dashboard/:username"
         element={<AdminDashboardPage />}
       />
-      <Route path="/manager/:id" element={<AdminProjectPage />} />
+      <Route path="/manager/:projectId" element={<AdminProjectPage />} />
       <Route
         path="/manager/:projectId/statistics"
         element={<ProjectStatistics />}
