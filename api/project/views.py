@@ -213,11 +213,12 @@ class GetAnnotation(APIView):
                     if len(annotation_query) > 0:
                         data = GetAnnotationSerializer(
                             annotation_query[0]).data
-                        data['tags'] = json.loads(data['tags'])
-                        data['relations'] = json.loads(data['relations'])
-                        data['co_occcurrence'] = json.loads(
-                            data['co_occcurrence'])
-                        return Response(data, status=status.HTTP_200_OK)
+                        if data['tags'] != None or data['relations'] != None or data['co_occcurrence'] != None:
+                            data['tags'] = json.loads(data['tags'])
+                            data['relations'] = json.loads(data['relations'])
+                            data['co_occcurrence'] = json.loads(
+                                data['co_occcurrence'])
+                            return Response(data, status=status.HTTP_200_OK)
                     return Response({'No Annotation Found'}, status=status.HTTP_204_NO_CONTENT)
             return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad Request': 'Invalid path, did not find project or tagger'}, status=status.HTTP_400_BAD_REQUEST)
