@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Accordion, Card, Button } from "react-bootstrap";
-import Badge from "react-bootstrap/Badge";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
 
-export default function ProjectStatistics2({ project_id }) {
-  console.log("--- in ProjectStatistics2---");
+export default function ProjectStatistics(props) {
+  let project_id = props.project_id;
 
   const [annotators, setAnnotators] = useState([]);
   const [tagsForAlgorithm, setTagsForAlgorithm] = useState([]);
   const [relationsForAlgorithm, setRelationsForAlgorithm] = useState([]);
-  /* ****************************** for tags ****************************** */
+
+  // tags
   const [UsersTagsAnnotationStatistics, setUsersTagsAnnotationStatistics] =
     useState({});
   const [tagKappa, setTagKappa] = useState({});
-  /* ****************************** for relations ****************************** */
+
+  // relations
   const [
     UsersRelationsAnnotationStatistics,
     setUsersRelationsAnnotationStatistics,
   ] = useState({});
   const [relKappa, setRelKappa] = useState({});
 
-  /* ****************************** useEffects ****************************** */
+  /* useEffects */
   useEffect(() => {
     //set project's annotators array
     getUsersByProject();
@@ -43,8 +43,7 @@ export default function ProjectStatistics2({ project_id }) {
     calcKappaForRelations();
   }, [UsersRelationsAnnotationStatistics]);
 
-  /* ****************************** General ****************************** */
-
+  /* General */
   function getUsersByProject() {
     // get all annotators in project
     fetch("/api/users/users-by-project/?project=" + project_id)
@@ -83,7 +82,7 @@ export default function ProjectStatistics2({ project_id }) {
       // Adding the new file to the project
       .then((response) => response.json())
       .then((data) => {
-        // navigate to output page with project_id
+        // navigate to output page with projectId
         console.log(data);
         alert(formatAlgorithmOutput(data));
       });
@@ -99,7 +98,7 @@ export default function ProjectStatistics2({ project_id }) {
     return str;
   };
 
-  /* ****************************** Tags ****************************** */
+  /* Tags */
 
   function processUserTagAnnotation(input) {
     let output = {};
@@ -149,9 +148,15 @@ export default function ProjectStatistics2({ project_id }) {
           "&tagger=" +
           annotators[u]
       )
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status == 200) {
+            return response.json();
+          }
+        })
         .then((data) => {
-          return processUserTagAnnotation(data.tags);
+          if (data != undefined) {
+            return processUserTagAnnotation(data.tags);
+          }
         })
         .then((data) => {
           setUsersTagsAnnotationStatistics({
@@ -162,7 +167,7 @@ export default function ProjectStatistics2({ project_id }) {
     }
   }
 
-  /* ****************************** Relations ****************************** */
+  /* Relations */
   function processUserRelationAnnotation(inp) {
     const indexDict = {};
 
@@ -201,6 +206,7 @@ export default function ProjectStatistics2({ project_id }) {
   }
 
   function getUsersRelationsAnnotationStatistics() {
+    console.log("annotators ", annotators);
     for (const u in annotators) {
       //get user annotations
       fetch(
@@ -209,9 +215,15 @@ export default function ProjectStatistics2({ project_id }) {
           "&tagger=" +
           annotators[u]
       )
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status == 200) {
+            return response.json();
+          }
+        })
         .then((data) => {
-          return processUserRelationAnnotation(data.relations);
+          if (data != undefined) {
+            return processUserRelationAnnotation(data.relations);
+          }
         })
         .then((data) => {
           setUsersRelationsAnnotationStatistics(
@@ -253,11 +265,10 @@ export default function ProjectStatistics2({ project_id }) {
     setRelKappa(avgRelCounts);
   }
 
-  /* ****************************** Return ****************************** */
+  /* Return */
   return (
-    <div>
-      <h2>Annotation Information about Project {project_id}</h2> <br></br>
-      <h2>Tags</h2>
+    <div style={{ marginTop: "15px" }}>
+      <h5>Tags</h5>
       <div>
         {Object.keys(tagKappa).length > 0 && (
           <ProjectTagTable
@@ -267,7 +278,7 @@ export default function ProjectStatistics2({ project_id }) {
           />
         )}
       </div>
-      <h2>Relations</h2>
+      <h5>Relations</h5>
       <div>
         {Object.keys(relKappa).length > 0 && (
           <ProjectRelationTable
@@ -277,7 +288,7 @@ export default function ProjectStatistics2({ project_id }) {
           />
         )}
       </div>
-      <h2>Algorithm Input Preview</h2>
+      <h5>Algorithm Input Preview</h5>
       <div>
         <input
           id="Algorithm_Input_Preview"
@@ -288,17 +299,16 @@ export default function ProjectStatistics2({ project_id }) {
           style={{ width: "30%", height: "200px" }}
         />
       </div>
+
       <div>
-        <div>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            onClick={() => sendProjectToAlgorithm()}
-            style={{ marginTop: "25px" }}
-          >
-            Send Data to Algorithm!
-          </button>
-        </div>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onClick={() => sendProjectToAlgorithm()}
+          style={{ marginTop: "25px" }}
+        >
+          Send Data to Algorithm
+        </button>
       </div>
     </div>
   );

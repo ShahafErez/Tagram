@@ -1,35 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ReactSession } from "react-client-session";
-import AdminDashboardProjectTable from "./AdminDashboardProjectTable";
+import ProjectPreviewAdmin from "./AdminProjectPreview";
+import { useNavigate } from "react-router-dom";
 import "../../../static/css/AdminDashboardProjectTable.css";
 
 export default function AdminDashboardPage() {
   let { username } = useParams();
-  // let username = ReactSession.get("username");
+  const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
   // getting projects
-  // TODO: filter by username
   useEffect(() => {
     fetch(`/api/project/get-by-project-manager?manager=${username}`)
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
-        // console.log(data);
       });
   }, []);
 
   return (
     <div>
-      <div>
-        <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
-          Hello {username}
-        </h2>
-      </div>
-      <div>
-        {/* {projects.length>0 && <p> {projects.length}</p>} */}
-        {projects && <AdminDashboardProjectTable data={projects} />}
+      <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
+        Projects You Manage
+      </h2>
+      <div
+        class="row row-cols-1 row-cols-md-3"
+        style={{
+          textAlign: "center",
+          margin: "auto",
+          paddingLeft: "20px",
+          paddingRight: "20px",
+        }}
+      >
+        {projects.length > 0 &&
+          projects.map((project, index) => (
+            <div
+              class="col mb-2"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                navigate("/manager/" + project.project_id);
+              }}
+            >
+              <ProjectPreviewAdmin project={project} />
+            </div>
+          ))}
       </div>
     </div>
   );
