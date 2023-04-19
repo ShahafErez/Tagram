@@ -167,14 +167,14 @@ class CreateUserProjectViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(UsersInProject.objects.count(), 0)
     
-    def test_invalid_user_assigned(self): #TODO: fix
+    def test_invalid_user_assigned(self): 
         print("USERS_CreateUserProjectViewTestCase: Running test_invalid_user_assigned")
         data = {'user': ['invaliduser'], 'project': self.project2.project_id}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(UsersInProject.objects.count(), 0)
     
-    def test_invalid_project_assigned(self): #TODO: fix
+    def test_invalid_project_assigned(self): 
         print("USERS_CreateUserProjectViewTestCase: Running test_invalid_project_assigned")
         data = {'user': ['user1'], 'project': "invalidproject"}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
