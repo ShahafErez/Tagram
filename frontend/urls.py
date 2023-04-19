@@ -23,4 +23,12 @@ urlpatterns = [
     path('password_reset/', auth_views.PasswordResetView.as_view(
     template_name='main/password_reset.html',
     form_class=UserPasswordResetForm),name='password_reset'),
+    path('reset_password/', auth_views.PasswordResetView.as_view(
+    template_name='frontend/password_reset.html',
+    form_class=UserPasswordResetForm),name='reset_password'),
+    path('reset_password', auth_views.PasswordResetView.as_view(
+    template_name='frontend/password_reset.html',
+    form_class=UserPasswordResetForm),name='reset_password'),
+
+
 ]
