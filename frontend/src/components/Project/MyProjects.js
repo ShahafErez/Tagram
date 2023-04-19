@@ -16,31 +16,36 @@ export default function MyProjects() {
       });
   }, []);
   return (
-    <div
-      class="row row-cols-1 row-cols-md-3"
-      style={{
-        textAlign: "center",
-        margin: "auto",
-        paddingLeft: "20px",
-        paddingRight: "20px",
-      }}
-    >
-      {projects.length > 0 &&
-        projects.map((project, index) => (
-          <div
-            class="col mb-2"
-            onClick={() => {
-              let project_id = project.project
-                .split(" ")[2]
-                .replace("(", "")
-                .replace(")", "");
-              navigate("/project/" + project_id + "?username=" + username);
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <ProjectPreview project={project} />
-          </div>
-        ))}
+    <div>
+      <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
+        Projects You Annotate
+      </h2>
+      <div
+        class="row row-cols-1 row-cols-md-3"
+        style={{
+          textAlign: "center",
+          margin: "auto",
+          paddingLeft: "20px",
+          paddingRight: "20px",
+        }}
+      >
+        {projects.length > 0 &&
+          projects.map((project, index) => (
+            <div
+              class="col mb-2"
+              onClick={() => {
+                let project_id = project.project
+                  .split(" ")[2]
+                  .replace("(", "")
+                  .replace(")", "");
+                navigate("/project/" + project_id + "?username=" + username);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              <ProjectPreview project={project} />
+            </div>
+          ))}
+      </div>
     </div>
   );
 }

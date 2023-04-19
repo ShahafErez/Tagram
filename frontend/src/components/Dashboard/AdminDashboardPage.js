@@ -20,11 +20,9 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <div>
-        <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
-          Hello {username}
-        </h2>
-      </div>
+      <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
+        Projects You Manage
+      </h2>
       <div
         class="row row-cols-1 row-cols-md-3"
         style={{

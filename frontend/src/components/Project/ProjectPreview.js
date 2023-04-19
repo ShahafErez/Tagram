@@ -8,7 +8,7 @@ export default function ProjectPreview(props) {
       {project ? (
         <div class="card project-preview">
           <h4 class="card-title">{project.project_title}</h4>
-          <hr />
+          <hr style={{ marginTop: "10px" }} />
           {project.project_description ? (
             <div>
               <h5>{project.project_description}</h5>
