@@ -51,10 +51,6 @@ class CreateProjectView(APIView):
             project = Project(project_manager=project_manager, title=title,
                               description=description, meta_tagging=meta_tagging)
             project.save()
-            # saving the current project id in the session, so we could return the user to it if needed
-            # storing a custom variable in the user session
-            self.request.session['project_id'] = project.project_id
-
             # returns the code to the user
             return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
@@ -144,15 +140,12 @@ class SaveAnnotation(APIView):
 
     def post(self, request, format=None):
         data = request.data
-        project, file = None, None
+        project = None
         project_id = data['project_id']
-        file_id = data['file_id']
-        if project_id != None and file_id != None:
+        if project_id != None:
             project_query = Project.objects.filter(project_id=project_id)
-            file_query = File.objects.filter(file_id=file_id)
-            if (len(project_query)) > 0 and (len(file_query)) > 0:
+            if (len(project_query)) > 0:
                 project = project_query[0]
-                file = file_query[0]
                 tagger = data['tagger']
 
                 ''' 
@@ -162,7 +155,6 @@ class SaveAnnotation(APIView):
                 annotation_query = Annotation.objects.filter(
                     project=project, tagger=tagger)
                 if len(annotation_query) > 0:
-                    print("yes")
                     annotation_query.delete()
 
                 tags = json.dumps(data['tags'])
@@ -170,14 +162,12 @@ class SaveAnnotation(APIView):
                 co_occcurrence = json.dumps(data['co_occcurrence'])
 
                 annotation = Annotation(
-                    project=project, file=file, tags=tags, tagger=tagger, relations=relations, co_occcurrence=co_occcurrence)
+                    project=project, tags=tags, tagger=tagger, relations=relations, co_occcurrence=co_occcurrence)
                 annotation.save()
-                print("00 ", annotation.project)
-                print("11 ", annotation.tagger)
 
                 return Response("Annotation saved successfully", status=status.HTTP_201_CREATED)
-            return Response({'Project Or File Not Found.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid path, did not find a project or a file'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'Project Not Found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find a project'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateAnnotationStatus(APIView):

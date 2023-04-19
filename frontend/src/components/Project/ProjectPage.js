@@ -153,7 +153,7 @@ export default function ProjectPage() {
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         project_id: id,
-        file_id: file.file_id,
+        // file_id: file.file_id,
         tagger: username,
         tags: tagCurrentState,
         relations: relationSummary,

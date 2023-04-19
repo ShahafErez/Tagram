@@ -59,7 +59,6 @@ class Annotation(models.Model):
         max_length=10, default=generate_annotation_unique_code, unique=True, primary_key=True)
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE)
-    file = models.ForeignKey(File, on_delete=models.CASCADE)
     tags = models.CharField(max_length=4096, null=True)
     relations = models.CharField(max_length=4096, null=True)
     co_occcurrence = models.CharField(max_length=4096, null=True)
