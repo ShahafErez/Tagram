@@ -2,9 +2,12 @@ from django.urls import path
 from .views import index, admin_index
 from .views import loginpage, logoutUser
 from .views import register
+from .forms import UserPasswordResetForm
+from django.contrib.auth import views as auth_views
 
 
 app_name = 'frontend'
+
 
 urlpatterns = [
     path('', index, name=''),
@@ -17,4 +20,7 @@ urlpatterns = [
     path('logout', logoutUser),
     path('register', register,  name='register'),
     path('dashboard/<str:username>', index),
+    path('password_reset/', auth_views.PasswordResetView.as_view(
+    template_name='main/password_reset.html',
+    form_class=UserPasswordResetForm),name='password_reset'),
 ]
