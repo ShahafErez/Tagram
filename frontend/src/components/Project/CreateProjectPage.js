@@ -82,7 +82,7 @@ export default function CreateProjectPage() {
           }),
         });
       })
-      .then(() => navigate("/project/" + project_id));
+      .then(() => navigate("/manager/" + project_id));
   };
 
   /** Getting the text of the new uploaded file

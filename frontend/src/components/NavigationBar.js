@@ -68,7 +68,12 @@ export default function NavigationBar() {
               </a>
             </li>
             {isAdmin && (
-              <span>
+              <span style={{ display: "contents" }}>
+                <li class="nav-item">
+                  <a class="nav-link" href={`/manager/dashboard/${username}`}>
+                    My Admin Projects
+                  </a>
+                </li>
                 <li class="nav-item">
                   <a class="nav-link" href="/create">
                     Create a Project

@@ -7,6 +7,7 @@ from api.project.models import Project
 from api.project.serializers import ProjectSerializer
 
 from api.users.models import User, UsersInProject
+from api.project.models import Annotation
 from api.users.serializers import CreateUserSerializer, CreateUsersInProjectSerializer, UserSerializer, UsersInProjectSerializer
 
 
@@ -20,9 +21,10 @@ class GetSessionDetails(APIView):
         is_admin = False
         if 'username' in request.session:
             username = request.session['username']
-        if 'is_admin' in request.session: 
+        if 'is_admin' in request.session:
             is_admin = request.session['is_admin']
-        return Response([username,is_admin], status=status.HTTP_200_OK)
+        return Response([username, is_admin], status=status.HTTP_200_OK)
+
 
 class UserView(generics.ListAPIView):
     """
@@ -90,7 +92,7 @@ class CreateUserProjectView(APIView):
                 if (len(project)) > 0:
                     project = project[0]
                 else:
-                    project = None
+                    return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
             if users_array != None:
                 # getting user object by username
@@ -98,9 +100,19 @@ class CreateUserProjectView(APIView):
                     current_user = User.objects.filter(username=current_user)
                     if (len(current_user)) > 0:
                         current_user = current_user[0]
+                    else:
+                        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
                     user_in_project = UsersInProject(
                         user=current_user, project=project, project_manager=project.project_manager)
                     user_in_project.save()
+                    # saving empty annotation record for each tagger in project
+                    # a = UserSerializer(current_user).data
+                    # print("99 ", UserSerializer(current_user).data["username"])
+                    # print("990 ", a["username"])
+                    username = UserSerializer(current_user).data["username"]
+                    annotation = annotation = Annotation(
+                        project=project, tags=None, tagger=username, relations=None, co_occcurrence=None)
+                    annotation.save()
 
             # returns the code to the user
             return Response(UsersInProjectSerializer(user_in_project).data, status=status.HTTP_201_CREATED)
