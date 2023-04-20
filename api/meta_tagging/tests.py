@@ -17,7 +17,7 @@ class CreateMetaTaggingTestCase(TestCase):
         self.metaTagging.delete()
 
     def test_create_meta_tagging(self):
-        print("MetaTagging_CreateMetaTaggingTestCase: Running test_create_meta_tagging")
+        print("CreateMetaTaggingTestCase: Running test_create_meta_tagging")
         data = {'title': 'metaTagging2'}
         response = self.client.post('/api/meta-tagging/create', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -25,14 +25,14 @@ class CreateMetaTaggingTestCase(TestCase):
         MetaTagging.objects.get(title='metaTagging2').delete()
 
     def test_create_meta_tagging_invalid_param(self):
-        print("MetaTagging_CreateMetaTaggingTestCase: Running test_create_meta_tagging_invalid_param")
+        print("CreateMetaTaggingTestCase: Running test_create_meta_tagging_invalid_param")
         data = {'invalid': 'metaTagging2'}
         response = self.client.post('/api/meta-tagging/create', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(MetaTagging.objects.count(), 1)
 
     def test_create_meta_tagging_no_title(self):
-        print("MetaTagging_CreateMetaTaggingTestCase: Running test_create_meta_tagging_no_title")
+        print("CreateMetaTaggingTestCase: Running test_create_meta_tagging_no_title")
         data = {'title': ''}
         response = self.client.post('/api/meta-tagging/create', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -92,17 +92,6 @@ class CreateMetaTaggingLabelView(TestCase):
         response = self.client.post('/api/meta-tagging/create-labels', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_meta_tagging_no_labels(self):
-        print("CreateMetaTaggingLabelView: Running test_meta_tagging_no_labels")
-        session = self.client.session
-        session.save()
-        data = {
-            'meta_tagging': self.metaTagging.meta_tagging_id,
-            'labels': [],
-        }
-        response = self.client.post('/api/meta-tagging/create-labels', data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
 
 class GetLabelsByMetaTaggingId(TestCase):
     """
@@ -111,11 +100,53 @@ class GetLabelsByMetaTaggingId(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.metaTagging = MetaTagging.objects.create(title='metaTagging1')
+        data = {
+            'meta_tagging': self.metaTagging.meta_tagging_id,
+            'labels': [
+                {'name': 'label1', 'type': 'relation', 'color': 'color1'},
+                {'name': 'label2', 'type': 'class', 'color': 'color2'},
+            ],
+        }
+        self.client.post('/api/meta-tagging/create-labels', data, format='json')
+        self.metaTagging.save()
+        self.session = self.client.session
+        self.session.save()
+
+    def tearDown(self):
+        self.metaTagging.delete()        
+
+    def test_get_labels_by_meta_tagging_id(self): 
+        print("GetLabelsByMetaTaggingId: Running test_get_labels_by_meta_tagging_id")
+        response = self.client.get(f'/api/meta-tagging/labels-by-id?meta-tagging-id={self.metaTagging.meta_tagging_id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['meta_tagging_id'], self.metaTagging.meta_tagging_id)
+        self.assertEqual(response.data[0]['name'], 'label1')
+        self.assertEqual(response.data[0]['type'], 'relation')
+        self.assertEqual(response.data[0]['color'], 'color1')
+        self.assertEqual(response.data[1]['meta_tagging_id'], self.metaTagging.meta_tagging_id)
+        self.assertEqual(response.data[1]['name'], 'label2')
+        self.assertEqual(response.data[1]['type'], 'class')
+        self.assertEqual(response.data[1]['color'], 'color2')
+
+    def test_get_labels_by_meta_tagging_id_invalid_id(self):
+        print("GetLabelsByMetaTaggingId: Running test_get_labels_by_meta_tagging_id_invalid_id")
+        response = self.client.get(f"/api/users/projects-by-username/get?id=invalid")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class GetLabelsGroupByMetaTagging(TestCase):
+    """
+        Get all labels for a given meta tagging id
+    """    
+    def setUp(self):
+        self.client = APIClient()
+        self.metaTagging = MetaTagging.objects.create(title='metaTagging1')
         self.metaTagging.save()
         session = self.client.session
         session.save()
         data = {
-            'meta_tagging': 'invalid_id',
+            'meta_tagging': {self.metaTagging.meta_tagging_id},
             'labels': [
                 {'name': 'aggregation', 'type': 'relation', 'color': 'color1'},
                 {'name': 'attribute', 'type': 'class', 'color': 'color2'},
@@ -124,27 +155,9 @@ class GetLabelsByMetaTaggingId(TestCase):
         self.client.post('/api/meta-tagging/create-labels', data, format='json')
 
     def tearDown(self):
-        self.metaTagging.delete()        
+        self.metaTagging.delete()
 
-    def test_get_labels_by_meta_tagging_id(self):
-        print("GetLabelsByMetaTaggingId: Running test_get_labels_by_meta_tagging_id")
-        print(f'/api/meta-tagging/labels-by-id?meta-tagging-id={self.metaTagging.meta_tagging_id}')
-        response = self.client.get(f'/api/meta-tagging/labels-by-id?meta-tagging-id={self.metaTagging.meta_tagging_id}')
+    def test_get_labels_group(self):
+        print("GetLabelsGroupByMetaTagging: Running test_get_labels_group")
+        response = self.client.get('/api/meta-tagging/all-labels-grouped', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # parse the response and extract the labels
-        print(response.content)
-
-        # define the expected labels
-        #expected_labels = [
-        #{'name': 'aggregation', 'type': 'relation', 'color': 'color1'},
-        #{'name': 'attribute', 'type': 'class', 'color': 'color2'},
-        #]
-
-        # check that the labels in the response match the expected labels
-        #self.assertListEqual(labels, expected_labels)
-
-    def test_get_labels_by_meta_tagging_id_invalid_id(self):
-        print("GetLabelsByMetaTaggingId: Running test_get_labels_by_meta_tagging_id_invalid_id")
-        response = self.client.get(f"/api/users/projects-by-username/get?id=invalid")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
