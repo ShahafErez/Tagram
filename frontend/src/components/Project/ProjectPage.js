@@ -8,7 +8,8 @@ import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
 
 export default function ProjectPage() {
   // TODO- check if the user has permissions for this project
-  let username = ReactSession.get("username");
+  let username = useQuery().get("username");
+  let is_manager = ReactSession.get("is_admin");
   let { id } = useParams();
 
   const [project, setProject] = useState({
@@ -42,6 +43,10 @@ export default function ProjectPage() {
 
   // annotation status
   const [annotationStatus, setAnnotationStatus] = useState();
+
+  function useQuery() {
+    return new URLSearchParams(window.location.search);
+  }
 
   function getMetaTaggingDetails() {
     let meta_tagging_id = "";
@@ -148,7 +153,7 @@ export default function ProjectPage() {
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         project_id: id,
-        file_id: file.file_id,
+        // file_id: file.file_id,
         tagger: username,
         tags: tagCurrentState,
         relations: relationSummary,
@@ -163,12 +168,14 @@ export default function ProjectPage() {
       })
       .then(() => {
         if (toSubmit) {
-          submitAnnotations();
+          changeAnnotationsStatus("submitted");
+        } else {
+          changeAnnotationsStatus(annotationStatus);
         }
       });
   }
 
-  function submitAnnotations() {
+  function changeAnnotationsStatus(status) {
     fetch(
       "/api/project/edit-annotation-status?project_id=" +
         id +
@@ -178,13 +185,13 @@ export default function ProjectPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json ; charset=utf-8" },
         body: JSON.stringify({
-          annotation_status: "submitted",
+          annotation_status: status,
         }),
       }
     ).then((response) => {
       if (response.status == 202) {
-        alert("Annotations submitted");
-        setAnnotationStatus("submitted");
+        alert(`Annotations status changed to ${status.replace("_", " ")}`);
+        setAnnotationStatus(status);
       }
       return response.json();
     });
@@ -314,6 +321,15 @@ export default function ProjectPage() {
               >
                 Save & Submit
               </button>
+              {is_manager == true && (
+                <button
+                  class="btn btn-warning"
+                  onClick={() => changeAnnotationsStatus("changes_requested")}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Request Changes
+                </button>
+              )}
             </div>
             <div style={{ marginTop: "10px", fontSize: "17px" }}>
               {annotationStatus == "not_submitted" && (
