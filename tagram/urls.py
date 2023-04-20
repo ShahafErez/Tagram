@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from frontend.views import loginpage, register, logoutUser, index
+from frontend.forms import UserPasswordResetForm, UserPasswordSetForm
 
 
 urlpatterns = [
@@ -24,8 +26,24 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('register', register,  name='register'),
     path('login', loginpage,  name='login'),
+    path('accounts/login/', loginpage,  name='login'),
     path('logout', logoutUser,  name='logout'),
     path('home', index,  name='home'),
     path('', include('frontend.urls'), name='home'),
+    path('reset_password/', auth_views.PasswordResetView.as_view(template_name="frontend/password_reset.html"), name="reset_password"),
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="frontend/password_reset_sent.html"), name="password_reset_done"),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="frontend/password_reset_form.html"), name="password_reset_confirm"),
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="frontend/password_reset_done.html"), name="password_reset_complete"),
+    path('password_reset/', auth_views.PasswordResetView.as_view(
+    template_name='main/password_reset.html',
+    form_class=UserPasswordResetForm),name='password_reset'),
+
+    path('password_reset_form/', auth_views.PasswordResetView.as_view(
+    template_name='main/password_reset_form.html',
+    form_class=UserPasswordSetForm),name='password_reset_form'),
+
+
+
+    
 
 ]
