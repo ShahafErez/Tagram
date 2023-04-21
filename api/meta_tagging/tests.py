@@ -1,7 +1,6 @@
 from django.test import TestCase
 from api.project.models import MetaTagging
 from rest_framework.test import APIClient
-from api.users.models import User
 from rest_framework.views import status
 
 class CreateMetaTaggingTestCase(TestCase):
