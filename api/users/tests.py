@@ -19,7 +19,7 @@ class getSessionTestCase(TestCase):
         self.session.save()
 
     def test_get_session_details(self):
-        print("getSessionTestCase: Running test_get_session_details")
+        print("users: Running test_get_session_details")
         # Make the request to the API endpoint
         response = self.client.get('/api/users/getsession/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -43,7 +43,7 @@ class UserViewTestCase(TestCase):
         self.user2.delete()
 
     def test_get_all_users(self):
-        print("UserViewTestCase: Running test_get_all_users")
+        print("users: Running test_get_all_users")
         response = self.client.get('/api/users/get-all')
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -52,7 +52,7 @@ class UserViewTestCase(TestCase):
         self.assertEqual(response.data, serializer.data)
 
     def test_get_all_users_with_exact_values(self):
-        print("UserViewTestCase: Running test_get_all_users_with_exact_values")
+        print("users: Running test_get_all_users_with_exact_values")
         response = self.client.get('/api/users/get-all')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -75,7 +75,7 @@ class CreateUserViewTestCase(TestCase):
         self.user.delete()
 
     def test_create_user(self):
-        print("CreateUserViewTestCase: Running test_create_user")
+        print("users: Running test_create_user")
         data = {'username': 'tagger_2'}
         response = self.client.post('/api/users/create-user', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -84,21 +84,21 @@ class CreateUserViewTestCase(TestCase):
         User.objects.get(username='tagger_2').delete()
 
     def test_create_user_with_existing_username(self):
-        print("CreateUserViewTestCase: Running test_create_user_with_existing_username")
+        print("users: Running test_create_user_with_existing_username")
         data = {'username': 'tagger_1'}
         response = self.client.post('/api/users/create-user', data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'Conflict': 'User already exists'})
 
     def test_create_user_with_blank_username(self):
-        print("CreateUserViewTestCase: Running test_create_user_with_blank_username")
+        print("users: Running test_create_user_with_blank_username")
         data = {'username': ''}
         response = self.client.post('/api/users/create-user', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, {'Bad Request': 'Invalid data...'})
 
     def test_create_user_without_username(self):
-        print("CreateUserViewTestCase: Running test_create_user_without_username")
+        print("users: Running test_create_user_without_username")
         data = {}
         response = self.client.post('/api/users/create-user', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -124,7 +124,7 @@ class CreateUserProjectViewTestCase(TestCase):
         self.project2.delete()
 
     def test_create_user_project_success(self):
-        print("CreateUserProjectViewTestCase: Running test_create_user_project_success")
+        print("users: Running test_create_user_project_success")
         data = {'user': ["user1"], 'project': self.project1.project_id}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -133,7 +133,7 @@ class CreateUserProjectViewTestCase(TestCase):
         self.assertEqual(UsersInProject.objects.get().project.title, 'project1')
 
     def test_project_with_many_users(self):
-        print("CreateUserProjectViewTestCase: Running test_project_with_many_users")
+        print("users: Running test_project_with_many_users")
         data = {'user': ['user2',"user3"], 'project': self.project1.project_id}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -142,7 +142,7 @@ class CreateUserProjectViewTestCase(TestCase):
         self.assertTrue(UsersInProject.objects.filter(user__username='user3', project=self.project1).exists())
 
     def test_user_with_many_projects(self):
-        print("CreateUserProjectViewTestCase: Running test_user_with_many_projects")
+        print("users: Running test_user_with_many_projects")
         data_first_insertion = {'user': ['user1'], 'project': self.project1.project_id}
         response_first_insertion = self.client.post('/api/users/create-user-project-mapping', data_first_insertion, format='json')
         data_second_insertion = {'user': ['user1'], 'project': self.project2.project_id}
@@ -154,28 +154,28 @@ class CreateUserProjectViewTestCase(TestCase):
         self.assertTrue(UsersInProject.objects.filter(user__username='user1', project=self.project2).exists())
 
     def test_no_taggers_assigned(self):
-        print("CreateUserProjectViewTestCase: Running test_no_taggers_assigned")
+        print("users: Running test_no_taggers_assigned")
         data = {'user': [''], 'project': self.project2.project_id}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(UsersInProject.objects.count(), 0)
     
     def test_no_project_assigned(self):
-        print("CreateUserProjectViewTestCase: Running test_no_project_assigned")
+        print("users: Running test_no_project_assigned")
         data = {'user': ['user1'], 'project': ""}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(UsersInProject.objects.count(), 0)
     
     def test_invalid_user_assigned(self): 
-        print("CreateUserProjectViewTestCase: Running test_invalid_user_assigned")
+        print("users: Running test_invalid_user_assigned")
         data = {'user': ['invaliduser'], 'project': self.project2.project_id}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(UsersInProject.objects.count(), 0)
     
     def test_invalid_project_assigned(self): 
-        print("CreateUserProjectViewTestCase: Running test_invalid_project_assigned")
+        print("users: Running test_invalid_project_assigned")
         data = {'user': ['user1'], 'project': "invalidproject"}
         response = self.client.post('/api/users/create-user-project-mapping', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -205,7 +205,7 @@ class GetProjectsByUsernameTestCase(TestCase):
         self.user_in_project3.delete()
 
     def test_get_projects_by_username_success(self):
-        print("GetProjectsByUsernameTestCase: Running test_get_projects_by_username_success")
+        print("users: Running test_get_projects_by_username_success")
         response = self.client.get('/api/users/projects-by-username/?user=user1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_data = response.json()
@@ -219,13 +219,13 @@ class GetProjectsByUsernameTestCase(TestCase):
         self.assertNotIn(self.user_in_project2.user.username, usernames)
 
     def test_user_with_no_projects(self):
-        print("GetProjectsByUsernameTestCase: Running test_user_with_no_projects")
+        print("users: Running test_user_with_no_projects")
         response = self.client.get('/api/users/projects-by-username/?user=fakeuser')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {""}) # returns empty dictionary
 
     def test_get_projects_by_user_invalid_request(self):
-        print("GetProjectsByUsernameTestCase: Running test_get_users_by_invalid_request")
+        print("users: Running test_get_users_by_invalid_request")
         response = self.client.get('/api/users/projects-by-username/')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
