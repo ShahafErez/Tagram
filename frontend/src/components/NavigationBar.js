@@ -23,7 +23,6 @@ export default function NavigationBar() {
 
   // emptying the session information
   function logout() {
-    console.log("logout ");
     ReactSession.set("username", null);
     ReactSession.set("is_admin", null);
     setUsername(null);
@@ -64,14 +63,14 @@ export default function NavigationBar() {
           <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link " href="/my-projects">
-                My Projects
+                Project Annotation
               </a>
             </li>
             {isAdmin && (
               <span style={{ display: "contents" }}>
                 <li class="nav-item">
                   <a class="nav-link" href={`/manager/dashboard/${username}`}>
-                    My Admin Projects
+                    Project Management
                   </a>
                 </li>
                 <li class="nav-item">

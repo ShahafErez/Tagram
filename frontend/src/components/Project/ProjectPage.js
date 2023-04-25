@@ -5,13 +5,18 @@ import MetaTaggingObject from "./MetaTaggingObject";
 import AnnotationTag from "./AnnotationTypes/AnnotationTag";
 import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
 import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
+import ErrorPage from "../ErrorPage";
 
 export default function ProjectPage() {
-  // TODO- check if the user has permissions for this project
-  let username = useQuery().get("username");
+  let username = new URLSearchParams(window.location.search).get("username");
+  let logged_in_user = ReactSession.get("username");
   let is_manager = ReactSession.get("is_admin");
   let { id } = useParams();
 
+  // the name of the field to be saved in the react session
+  let tagSessionField = `tagsCurrentState_${id}_${username}`;
+
+  // setting project and file
   const [project, setProject] = useState({
     title: "",
     description: "",
@@ -30,6 +35,7 @@ export default function ProjectPage() {
   const [relationsLabels, setRelationsLabels] = useState([]);
 
   // setting the annotations values
+  const [tagSummary, setTagSummary] = useState([]);
   const [tagCurrentState, setTagCurrentState] = useState();
   const [relationSummary, setRelationSummary] = useState([]);
   const [relationCurrentState, setRelationCurrentState] = useState();
@@ -43,10 +49,6 @@ export default function ProjectPage() {
 
   // annotation status
   const [annotationStatus, setAnnotationStatus] = useState();
-
-  function useQuery() {
-    return new URLSearchParams(window.location.search);
-  }
 
   function getMetaTaggingDetails() {
     let meta_tagging_id = "";
@@ -109,20 +111,24 @@ export default function ProjectPage() {
     ).then((response) => {
       if (response.status == 204) {
         // annotations not found, setting empty arrays
-        setTagCurrentState(new Array(arrayLength).fill([]));
         setRelationCurrentState(new Array(arrayLength).fill([]));
         setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
         setAnnotationStatus("not_submitted");
+        setTagCurrentState(new Array(arrayLength).fill([]));
       } else if (response.status == 200) {
         // annotations found
         return response.json().then((data) => {
-          console.log(data);
-          setTagCurrentState(data.tags);
+          setTagSummary(data.tags);
           setRelationSummary(data.relations);
           setCoOccurrenceSummary(data.co_occcurrence);
           setRelationCurrentState(new Array(arrayLength).fill([]));
           setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
           setAnnotationStatus(data.annotation_status);
+          // checking if the user has the current state saved in it's local storage
+          let localStorageCurrentState = ReactSession.get(tagSessionField);
+          localStorageCurrentState != undefined
+            ? setTagCurrentState(localStorageCurrentState)
+            : setTagCurrentState(new Array(arrayLength).fill([]));
         });
       }
     });
@@ -133,9 +139,10 @@ export default function ProjectPage() {
     getMetaTaggingDetails();
   }, []);
 
+  // exporting the annotations to a json file
   function exportToFile() {
     const fileData = JSON.stringify({
-      tags: tagCurrentState,
+      tags: tagSummary,
       relations: relationSummary,
       coOccurr: coOccurrenceSummary,
     });
@@ -147,15 +154,15 @@ export default function ProjectPage() {
     link.click();
   }
 
+  // saving annotations in database
   function saveAnnotations(toSubmit) {
     fetch("/api/project/save-annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         project_id: id,
-        // file_id: file.file_id,
         tagger: username,
-        tags: tagCurrentState,
+        tags: tagSummary,
         relations: relationSummary,
         co_occcurrence: coOccurrenceSummary,
       }),
@@ -168,14 +175,15 @@ export default function ProjectPage() {
       })
       .then(() => {
         if (toSubmit) {
-          changeAnnotationsStatus("submitted");
+          changeAnnotationsStatus("submitted", true);
         } else {
-          changeAnnotationsStatus(annotationStatus);
+          changeAnnotationsStatus(annotationStatus, false);
         }
       });
   }
 
-  function changeAnnotationsStatus(status) {
+  // changing the status of the annotations {not_submitted, submitted, changes_requested}
+  function changeAnnotationsStatus(status, showAlert) {
     fetch(
       "/api/project/edit-annotation-status?project_id=" +
         id +
@@ -190,169 +198,232 @@ export default function ProjectPage() {
       }
     ).then((response) => {
       if (response.status == 202) {
-        alert(`Annotations status changed to ${status.replace("_", " ")}`);
+        if (showAlert) {
+          alert(`Annotations status changed to ${status.replace("_", " ")}`);
+        }
         setAnnotationStatus(status);
       }
       return response.json();
     });
   }
 
-  return (
-    <div>
-      {file.text != "" && (
-        <div
-          class="card project-page"
-          style={{
-            textAlign: "center",
-            width: "50%",
-            margin: "auto",
-            minHeight: "500px",
-          }}
-        >
-          <div class="card-body">
-            <h2 class="card-title">{project.title}</h2>
+  // rendering projcet page
+  function renderProjectPage() {
+    return (
+      <div>
+        {file.text != "" && (
+          <div
+            class="card project-page"
+            style={{
+              textAlign: "center",
+              width: "60%",
+              margin: "auto",
+              minHeight: "500px",
+            }}
+          >
+            {/* showing project information- title, description, meta tagging */}
+            <div class="card-body">
+              <h2 class="card-title">{project.title}</h2>
 
-            {project.description != "" && (
-              <p class="card-text">{project.description}</p>
-            )}
-
-            {metaTaggingLabels.length > 0 && (
-              <MetaTaggingObject metaTagging={metaTaggingLabels} />
-            )}
-
-            <div>
-              <div class="btn-group" role="group" aria-label="Basic example">
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  onClick={() => {
-                    setIsAnnotateTags(true);
-                    setIsAnnotateRelations(false);
-                    setIsAnnotateCoOccurrence(false);
-                  }}
-                >
-                  Annotate Tags
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  onClick={() => {
-                    setIsAnnotateRelations(true);
-                    setIsAnnotateTags(false);
-                    setIsAnnotateCoOccurrence(false);
-                  }}
-                >
-                  Annotate Relations
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  onClick={() => {
-                    setIsAnnotateCoOccurrence(true);
-                    setIsAnnotateRelations(false);
-                    setIsAnnotateTags(false);
-                  }}
-                >
-                  Annotate Co-Occurrence
-                </button>
-              </div>
-              {tagsLabels.length > 0 && isAnnotateTags && (
-                <AnnotationTag
-                  file={file.text}
-                  labels={tagsLabels}
-                  tagCurrentState={tagCurrentState}
-                  onChangeTags={(newValueCurrentState) => {
-                    setTagCurrentState(newValueCurrentState);
-                  }}
-                />
+              {project.description != "" && (
+                <p class="card-text">{project.description}</p>
               )}
-              {file.text != "" &&
-                relationsLabels.length > 0 &&
-                isAnnotateRelations && (
-                  <AnnotationRelation
+
+              {metaTaggingLabels.length > 0 && (
+                <MetaTaggingObject metaTagging={metaTaggingLabels} />
+              )}
+
+              {/* selecting what label type to annotate */}
+              <div>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    onClick={() => {
+                      setIsAnnotateTags(true);
+                      setIsAnnotateRelations(false);
+                      setIsAnnotateCoOccurrence(false);
+                    }}
+                  >
+                    Annotate Tags
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    onClick={() => {
+                      setIsAnnotateRelations(true);
+                      setIsAnnotateTags(false);
+                      setIsAnnotateCoOccurrence(false);
+                    }}
+                  >
+                    Annotate Relations
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    onClick={() => {
+                      setIsAnnotateCoOccurrence(true);
+                      setIsAnnotateRelations(false);
+                      setIsAnnotateTags(false);
+                    }}
+                  >
+                    Annotate Co-Occurrence
+                  </button>
+                </div>
+
+                {/* rendering the annotation components */}
+                {tagsLabels.length > 0 && isAnnotateTags && (
+                  <AnnotationTag
                     file={file.text}
-                    labels={relationsLabels}
-                    relationSummary={relationSummary}
-                    relationCurrentState={relationCurrentState}
-                    onChangeRelation={(
-                      newValueSummary,
-                      newValueCurrentState
-                    ) => {
-                      setRelationSummary(newValueSummary);
-                      setRelationCurrentState(newValueCurrentState);
+                    labels={tagsLabels}
+                    tagSummary={tagSummary}
+                    tagCurrentState={tagCurrentState}
+                    tagSessionField={tagSessionField}
+                    onChangeTags={(newValueSummary, newValueCurrentState) => {
+                      setTagSummary(newValueSummary);
+                      setTagCurrentState(newValueCurrentState);
                     }}
                   />
                 )}
-              {file.text != "" && isAnnotateCoOccurrence && (
-                <AnnotationCoOccurrence
-                  file={file.text}
-                  coOccurrenceCurrentState={coOccurrenceCurrentState}
-                  coOccurrenceSummary={coOccurrenceSummary}
-                  onChangeCoOcurr={(newValueSummary, newValueCurrentState) => {
-                    setCoOccurrenceSummary(newValueSummary);
-                    setCoOccurrenceCurrentState(newValueCurrentState);
-                  }}
-                />
-              )}
-            </div>
-            <div>
-              <i
-                class="bi bi-download"
-                onClick={exportToFile}
-                style={{
-                  marginRight: "15px",
-                  fontSize: "20px",
-                  verticalAlign: "bottom",
-                  cursor: "pointer",
-                }}
-              ></i>
-              <button
-                class="btn btn-primary"
-                id="saveAllTaggingBtn"
-                onClick={() => saveAnnotations(false)}
-              >
-                Save
-              </button>
-              <button
-                id="exportAllTaggingBtn"
-                class="btn btn-success"
-                onClick={() => saveAnnotations(true)}
-                style={{ marginLeft: "10px" }}
-              >
-                Save & Submit
-              </button>
-              {is_manager == true && (
-                <button
-                  class="btn btn-warning"
-                  onClick={() => changeAnnotationsStatus("changes_requested")}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Request Changes
-                </button>
-              )}
-            </div>
-            <div style={{ marginTop: "10px", fontSize: "17px" }}>
-              {annotationStatus == "not_submitted" && (
-                <div>You haven't submitted the tagging yet</div>
-              )}
-              {annotationStatus == "submitted" && (
-                <div>You have submitted tagging</div>
-              )}
-              {annotationStatus == "changes_requested" && (
-                <div style={{ color: "#e56000" }}>
-                  <i
-                    class="bi bi-exclamation-triangle"
-                    style={{
-                      marginRight: "5px",
+                {file.text != "" &&
+                  relationsLabels.length > 0 &&
+                  isAnnotateRelations && (
+                    <AnnotationRelation
+                      file={file.text}
+                      labels={relationsLabels}
+                      relationSummary={relationSummary}
+                      relationCurrentState={relationCurrentState}
+                      onChangeRelation={(
+                        newValueSummary,
+                        newValueCurrentState
+                      ) => {
+                        setRelationSummary(newValueSummary);
+                        setRelationCurrentState(newValueCurrentState);
+                      }}
+                    />
+                  )}
+                {file.text != "" && isAnnotateCoOccurrence && (
+                  <AnnotationCoOccurrence
+                    file={file.text}
+                    coOccurrenceCurrentState={coOccurrenceCurrentState}
+                    coOccurrenceSummary={coOccurrenceSummary}
+                    onChangeCoOcurr={(
+                      newValueSummary,
+                      newValueCurrentState
+                    ) => {
+                      setCoOccurrenceSummary(newValueSummary);
+                      setCoOccurrenceCurrentState(newValueCurrentState);
                     }}
-                  ></i>
-                  Changes were requested on your tagging
+                  />
+                )}
+              </div>
+
+              {/* saving and changing status for annotation */}
+              <div class="card" style={{ marginTop: "15px" }}>
+                <p
+                  style={{
+                    color: "#fd8c00",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Please save all annotation type separately before saving all
+                </p>
+                <div
+                  class="btn-group"
+                  role="group"
+                  aria-label="Basic example"
+                  style={{ paddingLeft: "13px", paddingRight: "13px" }}
+                >
+                  <button
+                    class="btn btn-primary"
+                    id="saveAllTaggingBtn"
+                    style={{ marginTop: "0px", width: "33%" }}
+                    title="save taggings without changing the status"
+                    onClick={() => saveAnnotations(false)}
+                  >
+                    Save
+                  </button>
+                  <button
+                    id="exportAllTaggingBtn"
+                    class="btn btn-success"
+                    style={{
+                      marginTop: "0px",
+                      marginLeft: "2px",
+                      width: "33%",
+                    }}
+                    title="save taggings and change status to submitted"
+                    onClick={() => saveAnnotations(true)}
+                  >
+                    Save & Submit
+                  </button>
+                  {is_manager == true && (
+                    <button
+                      class="btn btn-warning"
+                      style={{
+                        marginTop: "0px",
+                        marginLeft: "2px",
+                        width: "33%",
+                      }}
+                      title="request changes from the annotator"
+                      onClick={() =>
+                        changeAnnotationsStatus("changes_requested")
+                      }
+                    >
+                      Request Changes
+                    </button>
+                  )}
                 </div>
-              )}
+
+                {/* current status of the annotation */}
+                <div style={{ marginTop: "7px", fontSize: "16px" }}>
+                  {annotationStatus == "not_submitted" && (
+                    <div>You haven't submitted the tagging yet</div>
+                  )}
+                  {annotationStatus == "submitted" && (
+                    <div>You have submitted tagging</div>
+                  )}
+                  {annotationStatus == "changes_requested" && (
+                    <div style={{ color: "#e56000" }}>
+                      <i
+                        class="bi bi-exclamation-triangle"
+                        style={{
+                          marginRight: "5px",
+                        }}
+                      ></i>
+                      Changes were requested on your tagging
+                    </div>
+                  )}
+                </div>
+                <i
+                  class="bi bi-download"
+                  onClick={exportToFile}
+                  style={{
+                    marginRight: "15px",
+                    fontSize: "20px",
+                    verticalAlign: "bottom",
+                    cursor: "pointer",
+                  }}
+                  title="download taggings"
+                ></i>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  }
+
+  /** If the user has permissions- showing the project page
+   * If not- showing error page
+   */
+  function renderPage() {
+    if (is_manager || username == logged_in_user) {
+      return renderProjectPage();
+    } else {
+      return <ErrorPage />;
+    }
+  }
+
+  return <div>{renderPage()}</div>;
 }
