@@ -5,7 +5,7 @@ from .views import GetAnnotatorsStatus, GetByProjectManager, ProjectView, Create
 
 urlpatterns = [
     # project
-    path('get-all', ProjectView.as_view()),
+    path('get-all', ProjectView.as_view()), #TODO: check id needed
     path('create', CreateProjectView.as_view()),
     path('get', GetProject.as_view()),
 
@@ -18,7 +18,7 @@ urlpatterns = [
     # annotations
     path('save-annotation', SaveAnnotation.as_view()),
 
-    path('get-annotation', GetAnnotation.as_view()),
+    path('get-annotation', GetAnnotation.as_view()), #TODO: check id needed
     # algorithm
     path('send-to-algorithm', SendToAlgorithm.as_view()),
 
