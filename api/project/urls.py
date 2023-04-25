@@ -20,10 +20,9 @@ urlpatterns = [
 
     path('get-annotation', GetAnnotation.as_view()), #TODO: check id needed
     # algorithm
-    path('send-to-algorithm', SendToAlgorithm.as_view()),
+    path('send-to-algorithm', SendToAlgorithm.as_view()), #TODO: add tests when finished
 
-
-    path('get-annotation-of-tagger', GetAnnotation.as_view()),
+    path('get-annotation-of-tagger', GetAnnotation.as_view()), 
 
     path('get-annotators-status', GetAnnotatorsStatus.as_view()),
     path('edit-annotation-status', UpdateAnnotationStatus.as_view()),

@@ -210,5 +210,76 @@ class saveAnnotation(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     
+class getAnnotation(TestCase):
+    """
+        tests for getting annotation of tagger in a project and getting status
+    """   
+    def setUp(self):
+        self.client = APIClient()
+        self.metaTagging = MetaTagging.objects.create(title='metaTagging1')
+        self.metaTagging.save()
+        session = self.client.session
+        session.save()
+        self.manager = User.objects.create(username='manager1', is_project_manager=True)        
+        self.user = User.objects.create(username='user1')
+        self.project = Project.objects.create(title='project_title', description='project_description', meta_tagging=self.metaTagging, project_manager=self.manager.username)
+        self.project_no_annotation = Project.objects.create(title='project_no_annotation', description='project_description', meta_tagging=self.metaTagging, project_manager=self.manager.username)
+        data = {
+            'project_id': self.project.project_id,
+            'tagger': self.user.username,
+            'tags': [{'id': 1, 'text': 'Tag1'}, {'id': 2, 'text': 'Tag2'}],
+            'relations': [{'type': 'relation1', 'from': 1, 'to': 2}],
+            'co_occcurrence': []
+        }
+        self.client.post('/api/project/save-annotation', data, format='json')
+   
+    def tearDown(self):
+        self.metaTagging.delete()
+        self.user.delete()
+        self.manager.delete()
+        self.project.delete()
+        self.project_no_annotation.delete()
+
+    def test_get_annotation(self):
+        print("project: Running test_get_annotation")
+        response = self.client.get(f'/api/project/get-annotation-of-tagger?project_id={self.project.project_id}&tagger={self.user.username}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['tagger'], self.user.username)
+        self.assertEqual(response.data['project_id'], self.project.project_id)
+
+    def test_get_annotation_invalid_project_id(self):
+        print("project: Running test_get_annotation_invalid_project_id")
+        response = self.client.get(f'/api/project/get-annotation-of-tagger?project_id=invalid&tagger={self.user.username}')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_annotation_bad_request(self):
+        print("project: Running test_get_annotation_bad_request")
+        response = self.client.get(f'/api/project/get-annotation-of-tagger?tagger={self.user.username}')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+    # getting annotators status
+
+    def test_get_default_annotation_status(self):
+        print("project: Running test_get_default_annotation_status")
+        response = self.client.get(f'/api/project/get-annotators-status?project_id={self.project.project_id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['annotators'][0]['annotation_status'], 'not_submitted')
+
+    def test_get_status_no_annotation(self):
+        print("project: Running test_get_status_no_annotation")
+        response = self.client.get(f'/api/project/get-annotators-status?project_id={self.project_no_annotation.project_id}')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+ 
+    def test_get_status_bad_request(self):
+        print("project: Running test_get_status_bad_request")
+        response = self.client.get(f'/api/project/get-annotators-status?project_id')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
 
 
