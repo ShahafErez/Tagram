@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
+import Form from "react-bootstrap/Form";
+import Kappa from "./Kappa";
 
 export default function ProjectStatistics(props) {
   let project_id = props.project_id;
@@ -83,18 +85,18 @@ export default function ProjectStatistics(props) {
       .then((response) => response.json())
       .then((data) => {
         // navigate to output page with projectId
-        console.log(data);
         alert(formatAlgorithmOutput(data));
       });
   };
 
   const getAlgorithmInputPreview = () => {
-    let str = "";
-    str += "Tags: ";
-    str += tagsForAlgorithm.join(" , ");
-    str += "     "; //TODO: remove
-    str += "\nRelations: ";
-    str += relationsForAlgorithm.join(" , ");
+    let tags_str = "";
+    tags_str += "Tags: ";
+    tags_str += tagsForAlgorithm.join(" , ");
+    let rel_str = "";
+    rel_str += "Relations: ";
+    rel_str += relationsForAlgorithm.join(" , ");
+    let str = [tags_str, rel_str].join("\n");
     return str;
   };
 
@@ -268,6 +270,8 @@ export default function ProjectStatistics(props) {
   /* Return */
   return (
     <div style={{ marginTop: "15px" }}>
+      <h5>Fleiss Kappa Score</h5>
+      {/* <Kappa data={UsersTagsAnnotationStatistics} /> */}
       <h5>Tags</h5>
       <div>
         {Object.keys(tagKappa).length > 0 && (
@@ -290,14 +294,16 @@ export default function ProjectStatistics(props) {
       </div>
       <h5>Algorithm Input Preview</h5>
       <div>
-        <input
-          id="Algorithm_Input_Preview"
-          class="Algorithm_Input_Preview"
-          type="text"
-          placeholder={getAlgorithmInputPreview()}
-          disabled="true"
-          style={{ width: "30%", height: "200px" }}
-        />
+        <Form>
+          <Form.Group className="mb-3" controlId="Algorithm_Input_Preview">
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder={getAlgorithmInputPreview()}
+              disabled="true"
+            />
+          </Form.Group>
+        </Form>
       </div>
 
       <div>

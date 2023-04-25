@@ -5,6 +5,8 @@ from api.meta_tagging.models import MetaTagging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
+from statsmodels.stats.inter_rater import fleiss_kappa
+import numpy as np
 
 
 class ProjectView(generics.ListAPIView):
@@ -279,3 +281,41 @@ class SendToAlgorithm(APIView):
             # TODO: save in DB after the acctual code is ready
             return Response(ans, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'No Project Id'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetProjectFleissKappaScore(APIView):
+    """
+    Calculates Fleiss' Kappa score for the input data.
+    Input: A dictionary of dictionaries where the keys of the outer dictionary are the raters, and the keys of the
+    inner dictionary are the items being rated. The values of the inner dictionary are lists of ratings for that item.
+    Output: The Fleiss' Kappa score as a float.
+    """
+
+    def post(self, request, format=None):
+        
+        data = request.data['data']
+        
+        if data != None:
+        # Create a list to hold the ratings
+            ratings = []
+    
+            # Loop through the items
+            for item in data.values():
+                # Create a list to hold the ratings for the current item
+                item_ratings = []
+                # Loop through the raters
+                for rater in item.values():
+                    # Loop through the classes
+                    for class_, value in rater.items():
+                        # Add the rating to the list
+                        item_ratings.append(value[0][0])
+                # Add the ratings for the current item to the list of all ratings
+                ratings.append(item_ratings)
+        
+            # Convert the list to a numpy array
+            ratings_array = np.array(ratings)
+        
+            # Calculate Fleiss' Kappa score
+            kappa = fleiss_kappa(ratings_array)
+            print(data)
+            return Response(kappa, status=status.HTTP_200_OK)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)
