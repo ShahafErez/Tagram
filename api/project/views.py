@@ -2,6 +2,7 @@ from rest_framework import generics, status
 from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer
 from .models import Project, File, Annotation
 from api.meta_tagging.models import MetaTagging
+from api.users.models import UsersInProject
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
@@ -51,7 +52,6 @@ class CreateProjectView(APIView):
             project = Project(project_manager=project_manager, title=title,
                               description=description, meta_tagging=meta_tagging)
             project.save()
-            # returns the code to the user
             return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -147,6 +147,12 @@ class SaveAnnotation(APIView):
             if (len(project_query)) > 0:
                 project = project_query[0]
                 tagger = data['tagger']
+
+                # checking if the tagger is assigned to this project
+                users_in_project_query = UsersInProject.objects.filter(
+                    project_id=project_id, user=tagger)
+                if (len(users_in_project_query)) <= 0:
+                    return Response(f"User {tagger} is not assigned to project {project_id}", status=status.HTTP_400_BAD_REQUEST)
 
                 ''' 
                 checking if the project and tagger already has a saved annotation

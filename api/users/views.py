@@ -1,10 +1,7 @@
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import JsonResponse
 from api.project.models import Project
-from api.project.serializers import ProjectSerializer
 
 from api.users.models import User, UsersInProject
 from api.project.models import Annotation
@@ -106,9 +103,6 @@ class CreateUserProjectView(APIView):
                         user=current_user, project=project, project_manager=project.project_manager)
                     user_in_project.save()
                     # saving empty annotation record for each tagger in project
-                    # a = UserSerializer(current_user).data
-                    # print("99 ", UserSerializer(current_user).data["username"])
-                    # print("990 ", a["username"])
                     username = UserSerializer(current_user).data["username"]
                     annotation = annotation = Annotation(
                         project=project, tags=None, tagger=username, relations=None, co_occcurrence=None)
