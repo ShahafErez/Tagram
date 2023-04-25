@@ -11,7 +11,12 @@ export default function AdminProjectPage() {
 
   useEffect(() => {
     fetch(`/api/project/get-annotators-status?project_id=${projectId}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status != 200) {
+          return;
+        }
+        return response.json();
+      })
       .then((data) => {
         setAnnotatorsStatus(data);
       });

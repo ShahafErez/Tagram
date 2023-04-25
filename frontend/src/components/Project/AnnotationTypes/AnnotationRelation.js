@@ -5,22 +5,16 @@ export default function AnnotationRelation(props) {
   const file = props.file;
   let TAG_COLORS = {};
   let tag_options = [];
-
-  // The current tag the user choose
-  const [tag, setTag] = useState(tag_options[0]);
-  const [tagSelectingError, setTagSelectingError] = useState("");
-
   props.labels.forEach(function (label, index) {
     TAG_COLORS[label["name"]] = label["color"];
     tag_options.push(label["name"] + "");
   });
 
-  /* The current values being selected. Displaying the select on text.
-    Each line in file will be a separate array */
-  const [currentState, setCurrentState] = useState(props.relationCurrentState);
-  /* The saved relations. Will be saved in db
-   * Saving all values in a single array */
-  const [relationSummary, setRelationSummary] = useState(props.relationSummary);
+  const [tag, setTag] = useState(tag_options[0]); // The current tag the user choose
+  const [tagSelectingError, setTagSelectingError] = useState(""); // error content
+
+  const [currentState, setCurrentState] = useState(props.relationCurrentState); // The current values being selected
+  const [relationSummary, setRelationSummary] = useState(props.relationSummary); // The saved relations. Will be saved in db
 
   // the first and second element that were selected
   const [firstElement, setFirstElement] = useState({
@@ -36,7 +30,8 @@ export default function AnnotationRelation(props) {
     tokens: [],
   });
 
-  const handleValueChange = (key, selectedValue) => {
+  // tokens were selected
+  function handleValueChange(key, selectedValue) {
     // saving the current state after relation selection
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
@@ -63,22 +58,38 @@ export default function AnnotationRelation(props) {
     }
     // sending the updated variables to project page
     props.onChangeRelation(relationSummary, temp_current_state);
-  };
+  }
 
-  const handleSave = () => {
+  function handleSave() {
     // saving the relation in relationSummary
     let temp_relation_summary = JSON.parse(JSON.stringify(relationSummary));
+
+    // change tokens to lowercase and remove punctuation symbols
+    let newTokensFirstElement = [];
+    firstElement.tokens.map((token) => {
+      newTokensFirstElement.push(
+        token.toLowerCase().replace(/[^a-zA-Z ]/g, "")
+      );
+    });
+    firstElement["tokens"] = newTokensFirstElement;
+
+    let newTokensSecondElement = [];
+    secondElement.tokens.map((token) => {
+      newTokensSecondElement.push(
+        token.toLowerCase().replace(/[^a-zA-Z ]/g, "")
+      );
+    });
+    secondElement["tokens"] = newTokensSecondElement;
+
     temp_relation_summary.push({
       tag: tag,
       From: firstElement,
       To: secondElement,
     });
     setRelationSummary(temp_relation_summary);
-    // re-setting the current state to be null
-    let now_current_state = new Array(file.length).fill([]);
-    setCurrentState(now_current_state);
-    props.onChangeRelation(temp_relation_summary, currentState);
-    // re-setting the first and second values
+    // re-setting the current state to be null and the first and second values
+    let new_current_state = new Array(file.length).fill([]);
+    setCurrentState(new_current_state);
     setFirstElement({
       selected: false,
       start: null,
@@ -91,10 +102,11 @@ export default function AnnotationRelation(props) {
       end: null,
       tokens: [],
     });
-    props.onChangeRelation(temp_relation_summary, now_current_state);
-  };
+    props.onChangeRelation(temp_relation_summary, new_current_state);
+  }
 
-  const handleTagChange = (e) => {
+  // the selected tag was changed
+  function handleTagChange(e) {
     // checking if the current state isn't in the middle of a tag change
     if (!firstElement.selected && !secondElement.selected) {
       setTag(e.target.value);
@@ -123,10 +135,10 @@ export default function AnnotationRelation(props) {
         </div>
       );
     }
-  };
+  }
 
   // re-setting the current state
-  const handleResetSelect = () => {
+  function handleResetSelect() {
     setFirstElement({
       selected: false,
       start: null,
@@ -139,25 +151,25 @@ export default function AnnotationRelation(props) {
       end: null,
       tokens: [],
     });
-    let now_current_state = new Array(file.length).fill([]);
-    setCurrentState(now_current_state);
-    props.onChangeRelation(relationSummary, now_current_state);
-  };
+    let new_current_state = new Array(file.length).fill([]);
+    setCurrentState(new_current_state);
+    props.onChangeRelation(relationSummary, new_current_state);
+  }
 
-  const processToken = (value) => {
+  function processToken(value) {
     let tokenString = "";
     value.tokens.forEach((token) => {
       tokenString += " " + token;
     });
     return tokenString;
-  };
+  }
 
-  const removeSelection = (key) => {
+  function removeSelection(key) {
     let temp_relation_summary = JSON.parse(JSON.stringify(relationSummary));
     temp_relation_summary.splice(key, 1);
     setRelationSummary(temp_relation_summary);
     props.onChangeRelation(temp_relation_summary, currentState);
-  };
+  }
 
   return (
     <div class="annotate">
@@ -223,7 +235,7 @@ export default function AnnotationRelation(props) {
           }}
           onClick={handleResetSelect}
         >
-          Reset Select
+          Clear
         </button>
 
         <button
@@ -237,7 +249,7 @@ export default function AnnotationRelation(props) {
           Save Relation
         </button>
 
-        <h4>Selected Tags</h4>
+        <h4>Selected Relations</h4>
         <div style={{ width: "80%", margin: "auto" }}>
           <table class="table">
             <thead>

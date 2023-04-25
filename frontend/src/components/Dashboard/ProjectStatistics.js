@@ -83,7 +83,6 @@ export default function ProjectStatistics(props) {
       .then((response) => response.json())
       .then((data) => {
         // navigate to output page with projectId
-        console.log(data);
         alert(formatAlgorithmOutput(data));
       });
   };
@@ -206,7 +205,6 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersRelationsAnnotationStatistics() {
-    console.log("annotators ", annotators);
     for (const u in annotators) {
       //get user annotations
       fetch(
