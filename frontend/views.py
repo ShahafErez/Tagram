@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
 from .decorators import unauthenticated_user, allowed_users, is_admin
+from api.users.models import User
 import requests
 
 
@@ -60,11 +61,14 @@ def register(request, *args, **kwargs):
                 password1 = form.cleaned_data.get('password1')
                 user = authenticate(
                     request, username=username1, password=password1)
+                send_email = request.POST.get('send-email-checkbox', False) == 'on'
                 if user is not None:
                     login(request, user)
                     context = {}
                     request.session['username'] = username1
                     request.session['is_admin'] = is_admin(request)
+                    if send_email:
+                        User.send_new_user_notification(user)
                     return redirect('/')
                 messages.success(request, 'Hi ' + username1 +
                                  "! You can start your annotation project now!")
