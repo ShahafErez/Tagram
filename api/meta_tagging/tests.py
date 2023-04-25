@@ -130,9 +130,13 @@ class GetLabelsByMetaTaggingId(TestCase):
 
     def test_get_labels_by_meta_tagging_id_invalid_id(self):
         print("MetaTagging: Running test_get_labels_by_meta_tagging_id_invalid_id")
-        response = self.client.get(f"/api/users/projects-by-username/get?id=invalid")
+        response = self.client.get("/api/meta-tagging/labels-by-id?meta-tagging-id=invalid")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_get_labels_by_meta_tagging_id_bad_request(self):
+        print("MetaTagging: Running test_get_labels_by_meta_tagging_id_bad_request")
+        response = self.client.get("/api/meta-tagging/labels-by-id?")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class GetLabelsGroupByMetaTagging(TestCase):
     """
