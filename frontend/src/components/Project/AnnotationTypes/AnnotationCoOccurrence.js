@@ -5,39 +5,36 @@ export default function AnnotationCoOccurrence(props) {
   const file = props.file;
   let TAG_COLOR = "#fcc727";
 
-  /* The current values being selected. Displaying the select on text.
-    Each line in file will be a separate array */
   const [currentState, setCurrentState] = useState(
     props.coOccurrenceCurrentState
-  );
-  /* The saved relations. Will be saved in db
-   * Saving all values in a single array */
+  ); // The current values being selected. saved in a matrix
+
   const [coOccurrenceSummary, setCoOccurrenceSummary] = useState(
     props.coOccurrenceSummary
-  );
-  /* The current values being selected
-   * Saving all values in a single array */
-  const [currentlySelectedArray, setCurrentlySelectedArray] = useState([]);
+  ); //The saved co occurrence. Will be saved in db
 
-  const handleValueChange = (key, selectedValue) => {
+  // tokens were selected
+  function handleValueChange(key, selectedValue) {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
+
+    let tokens_array = [];
+    temp_current_state.flat().map((selection) => {
+      tokens_array.push(selection.tokens);
+    });
+
     let temp_currently_selected_array = JSON.parse(
-      JSON.stringify(currentlySelectedArray)
+      JSON.stringify(tokens_array)
     );
     temp_currently_selected_array.push(
       selectedValue[selectedValue.length - 1].tokens
     );
-    setCurrentlySelectedArray(temp_currently_selected_array);
     props.onChangeCoOcurr(coOccurrenceSummary, temp_current_state);
-  };
+  }
 
-  /**
-   * Unselecting token
-   * Re-rendering currently selected array
-   */
-  const unselectValue = (key, selectedValue) => {
+  // tokens were un-selected
+  function unselectValue(key, selectedValue) {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
@@ -48,42 +45,52 @@ export default function AnnotationCoOccurrence(props) {
         temp_currently_selected_array.push(current_state.tokens);
       }
     }
-    setCurrentlySelectedArray(temp_currently_selected_array);
     props.onChangeCoOcurr(coOccurrenceSummary, temp_current_state);
-  };
+  }
 
-  /**
-   * Saving a currently selected array in co occurrence summary
-   * And re-setting the currently selected array
-   */
+  // saving all current tags
   const handleSave = () => {
     let tempCoOccur = JSON.parse(JSON.stringify(coOccurrenceSummary));
-    tempCoOccur.push([currentlySelectedArray]);
+    let tokensArray = [];
+    // change tokens to lowercase and remove punctuation symbols
+    currentState.flat().map((selection) => {
+      let newTokens = [];
+      selection.tokens.map((token) => {
+        newTokens.push(token.toLowerCase().replace(/[^a-zA-Z ]/g, ""));
+      });
+      selection["tokens"] = newTokens;
+      tokensArray.push(selection.tokens);
+    });
+    tempCoOccur.push([tokensArray]);
     setCoOccurrenceSummary(tempCoOccur);
     setCurrentState(new Array(file.length).fill([]));
-    setCurrentlySelectedArray([]);
     props.onChangeCoOcurr(tempCoOccur, currentState);
   };
 
-  /**
-   * Removing tagging set
-   */
-  const removeSet = (key) => {
+  // Removing tagging set
+  function removeSet(key) {
     let temp_co_occurrence_summary = JSON.parse(
       JSON.stringify(coOccurrenceSummary)
     );
     temp_co_occurrence_summary.splice(key, 1);
     setCoOccurrenceSummary(temp_co_occurrence_summary);
     props.onChangeCoOcurr(temp_co_occurrence_summary, currentState);
-  };
+  }
 
-  const processToken = (tokens) => {
+  // re-setting the current state
+  function handleResetSelect() {
+    let new_current_state = new Array(file.length).fill([]);
+    setCurrentState(new_current_state);
+    props.onChangeTags(coOccurrenceSummary, new_current_state);
+  }
+
+  function processToken(tokens) {
     let tokenString = "";
     tokens.forEach((token) => {
       tokenString += " " + token;
     });
     return tokenString;
-  };
+  }
 
   return (
     <div class="annotate">
@@ -121,10 +128,24 @@ export default function AnnotationCoOccurrence(props) {
             })}
           </div>
         </div>
+
+        <button
+          type="submit"
+          class="btn btn-passive"
+          style={{
+            marginRight: "10px",
+            backgroundColor: "#adb5bd",
+          }}
+          title="clear all selected tags"
+          onClick={handleResetSelect}
+        >
+          Clear
+        </button>
         <button class="btn btn-secondary" onClick={handleSave}>
           save co-occurrence set
         </button>
-        <h4>Selected Sets</h4>
+
+        <h4>Selected Co-Occurrence</h4>
         <div style={{ width: "80%", margin: "auto" }}>
           <table class="table">
             <thead>
