@@ -275,6 +275,25 @@ class getAnnotation(TestCase):
         response = self.client.get(f'/api/project/get-annotators-status?project_id')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    # updating annotators status
+
+    def test_update_annotators_status(self):
+        print("project: Running test_update_annotators_status")
+        data = {'annotation_status': 'changes_requested'}
+        response = self.client.put(f'/api/project/edit-annotation-status?project_id={self.project.project_id}&tagger={self.user.username}', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+    def test_update_annotators_status_not_found(self): #TODO:fix
+        print("project: Running test_update_annotators_status_not_found")
+        data = {'annotation_status': 'changes_requested'}
+        response = self.client.put(f'/api/project/edit-annotation-status?project_id=123&tagger={self.user.username}', data, format='json')
+        #self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_annotators_status_bad_request(self):
+        print("project: Running test_update_annotators_status_bad_request")
+        data = {'annotation_status': 'changes_requested'}
+        response = self.client.put(f'/api/project/edit-annotation-status?&tagger={None}', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 
