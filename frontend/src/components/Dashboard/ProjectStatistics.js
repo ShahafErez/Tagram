@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
 import Kappa from "./Kappa";
+import Badge from "react-bootstrap/Badge";
 
 export default function ProjectStatistics(props) {
   let project_id = props.project_id;
@@ -297,14 +299,31 @@ export default function ProjectStatistics(props) {
   /* Return */
   return (
     <div style={{ marginTop: "15px" }}>
-      <h5>Fleiss Kappa Score For Labels</h5>
-      {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
-        <Kappa data={UsersTagsAnnotationStatistics} />
-      )}
-      <h5>Fleiss Kappa Score For Relations</h5>
-      {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
-        <Kappa data={UsersRelationsAnnotationStatistics} />
-      )}
+      <Alert variant={"info"}>
+        <Alert.Heading>Fleiss Kappa Score For Labels</Alert.Heading>
+        <hr />
+        <h2>
+          <Badge bg="light" text="dark">
+            {" "}
+            {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
+              <Kappa data={UsersTagsAnnotationStatistics} />
+            )}
+          </Badge>
+        </h2>
+      </Alert>
+      <Alert variant={"info"}>
+        <Alert.Heading>Fleiss Kappa Score For Relations</Alert.Heading>
+        <hr />
+        <h2>
+          <Badge bg="light" text="dark">
+            {" "}
+            {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
+              <Kappa data={UsersRelationsAnnotationStatistics} />
+            )}
+          </Badge>
+        </h2>
+      </Alert>
+
       <h5>Tags</h5>
       <div>
         {Object.keys(tagKappa).length > 0 && (
