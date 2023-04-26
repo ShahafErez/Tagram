@@ -299,75 +299,88 @@ export default function ProjectStatistics(props) {
   /* Return */
   return (
     <div style={{ marginTop: "15px" }}>
-      <Alert variant={"info"}>
-        <Alert.Heading>Fleiss Kappa Score For Labels</Alert.Heading>
-        <hr />
-        <h2>
-          <Badge bg="light" text="dark">
-            {" "}
-            {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
-              <Kappa data={UsersTagsAnnotationStatistics} />
-            )}
-          </Badge>
-        </h2>
-      </Alert>
-      <Alert variant={"info"}>
-        <Alert.Heading>Fleiss Kappa Score For Relations</Alert.Heading>
-        <hr />
-        <h2>
-          <Badge bg="light" text="dark">
-            {" "}
-            {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
-              <Kappa data={UsersRelationsAnnotationStatistics} />
-            )}
-          </Badge>
-        </h2>
-      </Alert>
+      {annotators.length < 2 && (
+        <div>
+          <Alert variant={"danger"}>
+            <Alert.Heading>Not enough data</Alert.Heading>
+            <hr />
+            Not enough annotators annotate this project.
+          </Alert>
+        </div>
+      )}
+      {annotators.length > 1 && (
+        <div>
+          <Alert variant={"info"}>
+            <Alert.Heading>Fleiss Kappa Score For Labels</Alert.Heading>
+            <hr />
+            <h2>
+              <Badge bg="light" text="dark">
+                {" "}
+                {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
+                  <Kappa data={UsersTagsAnnotationStatistics} />
+                )}
+              </Badge>
+            </h2>
+          </Alert>
+          <Alert variant={"info"}>
+            <Alert.Heading>Fleiss Kappa Score For Relations</Alert.Heading>
+            <hr />
+            <h2>
+              <Badge bg="light" text="dark">
+                {" "}
+                {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
+                  <Kappa data={UsersRelationsAnnotationStatistics} />
+                )}
+              </Badge>
+            </h2>
+          </Alert>
 
-      <h5>Tags</h5>
-      <div>
-        {Object.keys(tagKappa).length > 0 && (
-          <ProjectTagTable
-            data={tagKappa}
-            threshold={0}
-            setTagsForAlgorithm={setTagsForAlgorithm}
-          />
-        )}
-      </div>
-      <h5>Relations</h5>
-      <div>
-        {Object.keys(relKappa).length > 0 && (
-          <ProjectRelationTable
-            data={relKappa}
-            threshold={0}
-            setRelationsForAlgorithm={setRelationsForAlgorithm}
-          />
-        )}
-      </div>
-      <h5>Algorithm Input Preview</h5>
-      <div>
-        <Form>
-          <Form.Group className="mb-3" controlId="Algorithm_Input_Preview">
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder={getAlgorithmInputPreview()}
-              disabled="true"
-            />
-          </Form.Group>
-        </Form>
-      </div>
+          <h5>Tags</h5>
+          <div>
+            {Object.keys(tagKappa).length > 0 && (
+              <ProjectTagTable
+                data={tagKappa}
+                threshold={0}
+                setTagsForAlgorithm={setTagsForAlgorithm}
+              />
+            )}
+          </div>
+          <h5>Relations</h5>
+          <div>
+            {Object.keys(relKappa).length > 0 && (
+              <ProjectRelationTable
+                data={relKappa}
+                threshold={0}
+                setRelationsForAlgorithm={setRelationsForAlgorithm}
+              />
+            )}
+          </div>
+          <h5>Algorithm Input Preview</h5>
+          <div>
+            <Form>
+              <Form.Group className="mb-3" controlId="Algorithm_Input_Preview">
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder={getAlgorithmInputPreview()}
+                  disabled="true"
+                />
+              </Form.Group>
+            </Form>
+          </div>
 
-      <div>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onClick={() => sendProjectToAlgorithm()}
-          style={{ marginTop: "25px" }}
-        >
-          Send Data to Algorithm
-        </button>
-      </div>
+          <div>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onClick={() => sendProjectToAlgorithm()}
+              style={{ marginTop: "25px" }}
+            >
+              Send Data to Algorithm
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
