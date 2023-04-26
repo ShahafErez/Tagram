@@ -258,6 +258,7 @@ export default function ProjectStatistics(props) {
           results[r].data;
       }
 
+      console.log(temp_UsersRelationsAnnotationStatistics);
       setUsersRelationsAnnotationStatistics(
         temp_UsersRelationsAnnotationStatistics
       );
@@ -296,9 +297,13 @@ export default function ProjectStatistics(props) {
   /* Return */
   return (
     <div style={{ marginTop: "15px" }}>
-      <h5>Fleiss Kappa Score</h5>
+      <h5>Fleiss Kappa Score For Labels</h5>
       {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
         <Kappa data={UsersTagsAnnotationStatistics} />
+      )}
+      <h5>Fleiss Kappa Score For Relations</h5>
+      {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
+        <Kappa data={UsersRelationsAnnotationStatistics} />
       )}
       <h5>Tags</h5>
       <div>

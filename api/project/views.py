@@ -344,5 +344,5 @@ class GetProjectFleissKappaScore(APIView):
             # Calculate Fleiss' Kappa score
             kappa = fleiss_kappa(arr)
             
-            return Response(kappa, status=status.HTTP_200_OK)
+            return Response('{:.2f}'.format(round(kappa, 2)), status=status.HTTP_200_OK)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
