@@ -16,7 +16,7 @@ class CreateMetaTaggingTestCase(TestCase):
         self.metaTagging.delete()
 
     def test_create_meta_tagging(self):
-        print("CreateMetaTaggingTestCase: Running test_create_meta_tagging")
+        print("MetaTagging: Running test_create_meta_tagging")
         data = {'title': 'metaTagging2'}
         response = self.client.post('/api/meta-tagging/create', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -24,14 +24,14 @@ class CreateMetaTaggingTestCase(TestCase):
         MetaTagging.objects.get(title='metaTagging2').delete()
 
     def test_create_meta_tagging_invalid_param(self):
-        print("CreateMetaTaggingTestCase: Running test_create_meta_tagging_invalid_param")
+        print("MetaTagging: Running test_create_meta_tagging_invalid_param")
         data = {'invalid': 'metaTagging2'}
         response = self.client.post('/api/meta-tagging/create', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(MetaTagging.objects.count(), 1)
 
     def test_create_meta_tagging_no_title(self):
-        print("CreateMetaTaggingTestCase: Running test_create_meta_tagging_no_title")
+        print("MetaTagging: Running test_create_meta_tagging_no_title")
         data = {'title': ''}
         response = self.client.post('/api/meta-tagging/create', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -50,7 +50,7 @@ class CreateMetaTaggingLabelView(TestCase):
         self.metaTagging.delete()
 
     def test_create_label_invalid_id(self):
-        print("CreateMetaTaggingLabelView: Running test_create_label")
+        print("MetaTagging: Running test_create_label_invalid_id")
         session = self.client.session
         session.save()
         data = {
@@ -64,7 +64,7 @@ class CreateMetaTaggingLabelView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_label(self):
-        print("CreateMetaTaggingLabelView: Running test_create_label")
+        print("MetaTagging: Running test_create_label")
         session = self.client.session
         session.save()
         data = {
@@ -78,7 +78,7 @@ class CreateMetaTaggingLabelView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_invalid_meta_tagging_id(self):
-        print("CreateMetaTaggingLabelView: Running test_invalid_meta_tagging_id")
+        print("MetaTagging: Running test_invalid_meta_tagging_id")
         session = self.client.session
         session.save()
         data = {
@@ -115,7 +115,7 @@ class GetLabelsByMetaTaggingId(TestCase):
         self.metaTagging.delete()        
 
     def test_get_labels_by_meta_tagging_id(self): 
-        print("GetLabelsByMetaTaggingId: Running test_get_labels_by_meta_tagging_id")
+        print("MetaTagging: Running test_get_labels_by_meta_tagging_id")
         response = self.client.get(f'/api/meta-tagging/labels-by-id?meta-tagging-id={self.metaTagging.meta_tagging_id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
@@ -129,10 +129,14 @@ class GetLabelsByMetaTaggingId(TestCase):
         self.assertEqual(response.data[1]['color'], 'color2')
 
     def test_get_labels_by_meta_tagging_id_invalid_id(self):
-        print("GetLabelsByMetaTaggingId: Running test_get_labels_by_meta_tagging_id_invalid_id")
-        response = self.client.get(f"/api/users/projects-by-username/get?id=invalid")
+        print("MetaTagging: Running test_get_labels_by_meta_tagging_id_invalid_id")
+        response = self.client.get("/api/meta-tagging/labels-by-id?meta-tagging-id=invalid")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_get_labels_by_meta_tagging_id_bad_request(self):
+        print("MetaTagging: Running test_get_labels_by_meta_tagging_id_bad_request")
+        response = self.client.get("/api/meta-tagging/labels-by-id?")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class GetLabelsGroupByMetaTagging(TestCase):
     """
@@ -157,6 +161,6 @@ class GetLabelsGroupByMetaTagging(TestCase):
         self.metaTagging.delete()
 
     def test_get_labels_group(self):
-        print("GetLabelsGroupByMetaTagging: Running test_get_labels_group")
+        print("MetaTagging: Running test_get_labels_group")
         response = self.client.get('/api/meta-tagging/all-labels-grouped', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

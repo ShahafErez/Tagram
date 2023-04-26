@@ -80,9 +80,14 @@ export default function CreateProjectPage() {
             project: project_id,
             user: selectedUsers,
           }),
+        }).then((response) => {
+          if (response.status == 201) {
+            navigate("/manager/" + project_id);
+          } else {
+            console.log("error");
+          }
         });
-      })
-      .then(() => navigate("/manager/" + project_id));
+      });
   };
 
   /** Getting the text of the new uploaded file
