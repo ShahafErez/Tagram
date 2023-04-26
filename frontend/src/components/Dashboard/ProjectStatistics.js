@@ -133,7 +133,7 @@ export default function ProjectStatistics(props) {
           if (!tagCounts[tagKey]) {
             tagCounts[tagKey] = 0;
           }
-          tagCounts[tagKey] += tagVal.length / numObjects;
+          tagCounts[tagKey] += Math.ceil(tagVal.length / numObjects);
         }
       }
     }
@@ -142,9 +142,10 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersTagsAnnotationStatistics() {
+    let promises = [];
+
     for (const u in annotators) {
-      //get user annotations
-      fetch(
+      let promise = fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
           project_id +
           "&tagger=" +
@@ -161,12 +162,24 @@ export default function ProjectStatistics(props) {
           }
         })
         .then((data) => {
-          setUsersTagsAnnotationStatistics({
-            ...UsersTagsAnnotationStatistics,
-            [annotators[u]]: data,
-          });
+          return {
+            user: annotators[u],
+            data: data,
+          };
         });
+
+      promises.push(promise);
     }
+
+    Promise.all(promises).then((results) => {
+      let temp_UsersTagsAnnotationStatistics = {};
+
+      for (const r in results) {
+        temp_UsersTagsAnnotationStatistics[results[r].user] = results[r].data;
+      }
+      console.log(temp_UsersTagsAnnotationStatistics);
+      setUsersTagsAnnotationStatistics(temp_UsersTagsAnnotationStatistics);
+    });
   }
 
   /* Relations */
@@ -208,10 +221,10 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersRelationsAnnotationStatistics() {
-    console.log("annotators ", annotators);
+    let promises = [];
+
     for (const u in annotators) {
-      //get user annotations
-      fetch(
+      let promise = fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
           project_id +
           "&tagger=" +
@@ -228,14 +241,27 @@ export default function ProjectStatistics(props) {
           }
         })
         .then((data) => {
-          setUsersRelationsAnnotationStatistics(
-            (UsersRelationsAnnotationStatistics) => ({
-              ...UsersRelationsAnnotationStatistics,
-              [annotators[u]]: data,
-            })
-          );
+          return {
+            user: annotators[u],
+            data: data,
+          };
         });
+
+      promises.push(promise);
     }
+
+    Promise.all(promises).then((results) => {
+      let temp_UsersRelationsAnnotationStatistics = {};
+
+      for (const r in results) {
+        temp_UsersRelationsAnnotationStatistics[results[r].user] =
+          results[r].data;
+      }
+
+      setUsersRelationsAnnotationStatistics(
+        temp_UsersRelationsAnnotationStatistics
+      );
+    });
   }
 
   function calcKappaForRelations() {
@@ -271,7 +297,9 @@ export default function ProjectStatistics(props) {
   return (
     <div style={{ marginTop: "15px" }}>
       <h5>Fleiss Kappa Score</h5>
-      {/* <Kappa data={UsersTagsAnnotationStatistics} /> */}
+      {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
+        <Kappa data={UsersTagsAnnotationStatistics} />
+      )}
       <h5>Tags</h5>
       <div>
         {Object.keys(tagKappa).length > 0 && (

@@ -5,8 +5,9 @@ from api.meta_tagging.models import MetaTagging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
-from statsmodels.stats.inter_rater import fleiss_kappa
+from statsmodels.stats.inter_rater import fleiss_kappa,aggregate_raters
 import numpy as np
+import pandas as pd
 
 
 class ProjectView(generics.ListAPIView):
@@ -289,33 +290,59 @@ class GetProjectFleissKappaScore(APIView):
     inner dictionary are the items being rated. The values of the inner dictionary are lists of ratings for that item.
     Output: The Fleiss' Kappa score as a float.
     """
+    def pad_arrays(self,arrays):
+        max_len = max([len(arr) for arr in arrays])
+        padded_arrays = []
+        for arr in arrays:
+            padding = [0] * (max_len - len(arr))
+            padded_arrays.append(arr + padding)
+        return padded_arrays
+    def getArray(self,input):
+        ans = {}
+        for key,val in input.items():
+            ans[key] = {}
+            for key2,val2 in val.items():
+                indx = key2
+                for key3,val3 in val2.items():
+                    class_ = key3
+                    for arr in val3:
+                        place_ = f"{arr[0]}{arr[1]}"
+                        new_str = indx+class_+place_
+                        ans[key][new_str] = 1
+        return ans
+        
+    def create_dataframe(self,input_dict):
+        # create an empty dataframe with the correct columns
+        columns = list(input_dict[list(input_dict.keys())[0]].keys())
+        df = pd.DataFrame(columns=columns)
+        
+        # iterate over the dictionary and fill in the dataframe
+        for key in input_dict:
+            row = [1 if input_dict[key].get(col, 0) == 1 else 0 for col in columns]
+            df.loc[key] = row
+        
+        return df
+    
+    def create_numpy_array(self,input_dict):
+        # create a pandas dataframe
+        columns = list(input_dict[list(input_dict.keys())[0]].keys())
+        df = pd.DataFrame(columns=columns)
+        for key in input_dict:
+            row = [1 if input_dict[key].get(col, 0) == 1 else 0 for col in columns]
+            df.loc[key] = row
+        
+        # return the numpy array
+        return df.values
 
     def post(self, request, format=None):
         
         data = request.data['data']
         
         if data != None:
-        # Create a list to hold the ratings
-            ratings = []
-    
-            # Loop through the items
-            for item in data.values():
-                # Create a list to hold the ratings for the current item
-                item_ratings = []
-                # Loop through the raters
-                for rater in item.values():
-                    # Loop through the classes
-                    for class_, value in rater.items():
-                        # Add the rating to the list
-                        item_ratings.append(value[0][0])
-                # Add the ratings for the current item to the list of all ratings
-                ratings.append(item_ratings)
-        
-            # Convert the list to a numpy array
-            ratings_array = np.array(ratings)
-        
+            arr  = self.create_numpy_array(self.getArray(data))
+            print(arr)
             # Calculate Fleiss' Kappa score
-            kappa = fleiss_kappa(ratings_array)
-            print(data)
+            kappa = fleiss_kappa(arr)
+            
             return Response(kappa, status=status.HTTP_200_OK)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
