@@ -34,7 +34,6 @@ export default function ProjectTagsTable2({
         />
       </td>
       <td>{tag}</td>
-      <td>{score}</td>
     </tr>
   ));
 
@@ -42,9 +41,8 @@ export default function ProjectTagsTable2({
     <table class="table">
       <thead>
         <tr>
-          <th scope="col"></th>
+          <th scope="col">Select</th>
           <th scope="col">Tag</th>
-          <th scope="col">Score</th>
         </tr>
       </thead>
       <tbody>{rows}</tbody>

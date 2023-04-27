@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
+import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
+import Kappa from "./Kappa";
+import Badge from "react-bootstrap/Badge";
 
 export default function ProjectStatistics(props) {
   let project_id = props.project_id;
@@ -88,12 +92,13 @@ export default function ProjectStatistics(props) {
   };
 
   const getAlgorithmInputPreview = () => {
-    let str = "";
-    str += "Tags: ";
-    str += tagsForAlgorithm.join(" , ");
-    str += "     "; //TODO: remove
-    str += "\nRelations: ";
-    str += relationsForAlgorithm.join(" , ");
+    let tags_str = "";
+    tags_str += "Tags: ";
+    tags_str += tagsForAlgorithm.join(" , ");
+    let rel_str = "";
+    rel_str += "Relations: ";
+    rel_str += relationsForAlgorithm.join(" , ");
+    let str = [tags_str, rel_str].join("\n");
     return str;
   };
 
@@ -130,7 +135,7 @@ export default function ProjectStatistics(props) {
           if (!tagCounts[tagKey]) {
             tagCounts[tagKey] = 0;
           }
-          tagCounts[tagKey] += tagVal.length / numObjects;
+          tagCounts[tagKey] += Math.ceil(tagVal.length / numObjects);
         }
       }
     }
@@ -139,9 +144,10 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersTagsAnnotationStatistics() {
+    let promises = [];
+
     for (const u in annotators) {
-      //get user annotations
-      fetch(
+      let promise = fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
           project_id +
           "&tagger=" +
@@ -158,12 +164,24 @@ export default function ProjectStatistics(props) {
           }
         })
         .then((data) => {
-          setUsersTagsAnnotationStatistics({
-            ...UsersTagsAnnotationStatistics,
-            [annotators[u]]: data,
-          });
+          return {
+            user: annotators[u],
+            data: data,
+          };
         });
+
+      promises.push(promise);
     }
+
+    Promise.all(promises).then((results) => {
+      let temp_UsersTagsAnnotationStatistics = {};
+
+      for (const r in results) {
+        temp_UsersTagsAnnotationStatistics[results[r].user] = results[r].data;
+      }
+      console.log(temp_UsersTagsAnnotationStatistics);
+      setUsersTagsAnnotationStatistics(temp_UsersTagsAnnotationStatistics);
+    });
   }
 
   /* Relations */
@@ -205,9 +223,10 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersRelationsAnnotationStatistics() {
+    let promises = [];
+
     for (const u in annotators) {
-      //get user annotations
-      fetch(
+      let promise = fetch(
         "/api/project/get-annotation-of-tagger?project_id=" +
           project_id +
           "&tagger=" +
@@ -224,14 +243,28 @@ export default function ProjectStatistics(props) {
           }
         })
         .then((data) => {
-          setUsersRelationsAnnotationStatistics(
-            (UsersRelationsAnnotationStatistics) => ({
-              ...UsersRelationsAnnotationStatistics,
-              [annotators[u]]: data,
-            })
-          );
+          return {
+            user: annotators[u],
+            data: data,
+          };
         });
+
+      promises.push(promise);
     }
+
+    Promise.all(promises).then((results) => {
+      let temp_UsersRelationsAnnotationStatistics = {};
+
+      for (const r in results) {
+        temp_UsersRelationsAnnotationStatistics[results[r].user] =
+          results[r].data;
+      }
+
+      console.log(temp_UsersRelationsAnnotationStatistics);
+      setUsersRelationsAnnotationStatistics(
+        temp_UsersRelationsAnnotationStatistics
+      );
+    });
   }
 
   function calcKappaForRelations() {
@@ -266,48 +299,88 @@ export default function ProjectStatistics(props) {
   /* Return */
   return (
     <div style={{ marginTop: "15px" }}>
-      <h5>Tags</h5>
-      <div>
-        {Object.keys(tagKappa).length > 0 && (
-          <ProjectTagTable
-            data={tagKappa}
-            threshold={0}
-            setTagsForAlgorithm={setTagsForAlgorithm}
-          />
-        )}
-      </div>
-      <h5>Relations</h5>
-      <div>
-        {Object.keys(relKappa).length > 0 && (
-          <ProjectRelationTable
-            data={relKappa}
-            threshold={0}
-            setRelationsForAlgorithm={setRelationsForAlgorithm}
-          />
-        )}
-      </div>
-      <h5>Algorithm Input Preview</h5>
-      <div>
-        <input
-          id="Algorithm_Input_Preview"
-          class="Algorithm_Input_Preview"
-          type="text"
-          placeholder={getAlgorithmInputPreview()}
-          disabled="true"
-          style={{ width: "30%", height: "200px" }}
-        />
-      </div>
+      {annotators.length < 2 && (
+        <div>
+          <Alert variant={"danger"}>
+            <Alert.Heading>Not enough data</Alert.Heading>
+            <hr />
+            Not enough annotators annotate this project.
+          </Alert>
+        </div>
+      )}
+      {annotators.length > 1 && (
+        <div>
+          <Alert variant={"info"}>
+            <Alert.Heading>Fleiss Kappa Score For Labels</Alert.Heading>
+            <hr />
+            <h2>
+              <Badge bg="light" text="dark">
+                {" "}
+                {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
+                  <Kappa data={UsersTagsAnnotationStatistics} />
+                )}
+              </Badge>
+            </h2>
+          </Alert>
+          <Alert variant={"info"}>
+            <Alert.Heading>Fleiss Kappa Score For Relations</Alert.Heading>
+            <hr />
+            <h2>
+              <Badge bg="light" text="dark">
+                {" "}
+                {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
+                  <Kappa data={UsersRelationsAnnotationStatistics} />
+                )}
+              </Badge>
+            </h2>
+          </Alert>
 
-      <div>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onClick={() => sendProjectToAlgorithm()}
-          style={{ marginTop: "25px" }}
-        >
-          Send Data to Algorithm
-        </button>
-      </div>
+          <h5>Tags</h5>
+          <div>
+            {Object.keys(tagKappa).length > 0 && (
+              <ProjectTagTable
+                data={tagKappa}
+                threshold={0}
+                setTagsForAlgorithm={setTagsForAlgorithm}
+              />
+            )}
+          </div>
+          <h5>Relations</h5>
+          <div>
+            {Object.keys(relKappa).length > 0 && (
+              <ProjectRelationTable
+                data={relKappa}
+                threshold={0}
+                setRelationsForAlgorithm={setRelationsForAlgorithm}
+              />
+            )}
+          </div>
+          <h5>Algorithm Input Preview</h5>
+          <div>
+            <Form>
+              <Form.Group className="mb-3" controlId="Algorithm_Input_Preview">
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder={getAlgorithmInputPreview()}
+                  disabled="true"
+                />
+              </Form.Group>
+            </Form>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onClick={() => sendProjectToAlgorithm()}
+              style={{ marginTop: "25px" }}
+            >
+              Send Data to Algorithm
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

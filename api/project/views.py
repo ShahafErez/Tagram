@@ -6,6 +6,9 @@ from api.users.models import UsersInProject
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
+from statsmodels.stats.inter_rater import fleiss_kappa,aggregate_raters
+import numpy as np
+import pandas as pd
 
 
 class ProjectView(generics.ListAPIView):
@@ -285,3 +288,67 @@ class SendToAlgorithm(APIView):
             # TODO: save in DB after the acctual code is ready
             return Response(ans, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'No Project Id'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetProjectFleissKappaScore(APIView):
+    """
+    Calculates Fleiss' Kappa score for the input data.
+    Input: A dictionary of dictionaries where the keys of the outer dictionary are the raters, and the keys of the
+    inner dictionary are the items being rated. The values of the inner dictionary are lists of ratings for that item.
+    Output: The Fleiss' Kappa score as a float.
+    """
+    def pad_arrays(self,arrays):
+        max_len = max([len(arr) for arr in arrays])
+        padded_arrays = []
+        for arr in arrays:
+            padding = [0] * (max_len - len(arr))
+            padded_arrays.append(arr + padding)
+        return padded_arrays
+    def getArray(self,input):
+        ans = {}
+        for key,val in input.items():
+            ans[key] = {}
+            for key2,val2 in val.items():
+                indx = key2
+                for key3,val3 in val2.items():
+                    class_ = key3
+                    for arr in val3:
+                        place_ = f"{arr[0]}{arr[1]}"
+                        new_str = indx+class_+place_
+                        ans[key][new_str] = 1
+        return ans
+        
+    def create_dataframe(self,input_dict):
+        # create an empty dataframe with the correct columns
+        columns = list(input_dict[list(input_dict.keys())[0]].keys())
+        df = pd.DataFrame(columns=columns)
+        
+        # iterate over the dictionary and fill in the dataframe
+        for key in input_dict:
+            row = [1 if input_dict[key].get(col, 0) == 1 else 0 for col in columns]
+            df.loc[key] = row
+        
+        return df
+    
+    def create_numpy_array(self,input_dict):
+        # create a pandas dataframe
+        columns = list(input_dict[list(input_dict.keys())[0]].keys())
+        df = pd.DataFrame(columns=columns)
+        for key in input_dict:
+            row = [1 if input_dict[key].get(col, 0) == 1 else 0 for col in columns]
+            df.loc[key] = row
+        
+        # return the numpy array
+        return df.values
+
+    def post(self, request, format=None):
+        
+        data = request.data['data']
+        
+        if data != None:
+            arr  = self.create_numpy_array(self.getArray(data))
+            print(arr)
+            # Calculate Fleiss' Kappa score
+            kappa = fleiss_kappa(arr)
+            
+            return Response('{:.2f}'.format(round(kappa, 2)), status=status.HTTP_200_OK)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)
