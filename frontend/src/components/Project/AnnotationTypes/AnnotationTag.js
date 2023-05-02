@@ -60,6 +60,7 @@ export default function AnnotationTag(props) {
     let new_current_state = new Array(file.length).fill([]);
     setCurrentState(new_current_state);
     props.onChangeTags(temp_tags_summary, new_current_state);
+    ReactSession.set(tagSessionField, new_current_state);
   }
 
   // Removing tagging set
@@ -75,6 +76,7 @@ export default function AnnotationTag(props) {
     let new_current_state = new Array(file.length).fill([]);
     setCurrentState(new_current_state);
     props.onChangeTags(tagsSummary, new_current_state);
+    ReactSession.set(tagSessionField, new_current_state);
   }
 
   function processToken(value) {
