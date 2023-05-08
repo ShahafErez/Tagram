@@ -33,7 +33,6 @@ export default function ProjectRelationsTable2({
         />
       </td>
       <td>{rel}</td>
-      <td>{score}</td>
     </tr>
   ));
 
@@ -41,9 +40,8 @@ export default function ProjectRelationsTable2({
     <table class="table">
       <thead>
         <tr>
-          <th scope="col"></th>
+          <th scope="col">Select</th>
           <th scope="col">Relation</th>
-          <th scope="col">Score</th>
         </tr>
       </thead>
       <tbody>{rows}</tbody>
