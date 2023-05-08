@@ -4,7 +4,8 @@ from api.project.models import Project
 from api.users.models import User, UsersInProject
 from rest_framework.test import APIClient
 from rest_framework.views import status
-
+from api.project.models import File
+import os
 
 class CreateProject(TestCase):
     """
@@ -152,21 +153,29 @@ class getProject(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class file(TestCase):  # TODO: fix
+class file(TestCase):
     """
-        tests for getting file, uploading file or getting file contend
+        tests for getting file, uploading file or getting file content
     """
-
+    current_dir = os.getcwd()
+    print(current_dir)
+    relative_path = 'api/project'
+    relative_full_path = os.path.join(current_dir, relative_path)
+    os.chdir(relative_full_path)
+    
     def setUp(self):
         self.client = APIClient()
         self.metaTagging = MetaTagging.objects.create(title='metaTagging1')
         self.metaTagging.save()
         session = self.client.session
         session.save()
-        self.manager1 = User.objects.create(
-            username='manager1', is_project_manager=True)
-        self.project = Project.objects.create(title='project_title', description='project_description',
-                                              meta_tagging=self.metaTagging, project_manager=self.manager1.username)
+        self.manager1 = User.objects.create(username='manager1', is_project_manager=True)
+        self.project = Project.objects.create(title='project_title', description='project_description', meta_tagging=self.metaTagging, project_manager=self.manager1.username)
+        self.file = open(r'test.txt', 'r')
+        self.file_data = {
+            'project_id': self.project.project_id,
+            'myFile': self.file
+        }
 
     def tearDown(self):
         self.metaTagging.delete()
@@ -175,6 +184,37 @@ class file(TestCase):  # TODO: fix
 
     def test_upload_file(self):
         print("project: Running test_upload_file")
+        response = self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(File.objects.count(), 1)
+        self.file.close()
+
+    def test_upload_file_no_project(self): 
+        print("project: Running test_upload_file_no_project")
+        self.file_data = {
+            'project_id': 'invalid',
+            'myFile': self.file
+        }
+        response = self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_file(self):
+        print("project: Running test_get_file")
+        self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        response = self.client.get(f'/api/project/get-file?project_id={self.project.project_id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_file_invalid_project_id(self):
+        print("project: Running test_get_file_invalid_project_id")
+        self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        response = self.client.get(f'/api/project/get-file?project_id=invalid')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+ 
+    def test_get_file_content(self):
+        print("project: Running test_get_file_content")
+        response = self.client.post(f'/api/project/get-file-content', self.file_data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 
 class saveAnnotation(TestCase):
