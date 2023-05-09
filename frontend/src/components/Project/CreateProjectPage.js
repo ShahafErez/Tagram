@@ -90,10 +90,18 @@ export default function CreateProjectPage() {
       });
   };
 
-  /** Getting the text of the new uploaded file
-   * Doesn't save file in database
+  /**
+   * If the file format is correct-
+   * Getting the text of the new uploaded file and setting it
    */
-  function getFileContent(file) {
+  function processFile(file) {
+    let fileType = file.name.split(".")[1];
+    if (fileType != "txt") {
+      return;
+    }
+
+    setSelectedFile(file);
+
     const formData = new FormData();
     formData.append("myFile", file, "new_file");
 
@@ -198,14 +206,26 @@ export default function CreateProjectPage() {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <input
-            type="file"
-            onChange={(e) => {
-              getFileContent(e.target.files[0]);
-              setSelectedFile(e.target.files[0]);
-            }}
-            style={{ marginTop: "15px" }}
-          />
+          <div style={{ marginTop: "15px" }}>
+            <input
+              type="file"
+              onChange={(e) => {
+                console.log("file!! ", e);
+                processFile(e.target.files[0]);
+                console.log("");
+              }}
+              style={{ marginTop: "0px" }}
+            />
+            <p
+              style={{
+                color: "#858585",
+                marginBottom: "0px",
+                fontSize: "15px",
+              }}
+            >
+              Please select only "txt" files
+            </p>
+          </div>
           {/* if file exist- showing it in accordion display */}
           {fileContent != null && (
             <div

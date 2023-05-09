@@ -132,8 +132,7 @@ class GetProjectsByUsername(APIView):
                         UsersInProjectSerializer(user_project_object).data)
 
                 return Response(user_project_mapping, status=status.HTTP_200_OK)
-
-            return Response({""}, status=status.HTTP_200_OK)
+            return Response({"No projects found"}, status=status.HTTP_204_NO_CONTENT)
         return Response({'Bad Request': 'Invalid get data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -156,4 +155,27 @@ class GetUsersByProject(APIView):
                 return Response(users, status=status.HTTP_200_OK)
 
             return Response({"This project does not have any taggers."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid get data'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class IsAssigned(APIView):
+    """
+        Get all projects for a given username
+    """
+    lookup_url_kwarg_project_id = 'project_id'
+    lookup_url_kwarg_project_username = 'username'
+
+    def get(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg_project_id)
+        user = request.GET.get(self.lookup_url_kwarg_project_username)
+        if project_id != None and user != None:
+            project = Project.objects.filter(project_id=project_id)
+            if (len(project)) > 0:
+                is_assigned = False
+                users_query = UsersInProject.objects.filter(
+                    project=project_id, user=user)
+                if len(users_query) > 0:
+                    is_assigned = True
+                return Response({"Assigned": is_assigned}, status=status.HTTP_200_OK)
+            return Response({'No project found with given id'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad Request': 'Invalid get data'}, status=status.HTTP_400_BAD_REQUEST)

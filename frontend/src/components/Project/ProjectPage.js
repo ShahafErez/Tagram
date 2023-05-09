@@ -5,7 +5,7 @@ import MetaTaggingObject from "./MetaTaggingObject";
 import AnnotationTag from "./AnnotationTypes/AnnotationTag";
 import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
 import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
-import ErrorPage from "../ErrorPage";
+import ProjectErrorPage from "../ProjectErrorPage";
 
 export default function ProjectPage() {
   let username = new URLSearchParams(window.location.search).get("username");
@@ -29,6 +29,9 @@ export default function ProjectPage() {
     text: "",
   });
 
+  // is user assigned to project
+  const [isUserAssigned, setIsUserAssigned] = useState(false);
+
   // setting the meta tagging values
   const [metaTaggingLabels, setMetaTaggingLabels] = useState([]);
   const [tagsLabels, setTagsLabels] = useState([]);
@@ -49,6 +52,30 @@ export default function ProjectPage() {
 
   // annotation status
   const [annotationStatus, setAnnotationStatus] = useState();
+
+  function getPojectDetails() {
+    fetch("/api/users/is-assigned?username=" + username + "&project_id=" + id)
+      .then((response) => {
+        // project not found
+        if (response.status == 200) {
+          return response.json();
+        }
+      })
+      .then((data) => {
+        if (data != null) {
+          setIsUserAssigned(data.Assigned);
+          return true; // data is valid
+        } else {
+          // data is unvalid
+          return false;
+        }
+      })
+      .then((isValid) => {
+        if (isValid) {
+          getMetaTaggingDetails();
+        }
+      });
+  }
 
   function getMetaTaggingDetails() {
     let meta_tagging_id = "";
@@ -136,7 +163,8 @@ export default function ProjectPage() {
 
   // getting all project details by a chain of .then() function calls
   useEffect(() => {
-    getMetaTaggingDetails();
+    getPojectDetails();
+    // getMetaTaggingDetails();
   }, []);
 
   // exporting the annotations to a json file
@@ -418,10 +446,16 @@ export default function ProjectPage() {
    * If not- showing error page
    */
   function renderPage() {
-    if (is_manager || username == logged_in_user) {
-      return renderProjectPage();
+    // console.log("is assigned ", isUserAssigned);
+    // if the user is not manager- they can only see their taggings
+    // if the username is not assigned to the project, the page will be blocked
+    if (
+      (!is_manager && username != logged_in_user) ||
+      isUserAssigned == false
+    ) {
+      return <ProjectErrorPage />;
     } else {
-      return <ErrorPage />;
+      return renderProjectPage();
     }
   }
 

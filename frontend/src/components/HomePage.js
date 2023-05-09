@@ -10,11 +10,10 @@ export default function HomePage() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <img src="../../static/frontend/loading.gif" height="150" alt="" />
-
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
         Welcome to Tagram
       </h2>
+      <img src="../../static/frontend/loading.gif" height="150" alt="" />
     </div>
   );
 }
