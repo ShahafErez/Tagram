@@ -244,7 +244,7 @@ export default function ProjectPage() {
             class="card project-page"
             style={{
               textAlign: "center",
-              width: "60%",
+              width: "90%",
               margin: "auto",
               minHeight: "500px",
             }}
@@ -347,7 +347,14 @@ export default function ProjectPage() {
               </div>
 
               {/* saving and changing status for annotation */}
-              <div class="card" style={{ marginTop: "15px" }}>
+              <div
+                style={{
+                  width: "60%",
+                  marginTop: "25px",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
                 <p
                   style={{
                     color: "#fd8c00",
@@ -361,7 +368,11 @@ export default function ProjectPage() {
                   class="btn-group"
                   role="group"
                   aria-label="Basic example"
-                  style={{ paddingLeft: "13px", paddingRight: "13px" }}
+                  style={{
+                    paddingLeft: "13px",
+                    paddingRight: "13px",
+                    width: "-webkit-fill-available",
+                  }}
                 >
                   <button
                     class="btn btn-primary"
@@ -392,6 +403,8 @@ export default function ProjectPage() {
                         marginTop: "0px",
                         marginLeft: "2px",
                         width: "33%",
+                        backgroundColor: "#ffac33",
+                        color: "white",
                       }}
                       title="request changes from the annotator"
                       onClick={() =>

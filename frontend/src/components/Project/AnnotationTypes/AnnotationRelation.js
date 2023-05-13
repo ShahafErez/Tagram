@@ -175,111 +175,118 @@ export default function AnnotationRelation(props) {
     <div class="annotate">
       <div style={{ padding: "10px" }}>
         <h4>Annotate Relations</h4>
-        <div>
-          <select
-            class="form-select"
-            size="2"
-            aria-label="multiple select example"
-            onChange={handleTagChange}
-            value={tag}
-          >
-            {tag_options.map((element, index) => (
-              <option key={index}>{element}</option>
-            ))}
-          </select>
-        </div>
 
-        <div>{tagSelectingError}</div>
-        {/* Each line of the file has a TokenAnnotator tag */}
-        <div
-          class="border border-secondary rounded"
-          style={{ marginTop: "10px" }}
-        >
-          <div class="text">
-            {file.map((sentence, key) => {
-              return (
-                <TokenAnnotator
-                  style={{
-                    padding: "5px",
-                    lineHeight: 1.5,
-                  }}
-                  tokens={sentence.split(" ")}
-                  value={currentState[key]}
-                  onChange={(e) => {
-                    // checking if value was removed or is both terms wasn't selected yet
-                    if (
-                      e.length < currentState[key].length ||
-                      (firstElement.selected && secondElement.selected)
-                    ) {
-                      return "";
-                    }
-                    handleValueChange(key, e);
-                  }}
-                  getSpan={(span) => ({
-                    ...span,
-                    tag: tag,
-                    color: TAG_COLORS[tag],
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8">
+              <select
+                class="form-select"
+                size="2"
+                aria-label="multiple select example"
+                onChange={handleTagChange}
+                value={tag}
+              >
+                {tag_options.map((element, index) => (
+                  <option key={index}>{element}</option>
+                ))}
+              </select>
+
+              <div>{tagSelectingError}</div>
+              {/* Each line of the file has a TokenAnnotator tag */}
+              <div
+                class="border border-secondary rounded"
+                style={{ marginTop: "10px" }}
+              >
+                <div class="text">
+                  {file.map((sentence, key) => {
+                    return (
+                      <TokenAnnotator
+                        style={{
+                          padding: "5px",
+                          lineHeight: 1.5,
+                        }}
+                        tokens={sentence.split(" ")}
+                        value={currentState[key]}
+                        onChange={(e) => {
+                          // checking if value was removed or is both terms wasn't selected yet
+                          if (
+                            e.length < currentState[key].length ||
+                            (firstElement.selected && secondElement.selected)
+                          ) {
+                            return "";
+                          }
+                          handleValueChange(key, e);
+                        }}
+                        getSpan={(span) => ({
+                          ...span,
+                          tag: tag,
+                          color: TAG_COLORS[tag],
+                        })}
+                      />
+                    );
                   })}
-                />
-              );
-            })}
-          </div>
-        </div>
+                </div>
+              </div>
 
-        <button
-          type="submit"
-          class="btn btn-passive"
-          style={{
-            marginRight: "10px",
-            backgroundColor: "#adb5bd",
-          }}
-          onClick={handleResetSelect}
-        >
-          Clear
-        </button>
+              <button
+                type="submit"
+                class="btn btn-passive"
+                style={{
+                  marginRight: "10px",
+                  backgroundColor: "#adb5bd",
+                }}
+                onClick={handleResetSelect}
+              >
+                Clear
+              </button>
 
-        <button
-          class="btn btn-secondary"
-          onClick={() => {
-            if (firstElement.selected && secondElement.selected) {
-              handleSave();
-            }
-          }}
-        >
-          Save Relation
-        </button>
+              <button
+                class="btn btn-secondary"
+                onClick={() => {
+                  if (firstElement.selected && secondElement.selected) {
+                    handleSave();
+                  }
+                }}
+              >
+                Save Relation
+              </button>
+            </div>
 
-        <h4>Selected Relations</h4>
-        <div style={{ width: "80%", margin: "auto" }}>
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Type</th>
-                <th scope="col">Term From</th>
-                <th scope="col">Term To</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {relationSummary.length > 0 &&
-                relationSummary.map((val, key) => {
-                  return (
-                    <tr key={key}>
-                      <td>{val.tag}</td>
-                      <td>{processToken(val.From)}</td>
-                      <td>{processToken(val.To)}</td>
-                      <td>
-                        <i
-                          class="bi bi-trash3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => removeSelection(key)}
-                        ></i>
-                      </td>
+            <div class="col-6 col-md-4">
+              <h4>Selected Relations</h4>
+              <div style={{ width: "80%", margin: "auto" }}>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Type</th>
+                      <th scope="col">Term From</th>
+                      <th scope="col">Term To</th>
+                      <th scope="col"></th>
                     </tr>
-                  );
-                })}
-            </tbody>
-          </table>
+                  </thead>
+                  <tbody>
+                    {relationSummary.length > 0 &&
+                      relationSummary.map((val, key) => {
+                        return (
+                          <tr key={key}>
+                            <td>{val.tag}</td>
+                            <td>{processToken(val.From)}</td>
+                            <td>{processToken(val.To)}</td>
+                            <td>
+                              <i
+                                class="bi bi-trash3"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => removeSelection(key)}
+                              ></i>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

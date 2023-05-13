@@ -12,9 +12,15 @@ export default function AdminDashboardPage() {
   // getting projects
   useEffect(() => {
     fetch(`/api/project/get-by-project-manager?manager=${username}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        }
+      })
       .then((data) => {
-        setProjects(data);
+        if (data != null) {
+          setProjects(data);
+        }
       });
   }, []);
 

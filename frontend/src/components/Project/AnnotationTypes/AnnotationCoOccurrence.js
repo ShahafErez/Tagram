@@ -96,95 +96,103 @@ export default function AnnotationCoOccurrence(props) {
     <div class="annotate">
       <div style={{ padding: "10px" }}>
         <h4>Annotate Co-Occurrence</h4>
-        <div
-          class="border border-secondary rounded"
-          style={{ marginTop: "15px" }}
-        >
-          <div class="text">
-            {file.map((sentence, key) => {
-              return (
-                <TokenAnnotator
-                  style={{
-                    padding: "5px",
-                    lineHeight: 1.5,
-                  }}
-                  tokens={sentence.split(" ")}
-                  value={currentState[key]}
-                  onChange={(e) => {
-                    // checking if a value was un-selected
-                    if (e.length < currentState[key].length) {
-                      unselectValue(key, e);
-                    } else {
-                      handleValueChange(key, e);
-                    }
-                  }}
-                  getSpan={(span) => ({
-                    ...span,
-                    tag: "",
-                    color: TAG_COLOR,
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8">
+              <div
+                class="border border-secondary rounded"
+                style={{ marginTop: "15px" }}
+              >
+                <div class="text">
+                  {file.map((sentence, key) => {
+                    return (
+                      <TokenAnnotator
+                        style={{
+                          padding: "5px",
+                          lineHeight: 1.5,
+                        }}
+                        tokens={sentence.split(" ")}
+                        value={currentState[key]}
+                        onChange={(e) => {
+                          // checking if a value was un-selected
+                          if (e.length < currentState[key].length) {
+                            unselectValue(key, e);
+                          } else {
+                            handleValueChange(key, e);
+                          }
+                        }}
+                        getSpan={(span) => ({
+                          ...span,
+                          tag: "",
+                          color: TAG_COLOR,
+                        })}
+                      />
+                    );
                   })}
-                />
-              );
-            })}
-          </div>
-        </div>
+                </div>
+              </div>
 
-        <button
-          type="submit"
-          class="btn btn-passive"
-          style={{
-            marginRight: "10px",
-            backgroundColor: "#adb5bd",
-          }}
-          title="clear all selected tags"
-          onClick={handleResetSelect}
-        >
-          Clear
-        </button>
-        <button class="btn btn-secondary" onClick={handleSave}>
-          save co-occurrence set
-        </button>
+              <button
+                type="submit"
+                class="btn btn-passive"
+                style={{
+                  marginRight: "10px",
+                  backgroundColor: "#adb5bd",
+                }}
+                title="clear all selected tags"
+                onClick={handleResetSelect}
+              >
+                Clear
+              </button>
+              <button class="btn btn-secondary" onClick={handleSave}>
+                save co-occurrence set
+              </button>
+            </div>
 
-        <h4>Selected Co-Occurrence</h4>
-        <div style={{ width: "80%", margin: "auto" }}>
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {coOccurrenceSummary.map((coOccurSet, key) => {
-                return (
-                  <tr>
-                    <td>
-                      {coOccurSet.map((coOccurItem, key) => {
-                        return (
-                          <div>
-                            {coOccurItem.map((item, key) => {
+            <div class="col-6 col-md-4">
+              <h4>Selected Co-Occurrence</h4>
+              <div style={{ width: "80%", margin: "auto" }}>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {coOccurrenceSummary.map((coOccurSet, key) => {
+                      return (
+                        <tr>
+                          <td>
+                            {coOccurSet.map((coOccurItem, key) => {
                               return (
-                                <p style={{ margin: "0px" }}>
-                                  {processToken(item)}
-                                </p>
+                                <div>
+                                  {coOccurItem.map((item, key) => {
+                                    return (
+                                      <p style={{ margin: "0px" }}>
+                                        {processToken(item)}
+                                      </p>
+                                    );
+                                  })}
+                                </div>
                               );
                             })}
-                          </div>
-                        );
-                      })}
-                    </td>
-                    <td>
-                      <i
-                        class="bi bi-trash3"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => removeSet(key)}
-                      ></i>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                          </td>
+                          <td>
+                            <i
+                              class="bi bi-trash3"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => removeSet(key)}
+                            ></i>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
