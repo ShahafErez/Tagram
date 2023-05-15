@@ -92,104 +92,110 @@ export default function AnnotationTag(props) {
       {currentState && (
         <div style={{ padding: "10px" }}>
           <h4>Annotate Tags</h4>
-          <div>
-            <select
-              class="form-select"
-              size="2"
-              aria-label="multiple select example"
-              onChange={handleTagChange}
-              value={tag}
-            >
-              {tag_options.map((element, index) => (
-                <option key={index}>{element}</option>
-              ))}
-            </select>
-          </div>
+          <div class="container">
+            <div class="row">
+              <div class="col-md-8">
+                <select
+                  class="form-select"
+                  size="2"
+                  aria-label="multiple select example"
+                  onChange={handleTagChange}
+                  value={tag}
+                >
+                  {tag_options.map((element, index) => (
+                    <option key={index}>{element}</option>
+                  ))}
+                </select>
 
-          {/* Each line of the file has a TokenAnnotator tag */}
-          <div
-            class="border border-secondary rounded"
-            style={{ marginTop: "15px" }}
-          >
-            <div class="text">
-              {file.map((sentence, key) => {
-                return (
-                  <TokenAnnotator
-                    style={{
-                      padding: "5px",
-                      lineHeight: 1.5,
-                    }}
-                    tokens={sentence.split(" ")}
-                    value={currentState[key]}
-                    onChange={(e) => {
-                      // checking if a value was un-selected
-                      if (e.length < currentState[key].length) {
-                        unselectValue(key, e);
-                      } else {
-                        // new value was added
-                        handleValueChange(key, e);
-                      }
-                    }}
-                    getSpan={(span) => ({
-                      ...span,
-                      tag: tag,
-                      color: TAG_COLORS[tag],
+                {/* Each line of the file has a TokenAnnotator tag */}
+                <div
+                  class="border border-secondary rounded"
+                  style={{ marginTop: "15px" }}
+                >
+                  <div class="text">
+                    {file.map((sentence, key) => {
+                      return (
+                        <TokenAnnotator
+                          style={{
+                            padding: "5px",
+                            lineHeight: 1.5,
+                          }}
+                          tokens={sentence.split(" ")}
+                          value={currentState[key]}
+                          onChange={(e) => {
+                            // checking if a value was un-selected
+                            if (e.length < currentState[key].length) {
+                              unselectValue(key, e);
+                            } else {
+                              // new value was added
+                              handleValueChange(key, e);
+                            }
+                          }}
+                          getSpan={(span) => ({
+                            ...span,
+                            tag: tag,
+                            color: TAG_COLORS[tag],
+                          })}
+                        />
+                      );
                     })}
-                  />
-                );
-              })}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-passive"
+                  style={{
+                    marginRight: "10px",
+                    backgroundColor: "#adb5bd",
+                  }}
+                  title="clear all selected tags"
+                  onClick={handleResetSelect}
+                >
+                  Clear
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  onClick={() => {
+                    handleSave();
+                  }}
+                >
+                  Save Tags
+                </button>
+              </div>
+
+              <div class="col-6 col-md-4">
+                <h4>Selected Tags</h4>
+                <div style={{ width: "80%", margin: "auto" }}>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Type</th>
+                        <th scope="col">Term</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tagsSummary.flat().map((val, key) => {
+                        return (
+                          <tr key={key}>
+                            <td>{val.tag}</td>
+                            <td>{processToken(val.tokens)}</td>
+                            <td>
+                              <i
+                                class="bi bi-trash3"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => removeSet(key)}
+                              ></i>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <button
-            type="submit"
-            class="btn btn-passive"
-            style={{
-              marginRight: "10px",
-              backgroundColor: "#adb5bd",
-            }}
-            title="clear all selected tags"
-            onClick={handleResetSelect}
-          >
-            Clear
-          </button>
-          <button
-            class="btn btn-secondary"
-            onClick={() => {
-              handleSave();
-            }}
-          >
-            Save Tags
-          </button>
-
-          <h4>Selected Tags</h4>
-          <div style={{ width: "80%", margin: "auto" }}>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">Type</th>
-                  <th scope="col">Term</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {tagsSummary.flat().map((val, key) => {
-                  return (
-                    <tr key={key}>
-                      <td>{val.tag}</td>
-                      <td>{processToken(val.tokens)}</td>
-                      <td>
-                        <i
-                          class="bi bi-trash3"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => removeSet(key)}
-                        ></i>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </div>
         </div>
       )}

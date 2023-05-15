@@ -77,7 +77,7 @@ export default function AdminProjectPage() {
                       {annotator.annotation_status == "changes_requested" && (
                         <i
                           class="bi bi-person-circle"
-                          style={{ marginLeft: "5px", color: "#ecb113" }}
+                          style={{ marginLeft: "5px", color: "#ffac33" }}
                         ></i>
                       )}
                       {annotator.annotation_status == "not_submitted" && (
