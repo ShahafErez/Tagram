@@ -8,32 +8,6 @@ from .models import MetaTagging, MetaTaggingLabels
 """ Meta Tagging """
 
 
-class MetaTaggingView(generics.ListAPIView):
-    """
-        Gets all of the meta tagging in the database
-    """
-    queryset = MetaTagging.objects.all()
-    serializer_class = MetaTaggingSerializer
-
-
-class GetMetaTagging(APIView):
-    """
-        Get meta-tagging details by a given id in path
-    """
-    serializer_class = MetaTaggingSerializer
-    lookup_url_kwarg = 'id'
-
-    def get(self, request, format=None):
-        # Getting meta-tagging id from path
-        meta_tagging_id = request.GET.get(self.lookup_url_kwarg)
-        if meta_tagging_id != None:
-            query = MetaTagging.objects.filter(meta_tagging_id=meta_tagging_id)
-            if len(query) > 0:
-                data = MetaTaggingSerializer(query[0]).data
-                return Response(data, status=status.HTTP_200_OK)
-            return Response({"Invalid meta-tagging id."}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid post data, did not find a meta tagging id'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class CreateMetaTaggingView(APIView):
     """
@@ -61,16 +35,7 @@ class CreateMetaTaggingView(APIView):
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-""" Meta Tagging  Lebals"""
-
-
-class MetaTaggingLabelView(generics.ListAPIView):
-    """
-        Gets all of labels in the database
-    """
-    queryset = MetaTaggingLabels.objects.all()
-    serializer_class = MetaTaggingLabelSerializer
-
+""" Meta Tagging  Labels"""
 
 class GetLabelsByMetaTaggingId(APIView):
     """
