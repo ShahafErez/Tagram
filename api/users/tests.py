@@ -305,3 +305,42 @@ class GetIsUserAssignedToProjectTesTCase(TestCase):
         response = self.client.get(
             '/api/users/is-assigned?username=user1&project_id=ABC')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class GetUsersByProject(TestCase):
+    """
+        tests for getting all users for a given project
+
+    """
+    def setUp(self):
+        self.client = APIClient()
+        self.user1 = User.objects.create(username='user1')
+        self.user2 = User.objects.create(username='user2')
+        self.project = Project.objects.create(title='project', description='Test Project Description')
+        self.project2 = Project.objects.create(title='project2', description='Test Project Description')
+        self.user_in_project = UsersInProject.objects.create(
+            user=self.user1, project=self.project)
+        self.user_in_project = UsersInProject.objects.create(
+            user=self.user2, project=self.project)
+        
+    def tearDown(self):
+        self.user1.delete()
+        self.user2.delete()
+        self.project.delete()
+        self.project2.delete()
+
+    def test_users_by_project(self):
+        print("users: Running test_users_by_project")
+        response = self.client.get('/api/users/users-by-project/?project='+self.project.project_id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_users_by_project_no_users(self):
+        print("users: Running test_users_by_project_no_users")
+        response = self.client.get('/api/users/users-by-project/?project='+self.project2.project_id)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_users_by_project_bad_request(self):
+        print("users: Running test_users_by_project_bad_request")
+        response = self.client.get('/api/users/users-by-project/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+

@@ -10,16 +10,6 @@ from statsmodels.stats.inter_rater import fleiss_kappa,aggregate_raters
 import numpy as np
 import pandas as pd
 
-
-class ProjectView(generics.ListAPIView):
-    """
-        Gets all of the active projects in the database
-    """
-    queryset = Project.objects.all()
-    # specify the serializer of this object
-    serializer_class = ProjectSerializer
-
-
 class CreateProjectView(APIView):
     """
         Creates a new project
@@ -343,7 +333,7 @@ class GetProjectFleissKappaScore(APIView):
     def post(self, request, format=None):
         
         data = request.data['data']
-        
+        print(data)    
         if data != None:
             arr  = self.create_numpy_array(self.getArray(data))
             print(arr)
