@@ -105,19 +105,20 @@ export default function ProjectStatistics(props) {
   /* Tags */
 
   function processUserTagAnnotation(input) {
-    let output = {};
-    for (let i = 0; i < input.length; i++) {
-      let objArr = input[i];
-      let objMap = {};
-      for (let j = 0; j < objArr.length; j++) {
-        let obj = objArr[j];
-        if (!objMap.hasOwnProperty(obj.tag)) {
-          objMap[obj.tag] = [];
-        }
-        objMap[obj.tag].push([obj.start, obj.end]);
+    const output = input.reduce((result, value, index) => {
+      const tag = value.tag;
+      const start = value.start;
+      const end = value.end;
+
+      if (!result[index]) {
+        result[index] = {};
       }
-      output[i] = objMap;
-    }
+
+      result[index][tag] = [start, end];
+
+      return result;
+    }, {});
+
     return output;
   }
 
@@ -156,6 +157,8 @@ export default function ProjectStatistics(props) {
         .then((response) => {
           if (response.status == 200) {
             return response.json();
+          } else {
+            throw new Error("Request failed with status: " + response.status);
           }
         })
         .then((data) => {
@@ -168,6 +171,9 @@ export default function ProjectStatistics(props) {
             user: annotators[u],
             data: data,
           };
+        })
+        .catch((error) => {
+          // do something?
         });
 
       promises.push(promise);
@@ -175,11 +181,11 @@ export default function ProjectStatistics(props) {
 
     Promise.all(promises).then((results) => {
       let temp_UsersTagsAnnotationStatistics = {};
-
       for (const r in results) {
-        temp_UsersTagsAnnotationStatistics[results[r].user] = results[r].data;
+        if (results[r] !== undefined) {
+          temp_UsersTagsAnnotationStatistics[results[r].user] = results[r].data;
+        }
       }
-      console.log(temp_UsersTagsAnnotationStatistics);
       setUsersTagsAnnotationStatistics(temp_UsersTagsAnnotationStatistics);
     });
   }
@@ -187,7 +193,6 @@ export default function ProjectStatistics(props) {
   /* Relations */
   function processUserRelationAnnotation(inp) {
     const indexDict = {};
-
     for (let i = 0; i < inp.length; i++) {
       const { tag, From, To } = inp[i];
       const { index: fromIndex } = From;
@@ -260,7 +265,6 @@ export default function ProjectStatistics(props) {
           results[r].data;
       }
 
-      console.log(temp_UsersRelationsAnnotationStatistics);
       setUsersRelationsAnnotationStatistics(
         temp_UsersRelationsAnnotationStatistics
       );

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 
 export default function Kappa({ data }) {
+  // console.log("*********************** in Kappa, data is: ");
+  // console.log(data);
   const [score, setScore] = useState(0.0);
   //   console.log(data);
   useEffect(() => {
@@ -14,7 +16,8 @@ export default function Kappa({ data }) {
     })
       .then((response) => response.json())
       .then((res) => {
-        console.log(res);
+        // console.log("RESPONSE in KAPPA:");
+        // console.log(res);
         setScore(res);
       });
   }, [data]);

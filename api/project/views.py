@@ -332,11 +332,9 @@ class GetProjectFleissKappaScore(APIView):
 
     def post(self, request, format=None):
         
-        data = request.data['data']
-        print(data)    
+        data = request.data['data']   
         if data != None:
             arr  = self.create_numpy_array(self.getArray(data))
-            print(arr)
             # Calculate Fleiss' Kappa score
             kappa = fleiss_kappa(arr)
             
