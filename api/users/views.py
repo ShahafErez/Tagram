@@ -2,7 +2,6 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.project.models import Project
-
 from api.users.models import User, UsersInProject
 from api.project.models import Annotation
 from api.users.serializers import CreateUserSerializer, CreateUsersInProjectSerializer, UserSerializer, UsersInProjectSerializer
@@ -30,15 +29,6 @@ class UserView(generics.ListAPIView):
     queryset = User.objects.all()
     # specify the serializer of this object
     serializer_class = UserSerializer
-
-
-class UserProjectView(generics.ListAPIView):
-    """
-        Gets all of the users-projects mapping in the database
-    """
-    queryset = UsersInProject.objects.all()
-    # specify the serializer of this object
-    serializer_class = UsersInProjectSerializer
 
 
 class CreateUserView(APIView):
@@ -138,7 +128,7 @@ class GetProjectsByUsername(APIView):
 
 class GetUsersByProject(APIView):
     """
-        Get all projects for a given username
+        Get all users for a given project
     """
     lookup_url_kwarg = 'project'
 
