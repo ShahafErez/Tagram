@@ -321,7 +321,10 @@ export default function ProjectStatistics(props) {
               <Badge bg="light" text="dark">
                 {" "}
                 {Object.keys(UsersTagsAnnotationStatistics).length > 0 && (
-                  <Kappa data={UsersTagsAnnotationStatistics} />
+                  <Kappa
+                    data={UsersTagsAnnotationStatistics}
+                    calcFor={"tags"}
+                  />
                 )}
               </Badge>
             </h2>
@@ -333,7 +336,10 @@ export default function ProjectStatistics(props) {
               <Badge bg="light" text="dark">
                 {" "}
                 {Object.keys(UsersRelationsAnnotationStatistics).length > 0 && (
-                  <Kappa data={UsersRelationsAnnotationStatistics} />
+                  <Kappa
+                    data={UsersRelationsAnnotationStatistics}
+                    calcFor={"relations"}
+                  />
                 )}
               </Badge>
             </h2>

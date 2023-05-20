@@ -293,16 +293,21 @@ class GetProjectFleissKappaScore(APIView):
             padding = [0] * (max_len - len(arr))
             padded_arrays.append(arr + padding)
         return padded_arrays
-    def getArray(self,input):
+    def getArray(self,input, calcFor):
         ans = {}
         for key,val in input.items():
-            ans[key] = {}
+            ans[key] = {} #key == username
             for key2,val2 in val.items():
-                indx = key2
+                indx = key2 #key2 == index
                 for key3,val3 in val2.items():
-                    class_ = key3
-                    for arr in val3:
-                        place_ = f"{arr[0]}{arr[1]}"
+                    class_ = key3 # key3 == tag name
+                    if(calcFor=='relations'):
+                        for arr in val3:
+                            place_ = f"{arr[0]}{arr[1]}"
+                            new_str = indx+class_+place_
+                            ans[key][new_str] = 1
+                    elif calcFor=="tags":
+                        place_ = f"{val3[0]}{val3[1]}"
                         new_str = indx+class_+place_
                         ans[key][new_str] = 1
         return ans
@@ -334,7 +339,7 @@ class GetProjectFleissKappaScore(APIView):
         
         data = request.data['data']   
         if data != None:
-            arr  = self.create_numpy_array(self.getArray(data))
+            arr  = self.create_numpy_array(self.getArray(data,request.data['calcFor']))
             # Calculate Fleiss' Kappa score
             kappa = fleiss_kappa(arr)
             

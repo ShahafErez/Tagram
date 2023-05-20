@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 
-export default function Kappa({ data }) {
+export default function Kappa({ data, calcFor }) {
   // console.log("*********************** in Kappa, data is: ");
   // console.log(data);
   const [score, setScore] = useState(0.0);
@@ -12,6 +12,7 @@ export default function Kappa({ data }) {
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         data: data,
+        calcFor: calcFor,
       }),
     })
       .then((response) => response.json())
