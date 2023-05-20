@@ -25,15 +25,22 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div>
+    <div
+      class="card project-page"
+      style={{
+        paddingTop: "10px",
+        textAlign: "center",
+        width: "80%",
+        margin: "auto",
+        minHeight: "500px",
+      }}
+    >
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
         Projects You Manage
       </h2>
       <div
         class="row row-cols-1 row-cols-md-3"
         style={{
-          textAlign: "center",
-          margin: "auto",
           paddingLeft: "20px",
           paddingRight: "20px",
         }}

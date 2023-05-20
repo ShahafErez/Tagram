@@ -26,8 +26,9 @@ export default function AdminProjectPage() {
     <div
       class="card project-page"
       style={{
+        paddingTop: "10px",
         textAlign: "center",
-        width: "70%",
+        width: "80%",
         margin: "auto",
         minHeight: "500px",
       }}

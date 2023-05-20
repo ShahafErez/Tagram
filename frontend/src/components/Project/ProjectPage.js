@@ -244,7 +244,7 @@ export default function ProjectPage() {
             class="card project-page"
             style={{
               textAlign: "center",
-              width: "90%",
+              width: "80%",
               margin: "auto",
               minHeight: "500px",
             }}
@@ -459,7 +459,6 @@ export default function ProjectPage() {
    * If not- showing error page
    */
   function renderPage() {
-    // console.log("is assigned ", isUserAssigned);
     // if the user is not manager- they can only see their taggings
     // if the username is not assigned to the project, the page will be blocked
     if (
