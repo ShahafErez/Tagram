@@ -168,7 +168,7 @@ export default function CreateProjectPage() {
   return (
     <div
       class="card"
-      style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
+      style={{ maxWidth: "80%", margin: "auto", padding: "20px" }}
     >
       {/* If we're in: create meta-tagging, browse meta-tagging or check correctness -> 
         we set the className to be 'hide', and we hide the content in style.css
