@@ -21,7 +21,9 @@ export default function ProjectPreviewAdmin(props) {
           {project.created_at ? (
             <span>{project.created_at.slice(0, 10)}</span>
           ) : null}
-          <button style={{ marginTop: "5px" }}>Show Project Details</button>
+          <button style={{ marginTop: "5px", borderRadius: "5px" }}>
+            Show Project Details
+          </button>
         </div>
       ) : null}
     </div>
