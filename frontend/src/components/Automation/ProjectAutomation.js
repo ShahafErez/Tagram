@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import FileContent from "../FileContent";
 import MetaTaggingObject from "../Project/MetaTaggingObject";
 import AutomationResults from "./AutomationResults";
+import SelectModelFile from "./SelectModelFile";
 
 export default function ProjectAutomation() {
   let { projectId } = useParams();
@@ -80,7 +81,7 @@ export default function ProjectAutomation() {
 
           <label>Please select a model</label>
           {/* TODO- get from backend */}
-          <select
+          {/* <select
             class="form-select"
             size="3"
             aria-label="size 3 select example"
@@ -90,7 +91,8 @@ export default function ProjectAutomation() {
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
-          </select>
+          </select> */}
+          <SelectModelFile />
 
           {/* showing the selected meta-model */}
           <div style={{ marginTop: "15px" }}>

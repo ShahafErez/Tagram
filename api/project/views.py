@@ -1,3 +1,4 @@
+import os
 from rest_framework import generics, status
 from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer
 from .models import Project, File, Annotation
@@ -9,6 +10,7 @@ import json
 from statsmodels.stats.inter_rater import fleiss_kappa,aggregate_raters
 import numpy as np
 import pandas as pd
+import subprocess
 
 class CreateProjectView(APIView):
     """
@@ -345,3 +347,33 @@ class GetProjectFleissKappaScore(APIView):
             
             return Response('{:.2f}'.format(round(kappa, 2)), status=status.HTTP_200_OK)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+
+class UploadUserModel(APIView):
+    """
+    Saving a model
+    """
+    def run_jar_file(self,file):
+        jar_path = os.path.abspath(file.name)
+        try:
+            print(file.name)
+            output = subprocess.call(['java', '-jar', 'C:\\Users\\henmo\\Downloads\\dummy.jar'])
+            print("output is: ")
+            print(output)
+            # os.system('java -jar dummy.jar')
+            return output
+            # print("decode is: ",output.decode('utf-8'))
+            # return output.decode('utf-8')
+        except subprocess.CalledProcessError as e:
+            error_message = e.output.decode('utf-8')
+            return f"Error running JAR file: {error_message}"
+
+    def post(self, request, format=None):
+        try:
+            # file = FilUserModel(file=request.FILES['file'])
+            # file.save()
+            x= self.run_jar_file(request.FILES['file'])
+            print(x)
+            return Response("File saved", status=status.HTTP_201_CREATED)
+        except:
+            return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
