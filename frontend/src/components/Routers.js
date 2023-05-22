@@ -7,6 +7,7 @@ import MyProjects from "./Project/MyProjects";
 import AdminDashboardPage from "./Dashboard/AdminDashboardPage";
 import AdminProjectPage from "./Dashboard/AdminProjectPage";
 import ProjectStatistics from "./Dashboard/ProjectStatistics";
+import ProjectAutomation from "./Automation/ProjectAutomation";
 
 export default function Routers() {
   return (
@@ -24,6 +25,7 @@ export default function Routers() {
         path="/manager/:projectId/statistics"
         element={<ProjectStatistics />}
       />
+      <Route path="/automation/:projectId" element={<ProjectAutomation />} />
     </Routes>
   );
 }

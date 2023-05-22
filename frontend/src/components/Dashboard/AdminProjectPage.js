@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function AdminProjectPage() {
   let { projectId } = useParams();
   const navigate = useNavigate();
-  const [annotatorsStatus, setAnnotatorsStatus] = useState();
+  const [projectInfo, setProjectInfo] = useState();
   const [showStatistics, setShowStatistics] = useState(false);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function AdminProjectPage() {
         return response.json();
       })
       .then((data) => {
-        setAnnotatorsStatus(data);
+        setProjectInfo(data);
       });
   }, []);
 
@@ -33,9 +33,9 @@ export default function AdminProjectPage() {
         minHeight: "500px",
       }}
     >
-      {annotatorsStatus != undefined && (
+      {projectInfo != undefined && (
         <div class="card-body">
-          <h2 class="card-title">Project Details {annotatorsStatus.title}</h2>
+          <h2 class="card-title">Project Details {projectInfo.title}</h2>
           <hr />
           {/* Show all the taggers and their status */}
           <h3 class="card-subtitle mb-2 text-muted">Annotators Information</h3>
@@ -43,7 +43,7 @@ export default function AdminProjectPage() {
             class="row row-cols-1 row-cols-md-3 g-4"
             style={{ padding: "10px" }}
           >
-            {annotatorsStatus.annotators.map((annotator, index) => (
+            {projectInfo.annotators.map((annotator, index) => (
               <div
                 class="col"
                 style={{
@@ -54,7 +54,7 @@ export default function AdminProjectPage() {
                 onClick={() => {
                   navigate(
                     "/project/" +
-                      annotatorsStatus.project_id +
+                      projectInfo.project_id +
                       "?username=" +
                       annotator.tagger
                   );
@@ -93,17 +93,26 @@ export default function AdminProjectPage() {
               </div>
             ))}
           </div>
-          {/* Show statistics */}
-          <h3 class="card-subtitle mb-2 text-muted">Statistics</h3>
-          <button
-            type="button"
-            class="btn btn-primary"
-            onClick={() => setShowStatistics(true)}
-            style={{ marginTop: "15px" }}
-          >
-            Show Statistics
-          </button>
-          {showStatistics && <ProjectStatistics project_id={projectId} />}
+
+          <div style={{ marginTop: "5px" }}>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              onClick={() => setShowStatistics(true)}
+            >
+              Show Statistics
+            </button>
+            {showStatistics && <ProjectStatistics project_id={projectId} />}
+
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              onClick={() => navigate("/automation/" + projectInfo.project_id)}
+              style={{ marginLeft: "15px" }}
+            >
+              Automatic Annotation
+            </button>
+          </div>
         </div>
       )}
     </div>
