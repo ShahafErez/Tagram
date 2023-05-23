@@ -353,18 +353,6 @@ class UploadUserModel(APIView):
     """
     Saving a usermodel
     """
-    # def run_jar_file(self,file):
-    #     try:
-    #         print(file.name)
-    #         output = subprocess.call(['java', '-jar', 'C:\\Users\\henmo\\Downloads\\dummy.jar'])
-    #         print("output is: ")
-    #         print(output)
-    #         return output
-            
-    #         # return output.decode('utf-8')
-    #     except subprocess.CalledProcessError as e:
-    #         error_message = e.output.decode('utf-8')
-    #         return f"Error running JAR file: {error_message}"
 
     def post(self, request, format=None):
         try:
@@ -395,11 +383,23 @@ class RunUserModel(APIView):
             if len(file_query) > 0:
                 data = UserModelSerializer(file_query[0]).data
                 # run data['file']
-                # jar_path = f"../../user_models/{data['user_model_name']}" #TODO: remove from comment
-                jar_path = f"C:\\Users\\henmo\\Downloads\\{data['user_model_name']}"
+                jar_path = f"../../user_models/{data['user_model_name']}" #TODO: remove from comment
+                # jar_path = f"C:\\Users\\henmo\\Downloads\\{data['user_model_name']}" #TODO: remove (only here so it will work on chen's computer)
                 res = self.execute_jar(jar_path)
 
             # self.run_jar_file(request.FILES['file'])
             return Response(res, status=status.HTTP_200_OK)
         except:
             return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class GetUserModelsNames(APIView):
+    """
+    Getting all UserModels
+    """
+
+    def get(self, request, format=None):
+        usermodel_query = UserModel.objects.filter()
+        if len(usermodel_query) > 0:
+            data = [UserModelSerializer(userModel).data['user_model_name'] for userModel in usermodel_query]
+            return Response(data, status=status.HTTP_200_OK)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)

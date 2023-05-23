@@ -15,6 +15,7 @@ export default function ProjectAutomation() {
   const [metaTaggingLabels, setMetaTaggingLabels] = useState([]);
   const [projectTitle, setProjectTitle] = useState();
   const [fileContent, setFileContent] = useState(null);
+  const [selectedModelName, set_gobal_selectedModelName] = useState(null);
 
   useEffect(() => {
     // TODO CHEN- get list of all models from an api call
@@ -79,7 +80,6 @@ export default function ProjectAutomation() {
             </h2>
           )}
 
-          <label>Please select a model</label>
           {/* TODO- get from backend */}
           {/* <select
             class="form-select"
@@ -92,7 +92,9 @@ export default function ProjectAutomation() {
             <option value="2">Two</option>
             <option value="3">Three</option>
           </select> */}
-          <SelectModelFile />
+          <SelectModelFile
+            set_gobal_selectedModelName={set_gobal_selectedModelName}
+          />
 
           {/* showing the selected meta-model */}
           <div style={{ marginTop: "15px" }}>
@@ -132,6 +134,7 @@ export default function ProjectAutomation() {
       {isAutomaticResults && (
         <div>
           <AutomationResults
+            selectedModelName={selectedModelName}
             backToPage={() => {
               setIsAutomaticResults(false);
             }}

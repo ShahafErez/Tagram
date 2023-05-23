@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import FileContent from "../FileContent";
-import CorrectnessPage from "../Project/CorrectnessPage";
 
-export default function AutomationResults() {
+export default function AutomationResults({ selectedModelName }) {
   const [automationOutput, setAutomationOutput] = useState();
   const [outputLabels, setOutputLabels] = useState();
   const [outputLabelsTypes, setOutputLabelsTypes] = useState();
@@ -12,17 +8,20 @@ export default function AutomationResults() {
 
   useEffect(() => {
     // getting the automation results from the backend
-    // TODO CHEN- get the 3 values as a response from an api call
 
-    let labels = ["user", "username"];
-    let labelsTypes = ["class", "attribute"];
-    let values = [
-      [0.8, 0.2],
-      [0.2, 0.8],
-    ];
-    setOutputLabels(labels);
-    setOutputLabelsTypes(labelsTypes);
-    setOutputValues(values);
+    fetch("/api/project/run-user-model", {
+      method: "POST",
+      headers: { "Content-Type": "application/json ; charset=utf-8" },
+      body: JSON.stringify({
+        user_model_name_: selectedModelName,
+      }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        setOutputLabels(res.labels);
+        setOutputLabelsTypes(res.labelsTypes);
+        setOutputValues(res.values);
+      });
   }, []);
 
   return (
