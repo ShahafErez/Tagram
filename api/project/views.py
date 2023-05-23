@@ -1,7 +1,7 @@
 import os
 from rest_framework import generics, status
-from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer
-from .models import Project, File, Annotation
+from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer, UserModelSerializer
+from .models import Project, File, Annotation, UserModel
 from api.meta_tagging.models import MetaTagging
 from api.users.models import UsersInProject
 from rest_framework.views import APIView
@@ -351,29 +351,55 @@ class GetProjectFleissKappaScore(APIView):
 
 class UploadUserModel(APIView):
     """
-    Saving a model
+    Saving a usermodel
     """
-    def run_jar_file(self,file):
-        jar_path = os.path.abspath(file.name)
-        try:
-            print(file.name)
-            output = subprocess.call(['java', '-jar', 'C:\\Users\\henmo\\Downloads\\dummy.jar'])
-            print("output is: ")
-            print(output)
-            # os.system('java -jar dummy.jar')
-            return output
-            # print("decode is: ",output.decode('utf-8'))
-            # return output.decode('utf-8')
-        except subprocess.CalledProcessError as e:
-            error_message = e.output.decode('utf-8')
-            return f"Error running JAR file: {error_message}"
+    # def run_jar_file(self,file):
+    #     try:
+    #         print(file.name)
+    #         output = subprocess.call(['java', '-jar', 'C:\\Users\\henmo\\Downloads\\dummy.jar'])
+    #         print("output is: ")
+    #         print(output)
+    #         return output
+            
+    #         # return output.decode('utf-8')
+    #     except subprocess.CalledProcessError as e:
+    #         error_message = e.output.decode('utf-8')
+    #         return f"Error running JAR file: {error_message}"
 
     def post(self, request, format=None):
         try:
-            # file = FilUserModel(file=request.FILES['file'])
-            # file.save()
-            x= self.run_jar_file(request.FILES['file'])
-            print(x)
+            print(request.FILES['file'].name)
+            file = UserModel(user_model=request.FILES['file'],user_model_name =request.FILES['file'].name )
+            file.save()
+            # self.run_jar_file(request.FILES['file'])
             return Response("File saved", status=status.HTTP_201_CREATED)
+        except:
+            return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+class RunUserModel(APIView):
+    def execute_jar(self,jar_path):
+
+        command = ['java', '-jar', jar_path]
+        try:
+            output = subprocess.check_output(command)
+            output_str = output.decode('utf-8')
+            result = json.loads(output_str)
+            return result
+        except subprocess.CalledProcessError as e:
+            print(f'Error executing JAR: {e}')
+            return None
+    def post(self, request, format=None):
+        try:
+            model_name = request.data['user_model_name_']
+            file_query = UserModel.objects.filter(user_model_name=model_name)
+            if len(file_query) > 0:
+                data = UserModelSerializer(file_query[0]).data
+                # run data['file']
+                # jar_path = f"../../user_models/{data['user_model_name']}" #TODO: remove from comment
+                jar_path = f"C:\\Users\\henmo\\Downloads\\{data['user_model_name']}"
+                res = self.execute_jar(jar_path)
+
+            # self.run_jar_file(request.FILES['file'])
+            return Response(res, status=status.HTTP_200_OK)
         except:
             return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)

@@ -20,7 +20,22 @@ function SelectModelFile() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setMetaTaggingLabels(data);
+        console.log("ok");
+      });
+  };
+
+  const runmodel = () => {
+    console.log(selectedFile.name);
+    fetch("/api/project/run-user-model", {
+      method: "POST",
+      headers: { "Content-Type": "application/json ; charset=utf-8" },
+      body: JSON.stringify({
+        user_model_name_: selectedFile.name,
+      }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        console.log(res);
       });
   };
 
@@ -28,6 +43,7 @@ function SelectModelFile() {
     <div>
       <input type="file" onChange={handleFileSelect} />
       <button onClick={handleFileUpload}>Upload</button>
+      <button onClick={runmodel}>RUN</button>
     </div>
   );
 }
