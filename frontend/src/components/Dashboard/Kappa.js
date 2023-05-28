@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
 
 export default function Kappa({ data, calcFor }) {
-  // console.log("*********************** in Kappa, data is: ");
-  // console.log(data);
   const [score, setScore] = useState(0.0);
-  //   console.log(data);
   useEffect(() => {
     fetch("/api/project/getProjectFleissKappaScore", {
       method: "POST",
@@ -17,8 +13,6 @@ export default function Kappa({ data, calcFor }) {
     })
       .then((response) => response.json())
       .then((res) => {
-        // console.log("RESPONSE in KAPPA:");
-        // console.log(res);
         setScore(res);
       });
   }, [data]);
