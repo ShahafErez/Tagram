@@ -224,6 +224,39 @@ class GetAnnotationByTagger(APIView):
         return Response({'Bad Request': 'Invalid path, did not find project or tagger'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GetAnnotationByProject(APIView):
+    """
+        Getting annotations by a given project id
+    """
+    lookup_url_kwarg_project_id = 'project_id'
+
+    def get(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg_project_id)
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                project = project_query[0]
+                if project != None:
+                    annotation_query = Annotation.objects.filter(
+                        project=project)
+                    if len(annotation_query) > 0:
+                        annotations = []
+                        for annotation in annotation_query:
+                            data = GetAnnotationSerializer(
+                                annotation).data
+                            if data['tags'] != None or data['relations'] != None or data['co_occcurrence'] != None:
+                                data['tags'] = json.loads(data['tags'])
+                                data['relations'] = json.loads(
+                                    data['relations'])
+                                data['co_occcurrence'] = json.loads(
+                                    data['co_occcurrence'])
+                                annotations.append(data)
+                        return Response(annotations, status=status.HTTP_200_OK)
+                    return Response({'No Annotation Found'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find a project'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class GetAnnotatorsStatus(APIView):
     lookup_url_kwarg_project_id = 'project_id'
 
