@@ -16,7 +16,7 @@ export default function ProjectErrorPage() {
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
         Project not found, or you don't have permissions
       </h2>
-      <img src="../../static/frontend/loading.gif" height="150" alt="" />
+      <img src="../../static/frontend/logo.gif" height="150" alt="" />
     </div>
   );
 }

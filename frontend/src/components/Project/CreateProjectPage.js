@@ -211,9 +211,7 @@ export default function CreateProjectPage() {
             <input
               type="file"
               onChange={(e) => {
-                console.log("file!! ", e);
                 processFile(e.target.files[0]);
-                console.log("");
               }}
               style={{ marginTop: "0px" }}
             />

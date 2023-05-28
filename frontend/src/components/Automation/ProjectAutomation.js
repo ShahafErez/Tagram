@@ -7,7 +7,6 @@ import AutomationResults from "./AutomationResults";
 export default function ProjectAutomation() {
   let { projectId } = useParams();
 
-  const [isCheckingCorrectness, setIsCheckingCorrectness] = useState(false);
   const [isAutomaticResults, setIsAutomaticResults] = useState(false);
 
   const [selectedModel, setSelectedModel] = useState();
@@ -64,7 +63,7 @@ export default function ProjectAutomation() {
       }}
     >
       {/* main automation page */}
-      {!isCheckingCorrectness && !isAutomaticResults && (
+      {!isAutomaticResults && (
         <div>
           {projectTitle != null && (
             <h2
@@ -130,7 +129,9 @@ export default function ProjectAutomation() {
       {isAutomaticResults && (
         <div>
           <AutomationResults
-            backToPage={() => {
+            metaTagging={metaTaggingLabels}
+            model={selectedModel}
+            onBack={() => {
               setIsAutomaticResults(false);
             }}
           />
