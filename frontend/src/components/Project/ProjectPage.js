@@ -13,9 +13,6 @@ export default function ProjectPage() {
   let is_manager = ReactSession.get("is_admin");
   let { id } = useParams();
 
-  // the name of the field to be saved in the react session
-  let tagSessionField = `tagsCurrentState_${id}_${username}`;
-
   // setting project and file
   const [project, setProject] = useState({
     title: "",
@@ -152,10 +149,6 @@ export default function ProjectPage() {
           setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
           setAnnotationStatus(data.annotation_status);
           // checking if the user has the current state saved in it's local storage
-          let localStorageCurrentState = ReactSession.get(tagSessionField);
-          localStorageCurrentState != undefined
-            ? setTagCurrentState(localStorageCurrentState)
-            : setTagCurrentState(new Array(arrayLength).fill([]));
         });
       }
     });
@@ -306,7 +299,6 @@ export default function ProjectPage() {
                     labels={tagsLabels}
                     tagSummary={tagSummary}
                     tagCurrentState={tagCurrentState}
-                    tagSessionField={tagSessionField}
                     onChangeTags={(newValueSummary, newValueCurrentState) => {
                       setTagSummary(newValueSummary);
                       setTagCurrentState(newValueCurrentState);
