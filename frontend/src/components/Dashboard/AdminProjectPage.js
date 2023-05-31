@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProjectStatistics from "./ProjectStatistics";
+import EditProjectFunc from "./EditProjectPage";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -8,6 +9,7 @@ export default function AdminProjectPage() {
   const navigate = useNavigate();
   const [annotatorsStatus, setAnnotatorsStatus] = useState();
   const [showStatistics, setShowStatistics] = useState(false);
+  const [editProjectDetails, editProject] = useState();
 
   useEffect(() => {
     fetch(`/api/project/get-annotators-status?project_id=${projectId}`)
@@ -92,17 +94,26 @@ export default function AdminProjectPage() {
               </div>
             ))}
           </div>
+
           {/* Show statistics */}
-          <h3 class="card-subtitle mb-2 text-muted">Statistics</h3>
           <button
             type="button"
             class="btn btn-primary"
             onClick={() => setShowStatistics(true)}
-            style={{ marginTop: "15px" }}
+            style={{ marginTop: "15px", marginRight: "2%" }}
           >
-            Show Statistics
+            Show Project Statistics
           </button>
           {showStatistics && <ProjectStatistics project_id={projectId} />}
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick={() => editProject(true)}
+            style={{ marginLeft: "2%" }}
+          >
+            Edit project details
+          </button>
+          {editProjectDetails && <EditProjectFunc project_id={projectId} />}
         </div>
       )}
     </div>
