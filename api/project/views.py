@@ -423,8 +423,8 @@ class RunUserModel(APIView):
             if len(file_query) > 0:
                 data = UserModelSerializer(file_query[0]).data
                 # run data['file']
-                jar_path = f"../../user_models/{data['user_model_name']}" #TODO: remove from comment
-                # jar_path = f"C:\\Users\\henmo\\Downloads\\{data['user_model_name']}" #TODO: remove (only here so it will work on chen's computer)
+                # jar_path = f"../../user_models/{data['user_model_name']}" #TODO: remove from comment
+                jar_path = f"C:\\Users\\henmo\\Downloads\\{data['user_model_name']}" #TODO: remove (only here so it will work on chen's computer)
                 res = self.execute_jar(jar_path)
 
             # self.run_jar_file(request.FILES['file'])
