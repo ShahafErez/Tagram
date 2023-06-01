@@ -23,7 +23,7 @@ export default function HomePage() {
         Welcome to Tagram
       </h2>
       <img
-        src="../../static/frontend/loading.gif"
+        src="../../static/frontend/logo.gif"
         height="180"
         alt=""
         style={{

@@ -8,7 +8,6 @@ import SelectModelFile from "./SelectModelFile";
 export default function ProjectAutomation() {
   let { projectId } = useParams();
 
-  const [isCheckingCorrectness, setIsCheckingCorrectness] = useState(false);
   const [isAutomaticResults, setIsAutomaticResults] = useState(false);
 
   const [selectedModel, setSelectedModel] = useState();
@@ -66,7 +65,7 @@ export default function ProjectAutomation() {
       }}
     >
       {/* main automation page */}
-      {!isCheckingCorrectness && !isAutomaticResults && (
+      {!isAutomaticResults && (
         <div>
           {projectTitle != null && (
             <h2
@@ -135,7 +134,9 @@ export default function ProjectAutomation() {
         <div>
           <AutomationResults
             selectedModelName={selectedModelName}
-            backToPage={() => {
+            metaTagging={metaTaggingLabels}
+            model={selectedModel}
+            onBack={() => {
               setIsAutomaticResults(false);
             }}
           />

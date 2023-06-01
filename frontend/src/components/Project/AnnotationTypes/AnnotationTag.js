@@ -16,7 +16,6 @@ export default function AnnotationTag(props) {
   const [currentState, setCurrentState] = useState(props.tagCurrentState); // a matrix, each story is in array, representing the values currenly selected
   const [tagsSummary, setTagsSummary] = useState(props.tagSummary); // an array, all values that were selected and saved
   const [tag, setTag] = useState(tag_options[0]); // tag- currently selected tag
-  let tagSessionField = props.tagSessionField; // string representing the value of the field to be saved in react session
 
   // tokens were selected
   function handleValueChange(key, selectedValue) {
@@ -24,7 +23,6 @@ export default function AnnotationTag(props) {
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
     props.onChangeTags(tagsSummary, temp_current_state);
-    ReactSession.set(tagSessionField, temp_current_state);
   }
 
   // tokens were un-selected
@@ -60,7 +58,6 @@ export default function AnnotationTag(props) {
     let new_current_state = new Array(file.length).fill([]);
     setCurrentState(new_current_state);
     props.onChangeTags(temp_tags_summary, new_current_state);
-    ReactSession.set(tagSessionField, new_current_state);
   }
 
   // Removing tagging set
@@ -76,7 +73,6 @@ export default function AnnotationTag(props) {
     let new_current_state = new Array(file.length).fill([]);
     setCurrentState(new_current_state);
     props.onChangeTags(tagsSummary, new_current_state);
-    ReactSession.set(tagSessionField, new_current_state);
   }
 
   function processToken(value) {
