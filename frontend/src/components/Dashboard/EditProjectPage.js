@@ -233,7 +233,7 @@ export default function EditProjectPage(props) {
               class="form-control"
               id="exampleFormControlTextarea1"
               rows="3"
-              defaultValue={annotators[0]}
+              defaultValue="todo insert desc"
               value={description}
               placeholder="Your project description"
               onChange={(e) => setDescription(e.target.value)}
@@ -403,12 +403,11 @@ export default function EditProjectPage(props) {
               >
                 <div class="accordion-body">
                   {users.length > 0 &&
+                    annotators.length > 0 &&
                     users.map((user, index) => {
                       const isChecked = annotators.some(
                         (annotator) => annotator === String(user.username)
                       );
-                      console.log(annotators);
-                      console.log(user.username);
                       const checkboxId = `flexCheckDefault_${index}`; // Unique id for each checkbox
                       return (
                         <div class="form-check" key={index}>
