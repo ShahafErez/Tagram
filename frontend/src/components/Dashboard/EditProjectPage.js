@@ -26,10 +26,6 @@ export default function EditProjectPage(props) {
   const [metaTaggingId, setMetaTaggingId] = useState("");
   const [metaTaggingTitle, setMetaTaggingTitle] = useState("");
 
-  // file
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [fileContent, setFileContent] = useState(null);
-
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -64,38 +60,21 @@ export default function EditProjectPage(props) {
         meta_tagging: metaTaggingId,
         project_manager: username,
       }),
-    })
-      // Adding the new file to the project
-      .then((response) => response.json())
-      .then((data) => {
-        project_id = data.project_id;
-        // Create an object of formData
-        const formData = new FormData();
-        formData.append("myFile", selectedFile, selectedFile.name);
-        formData.append("project_id", project_id);
-        fetch("/api/project/uploadfile", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          body: formData,
-        });
-      })
-      .then(() => {
-        fetch("/api/users/create-user-project-mapping", {
-          method: "POST",
-          headers: { "Content-Type": "application/json ; charset=utf-8" },
-          body: JSON.stringify({
-            project: project_id,
-            user: selectedUsers,
-          }),
-        }).then((response) => {
-          if (response.status == 201) {
-          } else {
-            console.log("error");
-          }
-        });
+    }).then(() => {
+      fetch("/api/users/create-user-project-mapping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json ; charset=utf-8" },
+        body: JSON.stringify({
+          project: project_id,
+          user: selectedUsers,
+        }),
+      }).then((response) => {
+        if (response.status == 201) {
+        } else {
+          console.log("error");
+        }
       });
+    });
   };
 
   /* General */
@@ -109,62 +88,12 @@ export default function EditProjectPage(props) {
       });
   }
 
-  /**
-   * If the file format is correct-
-   * Getting the text of the new uploaded file and setting it
-   */
-  function processFile(file) {
-    let fileType = file.name.split(".")[1];
-    if (fileType != "txt") {
-      return;
-    }
-
-    setSelectedFile(file);
-
-    const formData = new FormData();
-    formData.append("myFile", file, "new_file");
-
-    fetch("/api/project/get-file-content", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        let textArray = [];
-        data.split("\n").map((element, index) => {
-          textArray.push(element.trim());
-        });
-        setFileContent(textArray);
-      });
-  }
-
   /** Meta tagging is being saved */
   function saveMetaTagging(metaTagging) {
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
     setMetaTaggingTitle(metaTagging.title);
     setMetaTaggingId(metaTagging.meta_tagging_id);
-  }
-
-  /** Updated file content is being saved
-   * This function will be called from the "CorrectnessPage" component
-   */
-  function saveFileContent(newFileContent) {
-    let newFileArray = [];
-    newFileContent.textArray.map((story, index) => {
-      if (story != "") {
-        newFileArray.push(story + "\n");
-      }
-    });
-    const newFile = new Blob(newFileArray, {
-      type: "text/plain",
-    });
-    setFileContent(newFileArray);
-    setSelectedFile(newFile);
-    setIsCheckingCorrectness(false);
   }
 
   function SelectUser(username) {
@@ -239,89 +168,6 @@ export default function EditProjectPage(props) {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <div style={{ marginTop: "15px" }}>
-            <input
-              type="file"
-              onChange={(e) => {
-                console.log("file!! ", e);
-                processFile(e.target.files[0]);
-                console.log("");
-              }}
-              style={{ marginTop: "0px" }}
-            />
-            <p
-              style={{
-                color: "#858585",
-                marginBottom: "0px",
-                fontSize: "15px",
-              }}
-            >
-              Please select only "txt" files
-            </p>
-          </div>
-          {/* if file exists- showing it in accordion display */}
-          {fileContent != null && (
-            <div
-              class="accordion"
-              id="accordionExample"
-              style={{ marginTop: "15px" }}
-            >
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                  <button
-                    class="accordion-button"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne"
-                    aria-expanded="true"
-                    aria-controls="collapseOne"
-                  >
-                    Uploaded user stories
-                  </button>
-                </h2>
-                <div
-                  id="collapseOne"
-                  class="accordion-collapse collapse"
-                  aria-labelledby="headingOne"
-                  data-bs-parent="#accordionExample"
-                >
-                  <div class="accordion-body">
-                    <div>
-                      <ol class="list-group" style={{ marginLeft: "10px" }}>
-                        {fileContent.map((element, index) => (
-                          <li
-                            style={{ paddingLeft: "4px", paddingRight: "6px" }}
-                          >
-                            {element}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {fileContent != null && (
-            <div style={{ marginTop: "10px" }}>
-              <button
-                type="submit"
-                class="btn btn-outline-primary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsCheckingCorrectness(true);
-                }}
-              >
-                Edit stories & Check correctness
-                <i
-                  class="bi bi-pencil-square"
-                  style={{ marginLeft: "8px" }}
-                ></i>
-              </button>
-            </div>
-          )}
-
           <div style={{ marginTop: "15px" }}>
             <label>Replace Meta-Tagging</label>
             <div style={{ marginTop: "5px" }}>
@@ -433,10 +279,7 @@ export default function EditProjectPage(props) {
           </div>
 
           {/* Saving is only enabled if all required fields are inserted */}
-          {title != "" &&
-          metaTaggingId != "" &&
-          selectedFile &&
-          selectedUsers.length > 0 ? (
+          {title != "" && metaTaggingId != "" && selectedUsers.length > 0 ? (
             <button
               type="submit"
               class="btn btn-primary"
@@ -457,13 +300,6 @@ export default function EditProjectPage(props) {
       </div>
 
       {/* Calling the component the user has clicked on */}
-      {isCheckingCorrectness && (
-        <CorrectnessPage
-          file={fileContent}
-          onSave={saveFileContent}
-          onBack={backToPage}
-        />
-      )}
       {isCreateMetaTagging && (
         <CreateMetaTagging onSave={saveMetaTagging} onBack={backToPage} />
       )}
