@@ -18,9 +18,6 @@ export default function ProjectAutomation() {
   const [selectedModelName, set_gobal_selectedModelName] = useState(null);
 
   useEffect(() => {
-    // TODO CHEN- get list of all models from an api call
-    // TODO CHEN- upload a algorithm
-
     // getting the meta model information
     let meta_tagging_id = "";
     fetch("/api/project/get?project_id=" + projectId)
