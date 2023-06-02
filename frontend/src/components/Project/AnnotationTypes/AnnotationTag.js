@@ -1,8 +1,8 @@
 import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
-import { ReactSession } from "react-client-session";
 
 export default function AnnotationTag(props) {
+  console.log("!!!!!!!!!!!!!");
   // mapping the selected tags and tag colors
   let TAG_COLORS = {};
   let tag_options = [];
@@ -82,6 +82,8 @@ export default function AnnotationTag(props) {
     });
     return tokenString;
   }
+
+  console.log("current ", currentState);
 
   return (
     <div class="annotate">

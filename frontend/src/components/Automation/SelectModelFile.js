@@ -109,9 +109,6 @@ function SelectModelFile({ set_gobal_selectedModelName }) {
                     ))}
                   </select>
                 )}
-                {allUserModels.length == 0 && (
-                  <p style={{ color: "red" }}>no existing models</p>
-                )}
               </Card.Text>
             </Col>
           </Row>

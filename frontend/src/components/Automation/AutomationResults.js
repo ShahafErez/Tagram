@@ -6,10 +6,12 @@ export default function AutomationResults(props) {
   const [outputLabels, setOutputLabels] = useState();
   const [outputLabelsTypes, setOutputLabelsTypes] = useState();
   const [outputValues, setOutputValues] = useState();
-  const [matchingLabels, setMatchingLabels] = useState([]);
-  const [isShowingLabels, setIsShowingLabels] = useState(false);
 
+  const [matchingLabels, setMatchingLabels] = useState([]);
+  const [labelsDictionary, setLabelsDictionary] = useState();
   const [threshold, setThreshold] = useState("");
+
+  const [isShowingLabels, setIsShowingLabels] = useState(false);
 
   useEffect(() => {
     // getting the automation results from the backend
@@ -23,15 +25,32 @@ export default function AutomationResults(props) {
     })
       .then((response) => response.json())
       .then((res) => {
-        console.log("0000000000 ", res);
-        setOutputLabels(res.labels);
-        setOutputLabelsTypes(res.labelsTypes);
-        setOutputValues(res.values);
+        // console.log("0000000000 ", res);
+        // setOutputLabels(res.labels);
+        // setOutputLabelsTypes(res.labelsTypes);
+        // setOutputValues(res.values);
+        let labels = [["able", "to"], "username", "user"];
+        let labelsTypes = ["class", "attribute", "blabla"];
+        let values = [
+          [0.8, 0.2, 0.9],
+          [0.2, 0.8, 0.1],
+          [0.5, 0.2, 0.8],
+        ];
+        let labelsProcessed = [];
+        labels.map((label, index) => {
+          if (Array.isArray(label)) {
+            label = label.join(" ");
+          }
+          labelsProcessed.push(label);
+        });
+        setOutputLabels(labelsProcessed);
+        setOutputLabelsTypes(labelsTypes);
+        setOutputValues(values);
       });
   }, []);
 
   function filterByThreshold() {
-    let labelsDict = [];
+    let labelsDict = {};
     outputValues.map((valueArray, labelIndex) => {
       valueArray.map((value, labelTypeIndex) => {
         if (value >= threshold) {
@@ -66,6 +85,7 @@ export default function AutomationResults(props) {
         matchingLabels.push(label);
       }
     }
+    setLabelsDictionary(labelsDict);
     setMatchingLabels(matchingLabels);
   }
 
@@ -140,7 +160,10 @@ export default function AutomationResults(props) {
                     })}
                   </ul> */}
                   <div style={{ marginTop: "15px" }}>
-                    <CompareAnnotations />
+                    <CompareAnnotations
+                      automationResult={labelsDictionary}
+                      matchingLabels={matchingLabels}
+                    />
                   </div>
                 </div>
               </div>
