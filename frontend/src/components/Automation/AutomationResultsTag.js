@@ -23,7 +23,6 @@ export default function AutomationResults(props) {
     })
       .then((response) => response.json())
       .then((res) => {
-        console.log("0000000000 ", res);
         setOutputLabels(res.labels);
         setOutputLabelsTypes(res.labelsTypes);
         setOutputValues(res.values);
@@ -131,14 +130,14 @@ export default function AutomationResults(props) {
             {isShowingLabels && matchingLabels != undefined && (
               <div>
                 <div style={{ width: "60%", margin: "auto" }}>
-                  {/* <ul class="list-group">
+                  <ul class="list-group">
                     <p style={{ marginTop: "15px", marginBottom: "5px" }}>
                       Matching labels from meta tagging:
                     </p>
                     {matchingLabels.map((label, index) => {
                       return <li class="list-group-item">{label}</li>;
                     })}
-                  </ul> */}
+                  </ul>
                   <div style={{ marginTop: "15px" }}>
                     <CompareAnnotations />
                   </div>
