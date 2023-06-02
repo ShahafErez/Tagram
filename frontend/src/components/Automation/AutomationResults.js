@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import CompareAnnotations from "./CompareAnnotations";
 
 export default function AutomationResults(props) {
-  let model = props.model;
-
+  const [automationOutput, setAutomationOutput] = useState();
   const [outputLabels, setOutputLabels] = useState();
   const [outputLabelsTypes, setOutputLabelsTypes] = useState();
   const [outputValues, setOutputValues] = useState();
-
   const [matchingLabels, setMatchingLabels] = useState([]);
   const [isShowingLabels, setIsShowingLabels] = useState(false);
 
@@ -15,25 +13,20 @@ export default function AutomationResults(props) {
 
   useEffect(() => {
     // getting the automation results from the backend
-    // TODO CHEN- get the 3 values as a response from an api call
 
-    let labels = [["able", "to"], "username", "user"];
-    let labelsTypes = ["class", "attribute", "blabla"];
-    let values = [
-      [0.8, 0.2, 0.9],
-      [0.2, 0.8, 0.1],
-      [0.5, 0.2, 0.8],
-    ];
-    let labelsProcessed = [];
-    labels.map((label, index) => {
-      if (Array.isArray(label)) {
-        label = label.join(" ");
-      }
-      labelsProcessed.push(label);
-    });
-    setOutputLabels(labelsProcessed);
-    setOutputLabelsTypes(labelsTypes);
-    setOutputValues(values);
+    fetch("/api/project/run-user-model", {
+      method: "POST",
+      headers: { "Content-Type": "application/json ; charset=utf-8" },
+      body: JSON.stringify({
+        user_model_name_: props.selectedModelName,
+      }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        setOutputLabels(res.labels);
+        setOutputLabelsTypes(res.labelsTypes);
+        setOutputValues(res.values);
+      });
   }, []);
 
   function filterByThreshold() {

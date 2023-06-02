@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import FileContent from "../FileContent";
 import MetaTaggingObject from "../Project/MetaTaggingObject";
 import AutomationResults from "./AutomationResults";
+import SelectModelFile from "./SelectModelFile";
+import Card from "react-bootstrap/Card";
 
 export default function ProjectAutomation() {
   let { projectId } = useParams();
@@ -13,11 +15,9 @@ export default function ProjectAutomation() {
   const [metaTaggingLabels, setMetaTaggingLabels] = useState([]);
   const [projectTitle, setProjectTitle] = useState();
   const [fileContent, setFileContent] = useState(null);
+  const [selectedModelName, set_gobal_selectedModelName] = useState(null);
 
   useEffect(() => {
-    // TODO CHEN- get list of all models from an api call
-    // TODO CHEN- upload a algorithm
-
     // getting the meta model information
     let meta_tagging_id = "";
     fetch("/api/project/get?project_id=" + projectId)
@@ -77,21 +77,12 @@ export default function ProjectAutomation() {
             </h2>
           )}
 
-          <label>Please select a model</label>
-          {/* TODO- get from backend */}
-          <select
-            class="form-select"
-            size="3"
-            aria-label="size 3 select example"
-            onChange={(e) => setSelectedModel(e.target.value)}
-            style={{ marginTop: "5px" }}
-          >
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
-          </select>
+          <Card>
+            <SelectModelFile
+              set_gobal_selectedModelName={set_gobal_selectedModelName}
+            />
+          </Card>
 
-          {/* showing the selected meta-model */}
           <div style={{ marginTop: "15px" }}>
             <label>Meta-Model</label>
             {metaTaggingLabels.length > 0 && (
@@ -129,6 +120,7 @@ export default function ProjectAutomation() {
       {isAutomaticResults && (
         <div>
           <AutomationResults
+            selectedModelName={selectedModelName}
             metaTagging={metaTaggingLabels}
             model={selectedModel}
             onBack={() => {

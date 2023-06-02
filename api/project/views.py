@@ -1,6 +1,10 @@
+import os
+import pickle
+import sys
+import importlib.util
 from rest_framework import generics, status
-from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer
-from .models import Project, File, Annotation
+from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer, UserModelSerializer
+from .models import Project, File, Annotation, UserModel
 from api.meta_tagging.models import MetaTagging
 from api.users.models import UsersInProject
 from rest_framework.views import APIView
@@ -9,6 +13,7 @@ import json
 from statsmodels.stats.inter_rater import fleiss_kappa, aggregate_raters
 import numpy as np
 import pandas as pd
+import subprocess
 
 
 class CreateProjectView(APIView):
@@ -384,4 +389,56 @@ class GetProjectFleissKappaScore(APIView):
             kappa = fleiss_kappa(arr)
 
             return Response('{:.2f}'.format(round(kappa, 2)), status=status.HTTP_200_OK)
+        return Response("error", status=status.HTTP_400_BAD_REQUEST)
+
+
+class UploadUserModel(APIView):
+    """
+    Saving a usermodel
+    """
+
+    def post(self, request, format=None):
+        try:
+            print(request.FILES['file'].name)
+            file_query = UserModel.objects.filter(user_model_name=request.FILES['file'].name)
+            if len(file_query) > 0:
+                return Response("model name already exists", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            file = UserModel(user_model=request.FILES['file'],user_model_name =request.FILES['file'].name )
+            file.save()
+            return Response("File saved", status=status.HTTP_201_CREATED)
+        except:
+            return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+class RunUserModel(APIView):
+
+    def post(self, request, format=None):
+        try:
+            model_name = request.data['user_model_name_']
+            file_query = UserModel.objects.filter(user_model_name=model_name)
+            if len(file_query) > 0:
+                data = UserModelSerializer(file_query[0]).data
+                current_dir = os.getcwd()
+                model_path = f"{current_dir}\\user_models\\{data['user_model_name']}"
+                spec = importlib.util.spec_from_file_location('temp_script', model_path)
+                temp_script = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(temp_script)
+                model = temp_script.Model()
+                prediction = model.predict("data")
+
+                return Response(prediction, status=status.HTTP_200_OK)
+        except:
+            return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class GetUserModelsNames(APIView):
+    """
+    Getting all UserModels
+    """
+
+    def get(self, request, format=None):
+        usermodel_query = UserModel.objects.filter()
+        if len(usermodel_query) > 0:
+            data = [UserModelSerializer(userModel).data['user_model_name'] for userModel in usermodel_query]
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK)
         return Response("error", status=status.HTTP_400_BAD_REQUEST)

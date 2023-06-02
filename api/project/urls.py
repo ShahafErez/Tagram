@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import GetAnnotatorsStatus, GetByProjectManager, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotationByTagger, UpdateAnnotationStatus, SendToAlgorithm, GetProjectFleissKappaScore, GetAnnotationByProject
+from .views import GetAnnotatorsStatus, GetByProjectManager, CreateProjectView, GetProject, UploadFile, GetFile, GetProcessedFile, SaveAnnotation, GetAnnotationByTagger, UpdateAnnotationStatus, SendToAlgorithm, GetProjectFleissKappaScore, GetAnnotationByProject,UploadUserModel, RunUserModel, GetUserModelsNames
 
 
 urlpatterns = [
@@ -25,5 +25,8 @@ urlpatterns = [
     path('send-to-algorithm', SendToAlgorithm.as_view()),
     path('getProjectFleissKappaScore', GetProjectFleissKappaScore.as_view()),
 
+    path('upload-user-model', UploadUserModel.as_view()),
+    path('run-user-model', RunUserModel.as_view()),
+    path('get-all-usermodels-names', GetUserModelsNames.as_view()),
 
 ]
