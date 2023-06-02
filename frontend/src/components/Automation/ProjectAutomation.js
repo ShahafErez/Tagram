@@ -4,6 +4,7 @@ import FileContent from "../FileContent";
 import MetaTaggingObject from "../Project/MetaTaggingObject";
 import AutomationResults from "./AutomationResults";
 import SelectModelFile from "./SelectModelFile";
+import Card from "react-bootstrap/Card";
 
 export default function ProjectAutomation() {
   let { projectId } = useParams();
@@ -79,23 +80,12 @@ export default function ProjectAutomation() {
             </h2>
           )}
 
-          {/* TODO- get from backend */}
-          {/* <select
-            class="form-select"
-            size="3"
-            aria-label="size 3 select example"
-            onChange={(e) => setSelectedModel(e.target.value)}
-            style={{ marginTop: "5px" }}
-          >
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
-          </select> */}
-          <SelectModelFile
-            set_gobal_selectedModelName={set_gobal_selectedModelName}
-          />
+          <Card>
+            <SelectModelFile
+              set_gobal_selectedModelName={set_gobal_selectedModelName}
+            />
+          </Card>
 
-          {/* showing the selected meta-model */}
           <div style={{ marginTop: "15px" }}>
             <label>Meta-Model</label>
             {metaTaggingLabels.length > 0 && (
