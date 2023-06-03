@@ -12,6 +12,7 @@ export default function ProjectStatistics(props) {
   const [annotators, setAnnotators] = useState([]);
   const [tagsForAlgorithm, setTagsForAlgorithm] = useState([]);
   const [relationsForAlgorithm, setRelationsForAlgorithm] = useState([]);
+  const [allAnnotationData, setallAnnotationData] = useState([]);
 
   // tags
   const [UsersTagsAnnotationStatistics, setUsersTagsAnnotationStatistics] =
@@ -32,10 +33,14 @@ export default function ProjectStatistics(props) {
   }, []);
 
   useEffect(() => {
+    getAllAnnotationData();
+  }, [annotators]);
+
+  useEffect(() => {
     // get statistics: {user:{statistics}}
     getUsersTagsAnnotationStatistics();
     getUsersRelationsAnnotationStatistics();
-  }, [annotators]);
+  }, [allAnnotationData]);
 
   useEffect(() => {
     //calc kappa for each label
@@ -58,6 +63,13 @@ export default function ProjectStatistics(props) {
       });
   }
 
+  function getAllAnnotationData() {
+    fetch("/api/project/get-annotation-of-project?project_id=" + project_id)
+      .then((response) => response.json())
+      .then((data) => {
+        setallAnnotationData(data);
+      });
+  }
   //TODO: remove function after algorithm is ready.
   function formatAlgorithmOutput(outputObj) {
     let outputStr = "Algorithm Output: \n";
@@ -145,49 +157,28 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersTagsAnnotationStatistics() {
-    let promises = [];
+    let results = [];
 
     for (const u in annotators) {
-      let promise = fetch(
-        "/api/project/get-annotation-of-tagger?project_id=" +
-          project_id +
-          "&tagger=" +
-          annotators[u]
-      )
-        .then((response) => {
-          if (response.status == 200) {
-            return response.json();
-          } else {
-            throw new Error("Request failed with status: " + response.status);
-          }
-        })
-        .then((data) => {
-          if (data != undefined) {
-            return processUserTagAnnotation(data.tags);
-          }
-        })
-        .then((data) => {
-          return {
-            user: annotators[u],
-            data: data,
-          };
-        })
-        .catch((error) => {
-          // do something?
-        });
-
-      promises.push(promise);
+      const userTags = allAnnotationData.filter(
+        (x) => x.tagger === annotators[u]
+      );
+      let result_processUserTagAnnotation = processUserTagAnnotation(
+        userTags[0].tags
+      );
+      results.push({
+        user: annotators[u],
+        data: result_processUserTagAnnotation,
+      });
     }
 
-    Promise.all(promises).then((results) => {
-      let temp_UsersTagsAnnotationStatistics = {};
-      for (const r in results) {
-        if (results[r] !== undefined) {
-          temp_UsersTagsAnnotationStatistics[results[r].user] = results[r].data;
-        }
+    let temp_UsersTagsAnnotationStatistics = {};
+    for (const r in results) {
+      if (results[r] !== undefined) {
+        temp_UsersTagsAnnotationStatistics[results[r].user] = results[r].data;
       }
-      setUsersTagsAnnotationStatistics(temp_UsersTagsAnnotationStatistics);
-    });
+    }
+    setUsersTagsAnnotationStatistics(temp_UsersTagsAnnotationStatistics);
   }
 
   /* Relations */
@@ -228,36 +219,20 @@ export default function ProjectStatistics(props) {
   }
 
   function getUsersRelationsAnnotationStatistics() {
-    let promises = [];
+    let results = [];
 
     for (const u in annotators) {
-      let promise = fetch(
-        "/api/project/get-annotation-of-tagger?project_id=" +
-          project_id +
-          "&tagger=" +
-          annotators[u]
-      )
-        .then((response) => {
-          if (response.status == 200) {
-            return response.json();
-          }
-        })
-        .then((data) => {
-          if (data != undefined) {
-            return processUserRelationAnnotation(data.relations);
-          }
-        })
-        .then((data) => {
-          return {
-            user: annotators[u],
-            data: data,
-          };
-        });
+      const userRels = allAnnotationData.filter(
+        (x) => x.tagger === annotators[u]
+      );
+      let result_processUserRelationAnnotation = processUserRelationAnnotation(
+        userRels[0].relations
+      );
+      results.push({
+        user: annotators[u],
+        data: result_processUserRelationAnnotation,
+      });
 
-      promises.push(promise);
-    }
-
-    Promise.all(promises).then((results) => {
       let temp_UsersRelationsAnnotationStatistics = {};
 
       for (const r in results) {
@@ -268,7 +243,7 @@ export default function ProjectStatistics(props) {
       setUsersRelationsAnnotationStatistics(
         temp_UsersRelationsAnnotationStatistics
       );
-    });
+    }
   }
 
   function calcKappaForRelations() {
