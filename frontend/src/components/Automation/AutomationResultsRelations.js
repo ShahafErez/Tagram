@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import CompareAnnotationsTag from "./CompareAnnotationsTag";
+import CompareAnnotationsRelations from "./CompareAnnotationsRelations";
 
-export default function AutomationResultsTag(props) {
+export default function AutomationResultsRelations(props) {
   const [outputLabels, setOutputLabels] = useState();
   const [outputLabelsTypes, setOutputLabelsTypes] = useState();
   const [outputValues, setOutputValues] = useState();
@@ -16,11 +16,15 @@ export default function AutomationResultsTag(props) {
     // getting the automation results from the backend
 
     let labelsProcessed = [];
-    props.output.labels.map((label, index) => {
-      if (Array.isArray(label)) {
-        label = label.join(" ");
-      }
-      labelsProcessed.push(label);
+    props.output.labels.forEach((labelArray) => {
+      let labelArrayProcessed = [];
+      labelArray.forEach((label) => {
+        if (Array.isArray(label)) {
+          label = label.join(" ");
+        }
+        labelArrayProcessed.push(label);
+      });
+      labelsProcessed.push(labelArrayProcessed);
     });
     setOutputLabels(labelsProcessed);
     setOutputLabelsTypes(props.output.labelsTypes);
@@ -34,7 +38,6 @@ export default function AutomationResultsTag(props) {
         if (value >= threshold) {
           let key = outputLabelsTypes[labelTypeIndex];
           let dictValue = outputLabels[labelIndex];
-
           if (!labelsDict.hasOwnProperty(key)) {
             labelsDict[key] = [];
           }
@@ -49,7 +52,7 @@ export default function AutomationResultsTag(props) {
     let metaTaggings = props.metaTagging;
     let metaTaggingLabels = [];
     metaTaggings.map((label, index) => {
-      if (label.type == "Tag") {
+      if (label.type == "Relation") {
         metaTaggingLabels.push(label.name.toLowerCase());
       }
     });
@@ -72,13 +75,14 @@ export default function AutomationResultsTag(props) {
         outputLabelsTypes != undefined &&
         outputValues != undefined && (
           <div>
-            <h4>Tags</h4>
+            <h4>Relations</h4>
 
             {/* output result table */}
             <table class="table">
               <thead>
                 <tr>
-                  <th></th>
+                  <th>Term 1</th>
+                  <th>Term 2</th>
                   {outputLabelsTypes.map((label, index) => (
                     <th scope="col" key={index}>
                       {label}
@@ -89,7 +93,8 @@ export default function AutomationResultsTag(props) {
               <tbody>
                 {outputLabels.map((type, typeIndex) => (
                   <tr key={typeIndex}>
-                    <th>{type}</th>
+                    <th>{type[0]}</th>
+                    <th>{type[1]}</th>
                     {outputValues[typeIndex].map((value, valueIndex) => (
                       <td key={valueIndex}>{value}</td>
                     ))}
@@ -137,9 +142,10 @@ export default function AutomationResultsTag(props) {
                     })}
                   </ul>
                   <div style={{ marginTop: "15px" }}>
-                    <CompareAnnotationsTag
+                    <CompareAnnotationsRelations
                       automationResult={labelsDictionary}
                       matchingLabels={matchingLabels}
+                      annotationsData={props.annotationsData}
                     />
                   </div>
                 </div>

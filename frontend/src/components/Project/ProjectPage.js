@@ -143,7 +143,6 @@ export default function ProjectPage() {
         // annotations found
         return response.json().then((data) => {
           setTagSummary(data.tags);
-          console.log("data.tags ", data.tags);
           setRelationSummary(data.relations);
           setCoOccurrenceSummary(data.co_occcurrence);
           setRelationCurrentState(new Array(arrayLength).fill([]));
@@ -263,7 +262,6 @@ export default function ProjectPage() {
                     type="button"
                     class="btn btn-outline-primary"
                     onClick={() => {
-                      console.log("tags");
                       setIsAnnotateTags(true);
                       setIsAnnotateRelations(false);
                       setIsAnnotateCoOccurrence(false);
@@ -296,21 +294,18 @@ export default function ProjectPage() {
                 </div>
 
                 {/* rendering the annotation components */}
-                {tagsLabels.length > 0 &&
-                  isAnnotateTags &&
-                  (console.log("treu"),
-                  (
-                    <AnnotationTag
-                      file={file.text}
-                      labels={tagsLabels}
-                      tagSummary={tagSummary}
-                      tagCurrentState={tagCurrentState}
-                      onChangeTags={(newValueSummary, newValueCurrentState) => {
-                        setTagSummary(newValueSummary);
-                        setTagCurrentState(newValueCurrentState);
-                      }}
-                    />
-                  ))}
+                {tagsLabels.length > 0 && isAnnotateTags && (
+                  <AnnotationTag
+                    file={file.text}
+                    labels={tagsLabels}
+                    tagSummary={tagSummary}
+                    tagCurrentState={tagCurrentState}
+                    onChangeTags={(newValueSummary, newValueCurrentState) => {
+                      setTagSummary(newValueSummary);
+                      setTagCurrentState(newValueCurrentState);
+                    }}
+                  />
+                )}
                 {file.text != "" &&
                   relationsLabels.length > 0 &&
                   isAnnotateRelations && (
