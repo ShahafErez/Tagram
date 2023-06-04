@@ -53,6 +53,13 @@ export default function CompareAnnotationsTag(props) {
   }
 
   function combineSets(obj1, obj2) {
+    if (Object.keys(obj1).length === 0) {
+      return obj2;
+    }
+    if (Object.keys(obj2).length === 0) {
+      return obj1;
+    }
+
     let combinedObj = {};
     for (let key in obj1) {
       if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
