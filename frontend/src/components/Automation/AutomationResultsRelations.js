@@ -67,6 +67,11 @@ export default function AutomationResultsRelations(props) {
     setMatchingLabels(matchingLabels);
   }
 
+  useEffect(() => {
+    if (props) {
+      props.set_out_data(labelsDictionary, "relations");
+    }
+  }, [labelsDictionary]);
   return (
     <div style={{ textAlign: "center" }}>
       {outputLabels != undefined &&

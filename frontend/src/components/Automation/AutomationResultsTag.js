@@ -64,6 +64,11 @@ export default function AutomationResultsTag(props) {
     setMatchingLabels(matchingLabels);
   }
 
+  useEffect(() => {
+    if (props) {
+      props.set_out_data(labelsDictionary, "tags");
+    }
+  }, [labelsDictionary]);
   return (
     <div style={{ textAlign: "center" }}>
       {outputLabels != undefined &&
