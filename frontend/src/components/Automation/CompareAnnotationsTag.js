@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 export default function CompareAnnotationsTag(props) {
   let { projectId } = useParams();
 
+  console.log(props);
   let automationResult = {};
   Object.entries(props.automationResult).forEach(([key, value]) => {
     automationResult[key] = new Set(value);
