@@ -13,8 +13,6 @@ export default function AutomationResultsRelations(props) {
   const [isShowingLabels, setIsShowingLabels] = useState(false);
 
   useEffect(() => {
-    // getting the automation results from the backend
-
     let labelsProcessed = [];
     props.output.labels.forEach((labelArray) => {
       let labelArrayProcessed = [];

@@ -13,8 +13,6 @@ export default function AutomationResultsTag(props) {
   const [isShowingLabels, setIsShowingLabels] = useState(false);
 
   useEffect(() => {
-    // getting the automation results from the backend
-
     let labelsProcessed = [];
     props.output.labels.map((label, index) => {
       if (Array.isArray(label)) {

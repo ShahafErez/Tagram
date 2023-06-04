@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function CompareAnnotationsTag(props) {
+export default function CompareAnnotationsRelations(props) {
   let automationResult = {};
   Object.entries(props.automationResult).forEach(([key, value]) => {
     automationResult[key] = new Set(value);
@@ -58,6 +58,25 @@ export default function CompareAnnotationsTag(props) {
         combinedObj[key] = new Set([...obj1[key], ...obj2[key]]);
       }
     }
+
+    for (const [key, valueArray] of Object.entries(combinedObj)) {
+      let labelArraysUnique = [];
+      valueArray.forEach((valueTokensArray) => {
+        let isExists = false;
+        labelArraysUnique.forEach((tokensUnique) => {
+          if (
+            JSON.stringify(tokensUnique) === JSON.stringify(valueTokensArray)
+          ) {
+            isExists = true;
+          }
+        });
+        if (!isExists) {
+          labelArraysUnique.push(valueTokensArray);
+        }
+      });
+      combinedObj[key] = labelArraysUnique;
+    }
+
     return combinedObj;
   }
 

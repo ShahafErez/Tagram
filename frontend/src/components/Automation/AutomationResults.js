@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AutomationResultsTag from "./AutomationResultsTag";
 import AutomationResultsRelations from "./AutomationResultsRelations";
+import AutomationResultsCoOccurrence from "./AutomationResultsCoOccurrence";
 
 export default function AutomationResults(props) {
   let { projectId } = useParams();
@@ -35,7 +36,7 @@ export default function AutomationResults(props) {
           Relations: {
             labels: [
               ["project", ["able", "to"]],
-              ["projects", "add"],
+              ["projects", "username"],
               ["email", "user"],
             ],
             labelsTypes: ["aggregation", "attribute", "other"],
@@ -50,13 +51,9 @@ export default function AutomationResults(props) {
               ["user", ["able", "to"], "username"],
               ["user", "username"],
               ["email", "user", "phone"],
+              ["projects"],
             ],
-            labelsTypes: ["aggregation", "attribute", "other"],
-            values: [
-              [0.8, 0.2, 0.9],
-              [0.2, 0.8, 0.1],
-              [0.5, 0.2, 0.8],
-            ],
+            values: [0.6, 0.5, 0.2, 0.5],
           },
         };
         setAutomationOutput(algorithmOutput);
@@ -68,7 +65,6 @@ export default function AutomationResults(props) {
     fetch(`/api/project/get-annotation-of-project?project_id=${projectId}`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log("data ", data);
         setAnnotationsData(data);
       });
   }
@@ -159,8 +155,8 @@ export default function AutomationResults(props) {
         //     </div>
         //   </div>
 
-        <AutomationResultsRelations
-          output={automationOutput.Relations}
+        <AutomationResultsCoOccurrence
+          output={automationOutput.CoOccurrence}
           metaTagging={props.metaTagging}
           annotationsData={annotationsData}
         />
