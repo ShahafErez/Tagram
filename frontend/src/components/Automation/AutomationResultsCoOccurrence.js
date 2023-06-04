@@ -35,6 +35,11 @@ export default function AutomationResultsCoOccurrence(props) {
     setLabelsArray(annotationsArrays);
   }
 
+  useEffect(() => {
+    if (props) {
+      props.set_out_data(labelsArray, "co_occurrence");
+    }
+  }, [labelsArray]);
   return (
     <div style={{ textAlign: "center" }}>
       {outputValues != undefined && (

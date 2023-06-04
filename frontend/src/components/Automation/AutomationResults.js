@@ -9,7 +9,35 @@ export default function AutomationResults(props) {
 
   const [automationOutput, setAutomationOutput] = useState();
   const [annotationsData, setAnnotationsData] = useState();
+  const [outputTotalData, setOutputTatalData] = useState({});
 
+  const handleOutputTotalData = (data, from) => {
+    console.log(data);
+    if (from === "tags") {
+      const newData = {
+        ...outputTotalData,
+        Tags: data,
+      };
+      console.log(newData);
+      setOutputTatalData(newData);
+    }
+    if (from == "relations") {
+      const newData = {
+        ...outputTotalData,
+        Relations: data,
+      };
+      console.log(newData);
+      setOutputTatalData(newData);
+    }
+    if (from == "co_occurrence") {
+      const newData = {
+        ...outputTotalData,
+        Co_Occurrence: data,
+      };
+      console.log(newData);
+      setOutputTatalData(newData);
+    }
+  };
   useEffect(() => {
     // getting the automation results from the backend
     fetch("/api/project/run-user-model", {
@@ -17,6 +45,7 @@ export default function AutomationResults(props) {
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         user_model_name_: props.selectedModelName,
+        file_content: props.file_content,
       }),
     })
       .then((response) => response.json())
@@ -34,6 +63,29 @@ export default function AutomationResults(props) {
       });
   }
 
+  function writeArraysToTxtFile() {
+    const obj = outputTotalData;
+    const fileName = "output.txt";
+    const jsonString = JSON.stringify(obj, null, 2);
+    const blob = new Blob([jsonString], { type: "text/plain;charset=utf-8" });
+
+    if (navigator.msSaveBlob) {
+      // For Internet Explorer or Microsoft Edge
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        // For modern browsers
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  }
   return (
     <div style={{ textAlign: "center" }}>
       <h3>Automation results</h3>
@@ -63,6 +115,7 @@ export default function AutomationResults(props) {
                     output={automationOutput.Tag}
                     metaTagging={props.metaTagging}
                     annotationsData={annotationsData}
+                    set_out_data={handleOutputTotalData}
                   />
                 </div>
               </div>
@@ -90,6 +143,7 @@ export default function AutomationResults(props) {
                     output={automationOutput.Relations}
                     metaTagging={props.metaTagging}
                     annotationsData={annotationsData}
+                    set_out_data={handleOutputTotalData}
                   />
                 </div>
               </div>
@@ -116,6 +170,7 @@ export default function AutomationResults(props) {
                   <AutomationResultsCoOccurrence
                     output={automationOutput.CoOccurrence}
                     annotationsData={annotationsData}
+                    set_out_data={handleOutputTotalData}
                   />
                 </div>
               </div>
@@ -123,6 +178,12 @@ export default function AutomationResults(props) {
           </div>
         </div>
       )}
+      {Object.keys(outputTotalData).length === 3 && (
+        <div>
+          <button onClick={writeArraysToTxtFile}>Download Result</button>
+        </div>
+      )}
+
       <div style={{ textAlign: "left" }}>
         <button
           type="submit"
