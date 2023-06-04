@@ -423,7 +423,7 @@ class RunUserModel(APIView):
                 temp_script = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(temp_script)
                 model = temp_script.Model()
-                prediction = model.predict("data")
+                prediction = model.predict(request.data['file_content'])
 
                 return Response(prediction, status=status.HTTP_200_OK)
         except:

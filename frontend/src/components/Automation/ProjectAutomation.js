@@ -128,6 +128,7 @@ export default function ProjectAutomation() {
           <AutomationResults
             selectedModelName={selectedModelName}
             metaTagging={metaTaggingLabels}
+            file_content={fileContent}
             onBack={() => {
               setIsAutomaticResults(false);
             }}

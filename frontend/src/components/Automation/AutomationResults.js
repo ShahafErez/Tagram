@@ -17,6 +17,7 @@ export default function AutomationResults(props) {
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         user_model_name_: props.selectedModelName,
+        file_content: props.file_content,
       }),
     })
       .then((response) => response.json())
