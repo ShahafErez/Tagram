@@ -51,7 +51,7 @@ function SelectModelFile({ set_gobal_selectedModelName }) {
         return response.json();
       })
       .then((data) => {
-        setAllUserModels(data);
+        setAllUserModels(data.reverse());
       });
   }, [selectedFile]);
 

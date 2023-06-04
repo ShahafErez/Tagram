@@ -12,7 +12,6 @@ export default function AutomationResults(props) {
 
   useEffect(() => {
     // getting the automation results from the backend
-
     fetch("/api/project/run-user-model", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -22,41 +21,7 @@ export default function AutomationResults(props) {
     })
       .then((response) => response.json())
       .then((res) => {
-        // setAutomationOutput(res.results)
-        let algorithmOutput = {
-          Tag: {
-            labels: [["able", "to"], "username", "want"],
-            labelsTypes: ["class", "attribute", "other"],
-            values: [
-              [0.8, 0.2, 0.9],
-              [0.2, 0.8, 0.1],
-              [0.5, 0.2, 0.8],
-            ],
-          },
-          Relations: {
-            labels: [
-              ["project", ["able", "to"]],
-              ["projects", "username"],
-              ["email", "user"],
-            ],
-            labelsTypes: ["aggregation", "attribute", "other"],
-            values: [
-              [0.8, 0.2, 0.9],
-              [0.2, 0.8, 0.1],
-              [0.5, 0.2, 0.8],
-            ],
-          },
-          CoOccurrence: {
-            labels: [
-              ["user", ["able", "to"], "username"],
-              ["user", "username"],
-              ["email", "user", "phone"],
-              ["projects"],
-            ],
-            values: [0.6, 0.5, 0.2, 0.5],
-          },
-        };
-        setAutomationOutput(algorithmOutput);
+        setAutomationOutput(res);
         getAnnotationsData();
       });
   }, []);
