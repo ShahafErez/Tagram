@@ -25,7 +25,7 @@ export default function AutomationResults(props) {
         // setAutomationOutput(res.results)
         let algorithmOutput = {
           Tag: {
-            labels: [["able", "to"], "username", "user"],
+            labels: [["able", "to"], "username", "want"],
             labelsTypes: ["class", "attribute", "other"],
             values: [
               [0.8, 0.2, 0.9],
@@ -73,94 +73,90 @@ export default function AutomationResults(props) {
     <div style={{ textAlign: "center" }}>
       <h3>Automation results</h3>
       {automationOutput != undefined && (
-        // <div>
-        //   <div class="accordion" id="accordionPanelsStayOpenExample">
-        //     <div class="accordion-item">
-        //       <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-        //         <button
-        //           class="accordion-button"
-        //           type="button"
-        //           data-bs-toggle="collapse"
-        //           data-bs-target="#panelsStayOpen-collapseOne"
-        //           aria-expanded="true"
-        //           aria-controls="panelsStayOpen-collapseOne"
-        //         >
-        //           Tag
-        //         </button>
-        //       </h2>
-        //       <div
-        //         id="panelsStayOpen-collapseOne"
-        //         class="accordion-collapse collapse show"
-        //         aria-labelledby="panelsStayOpen-headingOne"
-        //       >
-        //         <div class="accordion-body">
-        //           <AutomationResultsTag
-        //             output={automationOutput.Tag}
-        //             metaTagging={props.metaTagging}
-        //           />
-        //         </div>
-        //       </div>
-        //     </div>
-        //     <div class="accordion-item">
-        //       <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-        //         <button
-        //           class="accordion-button collapsed"
-        //           type="button"
-        //           data-bs-toggle="collapse"
-        //           data-bs-target="#panelsStayOpen-collapseTwo"
-        //           aria-expanded="true"
-        //           aria-controls="panelsStayOpen-collapseTwo"
-        //         >
-        //           Relations
-        //         </button>
-        //       </h2>
-        //       <div
-        //         id="panelsStayOpen-collapseTwo"
-        //         class="accordion-collapse collapse"
-        //         aria-labelledby="panelsStayOpen-headingTwo"
-        //       >
-        //         <div class="accordion-body">
-        //           <AutomationResultsTag
-        //             output={automationOutput.Tag}
-        //             metaTagging={props.metaTagging}
-        //           />
-        //         </div>
-        //       </div>
-        //     </div>
-        //     <div class="accordion-item">
-        //       <h2 class="accordion-header" id="panelsStayOpen-headingThree">
-        //         <button
-        //           class="accordion-button collapsed"
-        //           type="button"
-        //           data-bs-toggle="collapse"
-        //           data-bs-target="#panelsStayOpen-collapseThree"
-        //           aria-expanded="true"
-        //           aria-controls="panelsStayOpen-collapseThree"
-        //         >
-        //           Co-Occurrence
-        //         </button>
-        //       </h2>
-        //       <div
-        //         id="panelsStayOpen-collapseThree"
-        //         class="accordion-collapse collapse"
-        //         aria-labelledby="panelsStayOpen-headingThree"
-        //       >
-        //         <div class="accordion-body">
-        //           <AutomationResultsTag
-        //             output={automationOutput.Tag}
-        //             metaTagging={props.metaTagging}
-        //           />
-        //         </div>
-        //       </div>
-        //     </div>
-        //   </div>
-
-        <AutomationResultsCoOccurrence
-          output={automationOutput.CoOccurrence}
-          metaTagging={props.metaTagging}
-          annotationsData={annotationsData}
-        />
-        // </div>
+        <div>
+          <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button
+                  class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#panelsStayOpen-collapseOne"
+                  aria-expanded="true"
+                  aria-controls="panelsStayOpen-collapseOne"
+                >
+                  Tag
+                </button>
+              </h2>
+              <div
+                id="panelsStayOpen-collapseOne"
+                class="accordion-collapse collapse show"
+                aria-labelledby="panelsStayOpen-headingOne"
+              >
+                <div class="accordion-body">
+                  <AutomationResultsTag
+                    output={automationOutput.Tag}
+                    metaTagging={props.metaTagging}
+                    annotationsData={annotationsData}
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#panelsStayOpen-collapseTwo"
+                  aria-expanded="true"
+                  aria-controls="panelsStayOpen-collapseTwo"
+                >
+                  Relations
+                </button>
+              </h2>
+              <div
+                id="panelsStayOpen-collapseTwo"
+                class="accordion-collapse collapse"
+                aria-labelledby="panelsStayOpen-headingTwo"
+              >
+                <div class="accordion-body">
+                  <AutomationResultsRelations
+                    output={automationOutput.Relations}
+                    metaTagging={props.metaTagging}
+                    annotationsData={annotationsData}
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#panelsStayOpen-collapseThree"
+                  aria-expanded="true"
+                  aria-controls="panelsStayOpen-collapseThree"
+                >
+                  Co-Occurrence
+                </button>
+              </h2>
+              <div
+                id="panelsStayOpen-collapseThree"
+                class="accordion-collapse collapse"
+                aria-labelledby="panelsStayOpen-headingThree"
+              >
+                <div class="accordion-body">
+                  <AutomationResultsCoOccurrence
+                    output={automationOutput.CoOccurrence}
+                    annotationsData={annotationsData}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       <div style={{ textAlign: "left" }}>
         <button

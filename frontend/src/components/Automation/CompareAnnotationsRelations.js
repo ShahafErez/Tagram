@@ -52,31 +52,11 @@ export default function CompareAnnotationsRelations(props) {
 
   function combineSets(obj1, obj2) {
     let combinedObj = {};
-
     for (let key in obj1) {
       if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
         combinedObj[key] = new Set([...obj1[key], ...obj2[key]]);
       }
     }
-
-    for (const [key, valueArray] of Object.entries(combinedObj)) {
-      let labelArraysUnique = [];
-      valueArray.forEach((valueTokensArray) => {
-        let isExists = false;
-        labelArraysUnique.forEach((tokensUnique) => {
-          if (
-            JSON.stringify(tokensUnique) === JSON.stringify(valueTokensArray)
-          ) {
-            isExists = true;
-          }
-        });
-        if (!isExists) {
-          labelArraysUnique.push(valueTokensArray);
-        }
-      });
-      combinedObj[key] = labelArraysUnique;
-    }
-
     return combinedObj;
   }
 
@@ -96,9 +76,14 @@ export default function CompareAnnotationsRelations(props) {
         taggersList.forEach((tagger) => {
           // all the tokens the tagger has annotated for
           let labelList = annotationsDict[tagger][label];
-          let isPresend = Array.from(labelList).some(
-            (arr) => JSON.stringify(arr) === JSON.stringify(tokens)
-          );
+          let isPresend;
+          if (annotationsDict[tagger][label] == undefined) {
+            isPresend = false;
+          } else {
+            isPresend = Array.from(labelList).some(
+              (arr) => JSON.stringify(arr) === JSON.stringify(tokens)
+            );
+          }
           tokenArray.push(isPresend);
         });
         tokensMatrix.push(tokenArray.flat(1));

@@ -10,16 +10,13 @@ export default function CompareAnnotationsTag(props) {
   });
 
   let matchingLabels = props.matchingLabels;
+  let annotationsData = props.annotationsData;
 
   const [taggers, setTaggers] = useState([]);
   const [tokensTaggersMapping, setTokensTaggersMapping] = useState();
 
   useEffect(() => {
-    fetch(`/api/project/get-annotation-of-project?project_id=${projectId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        processAnnotations(data);
-      });
+    processAnnotations(annotationsData);
   }, []);
 
   function processAnnotations(data) {
@@ -50,7 +47,18 @@ export default function CompareAnnotationsTag(props) {
       annotationsDict[annotationsInfo.tagger.toLowerCase()] = taggerAnnotations;
     });
     setTaggers(taggersList);
+    labelsByTokenDict = combineSets(automationResult, labelsByTokenDict);
     getAnnotationTaggersArray(labelsByTokenDict, taggersList, annotationsDict);
+  }
+
+  function combineSets(obj1, obj2) {
+    let combinedObj = {};
+    for (let key in obj1) {
+      if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
+        combinedObj[key] = new Set([...obj1[key], ...obj2[key]]);
+      }
+    }
+    return combinedObj;
   }
 
   function getAnnotationTaggersArray(
@@ -69,7 +77,11 @@ export default function CompareAnnotationsTag(props) {
         taggersList.forEach((tagger) => {
           // all the tokens the tagger has annotated for
           let labelList = annotationsDict[tagger][label];
-          tokenArray.push(labelList.has(token));
+          if (labelList == undefined) {
+            tokenArray.push(false);
+          } else {
+            tokenArray.push(labelList.has(token));
+          }
         });
         tokensMatrix.push(tokenArray);
       });

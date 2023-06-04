@@ -138,6 +138,7 @@ export default function AutomationResultsTag(props) {
                     <CompareAnnotationsTag
                       automationResult={labelsDictionary}
                       matchingLabels={matchingLabels}
+                      annotationsData={props.annotationsData}
                     />
                   </div>
                 </div>
