@@ -12,13 +12,11 @@ export default function AutomationResults(props) {
   const [outputTotalData, setOutputTatalData] = useState({});
 
   const handleOutputTotalData = (data, from) => {
-    console.log(data);
     if (from === "tags") {
       const newData = {
         ...outputTotalData,
         Tags: data,
       };
-      console.log(newData);
       setOutputTatalData(newData);
     }
     if (from == "relations") {
@@ -26,7 +24,6 @@ export default function AutomationResults(props) {
         ...outputTotalData,
         Relations: data,
       };
-      console.log(newData);
       setOutputTatalData(newData);
     }
     if (from == "co_occurrence") {
@@ -34,7 +31,6 @@ export default function AutomationResults(props) {
         ...outputTotalData,
         Co_Occurrence: data,
       };
-      console.log(newData);
       setOutputTatalData(newData);
     }
   };
