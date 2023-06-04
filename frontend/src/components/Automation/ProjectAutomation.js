@@ -104,15 +104,21 @@ export default function ProjectAutomation() {
 
           {/* getting automatic results */}
           <div style={{ textAlign: "center" }}>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onClick={() => {
-                setIsAutomaticResults(true);
-              }}
-            >
-              Get Automatic Annotation
-            </button>
+            {selectedModelName == null ? (
+              <button type="button" class="btn btn-primary disabled">
+                Get Automatic Annotation
+              </button>
+            ) : (
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={() => {
+                  setIsAutomaticResults(true);
+                }}
+              >
+                Get Automatic Annotation
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -122,7 +128,6 @@ export default function ProjectAutomation() {
           <AutomationResults
             selectedModelName={selectedModelName}
             metaTagging={metaTaggingLabels}
-            model={selectedModel}
             onBack={() => {
               setIsAutomaticResults(false);
             }}

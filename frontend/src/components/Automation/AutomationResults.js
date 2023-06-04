@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react";
-import CompareAnnotations from "./CompareAnnotations";
+import { useParams } from "react-router-dom";
+import AutomationResultsTag from "./AutomationResultsTag";
+import AutomationResultsRelations from "./AutomationResultsRelations";
+import AutomationResultsCoOccurrence from "./AutomationResultsCoOccurrence";
 
 export default function AutomationResults(props) {
-  const [automationOutput, setAutomationOutput] = useState();
-  const [outputLabels, setOutputLabels] = useState();
-  const [outputLabelsTypes, setOutputLabelsTypes] = useState();
-  const [outputValues, setOutputValues] = useState();
-  const [matchingLabels, setMatchingLabels] = useState([]);
-  const [isShowingLabels, setIsShowingLabels] = useState(false);
+  let { projectId } = useParams();
 
-  const [threshold, setThreshold] = useState("");
+  const [automationOutput, setAutomationOutput] = useState();
+  const [annotationsData, setAnnotationsData] = useState();
 
   useEffect(() => {
     // getting the automation results from the backend
-
     fetch("/api/project/run-user-model", {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -23,129 +21,108 @@ export default function AutomationResults(props) {
     })
       .then((response) => response.json())
       .then((res) => {
-        setOutputLabels(res.labels);
-        setOutputLabelsTypes(res.labelsTypes);
-        setOutputValues(res.values);
+        setAutomationOutput(res);
+        getAnnotationsData();
       });
   }, []);
 
-  function filterByThreshold() {
-    let labelsDict = [];
-    outputValues.map((valueArray, labelIndex) => {
-      valueArray.map((value, labelTypeIndex) => {
-        if (value >= threshold) {
-          let key = outputLabelsTypes[labelTypeIndex];
-          let dictValue = outputLabels[labelIndex];
-
-          if (!labelsDict.hasOwnProperty(key)) {
-            labelsDict[key] = [];
-          }
-          labelsDict[key].push(dictValue);
-        }
+  function getAnnotationsData() {
+    fetch(`/api/project/get-annotation-of-project?project_id=${projectId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAnnotationsData(data);
       });
-    });
-    checkMetaTagging(labelsDict);
-  }
-
-  function checkMetaTagging(labelsDict) {
-    let metaTaggings = props.metaTagging;
-    let metaTaggingLabels = [];
-    metaTaggings.map((label, index) => {
-      // TODO- change?
-      if (label.type == "Tag") {
-        metaTaggingLabels.push(label.name.toLowerCase());
-      }
-    });
-
-    let matchingLabels = [];
-    for (let label in labelsDict) {
-      if (!metaTaggingLabels.includes(label.toLowerCase())) {
-        delete labelsDict[label];
-      } else {
-        matchingLabels.push(label);
-      }
-    }
-    setMatchingLabels(matchingLabels);
   }
 
   return (
     <div style={{ textAlign: "center" }}>
-      {outputLabels != undefined &&
-        outputLabelsTypes != undefined &&
-        outputValues != undefined && (
-          <div>
-            <h3>Automation result</h3>
-
-            {/* output result table */}
-            <table class="table">
-              <thead>
-                <tr>
-                  <th></th>
-                  {outputLabelsTypes.map((label, index) => (
-                    <th scope="col" key={index}>
-                      {label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {outputLabels.map((type, typeIndex) => (
-                  <tr key={typeIndex}>
-                    <th>{type}</th>
-                    {outputValues[typeIndex].map((value, valueIndex) => (
-                      <td key={valueIndex}>{value}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <label>Please select a threshold</label>
-            <input
-              class="form-control"
-              type="number"
-              value={threshold}
-              onChange={(e) => setThreshold(e.target.value)}
-              placeholder="Please select a nubmer between 0 and 1"
-              style={{ width: "60%", margin: "auto" }}
-            />
-
-            {threshold != "" && threshold >= 0 && threshold <= 1 ? (
-              <button
-                type="button"
-                class="btn btn-secondary"
-                onClick={() => {
-                  filterByThreshold();
-                  setIsShowingLabels(true);
-                }}
+      <h3>Automation results</h3>
+      {automationOutput != undefined && (
+        <div>
+          <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button
+                  class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#panelsStayOpen-collapseOne"
+                  aria-expanded="true"
+                  aria-controls="panelsStayOpen-collapseOne"
+                >
+                  Tag
+                </button>
+              </h2>
+              <div
+                id="panelsStayOpen-collapseOne"
+                class="accordion-collapse collapse show"
+                aria-labelledby="panelsStayOpen-headingOne"
               >
-                Submit
-              </button>
-            ) : (
-              <button type="button" class="btn btn-secondary disabled">
-                Submit
-              </button>
-            )}
-
-            {isShowingLabels && matchingLabels != undefined && (
-              <div>
-                <div style={{ width: "60%", margin: "auto" }}>
-                  <ul class="list-group">
-                    <p style={{ marginTop: "15px", marginBottom: "5px" }}>
-                      Matching labels from meta tagging:
-                    </p>
-                    {matchingLabels.map((label, index) => {
-                      return <li class="list-group-item">{label}</li>;
-                    })}
-                  </ul>
-                  <div style={{ marginTop: "15px" }}>
-                    <CompareAnnotations />
-                  </div>
+                <div class="accordion-body">
+                  <AutomationResultsTag
+                    output={automationOutput.Tag}
+                    metaTagging={props.metaTagging}
+                    annotationsData={annotationsData}
+                  />
                 </div>
               </div>
-            )}
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#panelsStayOpen-collapseTwo"
+                  aria-expanded="true"
+                  aria-controls="panelsStayOpen-collapseTwo"
+                >
+                  Relations
+                </button>
+              </h2>
+              <div
+                id="panelsStayOpen-collapseTwo"
+                class="accordion-collapse collapse"
+                aria-labelledby="panelsStayOpen-headingTwo"
+              >
+                <div class="accordion-body">
+                  <AutomationResultsRelations
+                    output={automationOutput.Relations}
+                    metaTagging={props.metaTagging}
+                    annotationsData={annotationsData}
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#panelsStayOpen-collapseThree"
+                  aria-expanded="true"
+                  aria-controls="panelsStayOpen-collapseThree"
+                >
+                  Co-Occurrence
+                </button>
+              </h2>
+              <div
+                id="panelsStayOpen-collapseThree"
+                class="accordion-collapse collapse"
+                aria-labelledby="panelsStayOpen-headingThree"
+              >
+                <div class="accordion-body">
+                  <AutomationResultsCoOccurrence
+                    output={automationOutput.CoOccurrence}
+                    annotationsData={annotationsData}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
+      )}
       <div style={{ textAlign: "left" }}>
         <button
           type="submit"

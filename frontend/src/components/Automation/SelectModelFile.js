@@ -51,8 +51,7 @@ function SelectModelFile({ set_gobal_selectedModelName }) {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
-        setAllUserModels(data);
+        setAllUserModels(data.reverse());
       });
   }, [selectedFile]);
 
@@ -108,9 +107,6 @@ function SelectModelFile({ set_gobal_selectedModelName }) {
                       </option>
                     ))}
                   </select>
-                )}
-                {allUserModels.length == 0 && (
-                  <p style={{ color: "red" }}>no existing models</p>
                 )}
               </Card.Text>
             </Col>

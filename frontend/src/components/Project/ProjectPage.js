@@ -148,6 +148,7 @@ export default function ProjectPage() {
           setRelationCurrentState(new Array(arrayLength).fill([]));
           setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
           setAnnotationStatus(data.annotation_status);
+          setTagCurrentState(new Array(arrayLength).fill([]));
           // checking if the user has the current state saved in it's local storage
         });
       }
