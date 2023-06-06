@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import CompareAnnotationsCoOccurrence from "./CompareAnnotationsCoOccurrence";
 
 export default function AutomationResultsCoOccurrence(props) {
   const [outputLabels, setOutputLabels] = useState();
@@ -8,6 +7,9 @@ export default function AutomationResultsCoOccurrence(props) {
   const [labelsArray, setLabelsArray] = useState();
 
   const [isShowingLabels, setIsShowingLabels] = useState(false);
+
+  const [taggers, setTaggers] = useState([]);
+  const [tokensTaggersMapping, setTokensTaggersMapping] = useState();
 
   useEffect(() => {
     let labelsProcessed = [];
@@ -33,6 +35,130 @@ export default function AutomationResultsCoOccurrence(props) {
       }
     });
     setLabelsArray(annotationsArrays);
+    processAnnotations(props.annotationsData, annotationsArrays);
+  }
+
+  function processAnnotations(data, automationResult) {
+    let annotationsDict = {};
+    let taggersList = ["automation"];
+    let annotationsArrays = [];
+    automationResult.forEach((automaticAnnotation) => {
+      annotationsArrays.push(automaticAnnotation);
+    });
+
+    annotationsDict["automation"] = automationResult;
+    data.map((annotationsInfo, index) => {
+      let coOcccurrenceArray = [];
+      annotationsInfo.co_occcurrence.map((coOcccurrenceInfo, idx) => {
+        let allCoOcccurrenceAnnotations = coOcccurrenceInfo.flat(1);
+        let tokensArray = [];
+        allCoOcccurrenceAnnotations.forEach((coOcccurrenceAnnotations) => {
+          tokensArray.push(coOcccurrenceAnnotations.join(" ").toLowerCase());
+        });
+        coOcccurrenceArray.push(tokensArray);
+        if (!isArrayExists(annotationsArrays, tokensArray)) {
+          annotationsArrays.push(tokensArray);
+        }
+      });
+
+      taggersList.push(annotationsInfo.tagger);
+      annotationsDict[annotationsInfo.tagger.toLowerCase()] =
+        coOcccurrenceArray;
+    });
+    setTaggers(taggersList);
+    getAnnotationTaggersArray(annotationsDict, annotationsArrays, taggersList);
+  }
+
+  function isArrayExists(annotationsArrays, tokensArray) {
+    let isExists = false;
+    annotationsArrays.forEach((annotations) => {
+      if (JSON.stringify(annotations) === JSON.stringify(tokensArray)) {
+        isExists = true;
+      }
+    });
+    return isExists;
+  }
+
+  function getAnnotationTaggersArray(
+    annotationsDict,
+    annotationsArrays,
+    taggersList
+  ) {
+    let tokensMatrix = [];
+
+    annotationsArrays.forEach((annotationArray) => {
+      let tokensArrayInfo = [];
+      tokensArrayInfo.push(annotationArray);
+
+      taggersList.forEach((tagger) => {
+        let isTokenArrayExists = false;
+        annotationsDict[tagger].forEach((taggerTokensArray) => {
+          if (
+            taggerTokensArray.length === annotationArray.length &&
+            taggerTokensArray.every((obj) => annotationArray.includes(obj))
+          ) {
+            isTokenArrayExists = true;
+          }
+        });
+        tokensArrayInfo.push(isTokenArrayExists);
+      });
+      tokensMatrix.push(tokensArrayInfo);
+    });
+    setTokensTaggersMapping(tokensMatrix);
+  }
+
+  function renderCompareTable() {
+    return (
+      <div>
+        <h4 style={{ fontSize: "18px", fontWeight: "500" }}>
+          Comparing Annotation
+        </h4>
+
+        {tokensTaggersMapping != undefined && (
+          <div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Terms</th>
+                  {taggers.map((tagger, index) => (
+                    <th key={index} scope="col">
+                      {tagger}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {tokensTaggersMapping.map((row, rowIndex) => {
+                  return (
+                    <tr key={rowIndex}>
+                      {row.map((value, index) => {
+                        return index === 0 ? (
+                          <th scope="row" key={index}>
+                            {value.join(", ")}
+                          </th>
+                        ) : value ? (
+                          <td key={index}>
+                            <i
+                              class="bi bi-check-lg"
+                              style={{ color: "green" }}
+                            ></i>
+                          </td>
+                        ) : (
+                          <td key={index}>
+                            <i class="bi bi-x" style={{ color: "red" }}></i>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
   }
 
   useEffect(() => {
@@ -88,12 +214,7 @@ export default function AutomationResultsCoOccurrence(props) {
             </button>
           )}
           {isShowingLabels && (
-            <div style={{ marginTop: "15px" }}>
-              <CompareAnnotationsCoOccurrence
-                automationResult={labelsArray}
-                annotationsData={props.annotationsData}
-              />
-            </div>
+            <div style={{ marginTop: "15px" }}>{renderCompareTable()}</div>
           )}
         </div>
       )}

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import CompareAnnotationsTag from "./CompareAnnotationsTag";
 
 export default function AutomationResultsTag(props) {
   const [outputLabels, setOutputLabels] = useState();
   const [outputLabelsTypes, setOutputLabelsTypes] = useState();
   const [outputValues, setOutputValues] = useState();
 
-  const [matchingLabels, setMatchingLabels] = useState([]);
   const [labelsDictionary, setLabelsDictionary] = useState();
+  const [matchingLabels, setMatchingLabels] = useState([]);
   const [threshold, setThreshold] = useState("");
 
   const [isShowingLabels, setIsShowingLabels] = useState(false);
+
+  const [taggers, setTaggers] = useState([]);
+  const [tokensTaggersMapping, setTokensTaggersMapping] = useState();
 
   useEffect(() => {
     let labelsProcessed = [];
@@ -60,15 +62,152 @@ export default function AutomationResultsTag(props) {
         matchingLabels.push(label);
       }
     }
+    let automationResult = {};
+    Object.entries(labelsDict).forEach(([key, value]) => {
+      automationResult[key] = new Set(value);
+    });
     setLabelsDictionary(labelsDict);
     setMatchingLabels(matchingLabels);
+    processAnnotations(props.annotationsData, automationResult, matchingLabels);
+  }
+
+  function processAnnotations(data, automationResult, matchingLabels) {
+    let annotationsDict = {};
+    let labelsByTokenDict = {};
+    let taggersList = ["automation"];
+
+    annotationsDict["automation"] = automationResult;
+    data.map((annotationsInfo, index) => {
+      let taggerAnnotations = {};
+      annotationsInfo.tags.map((tagInfo, idx) => {
+        // creating a dict with all the selected labels
+        let labelKey = tagInfo.tag.toLowerCase();
+        if (matchingLabels.includes(labelKey)) {
+          if (!taggerAnnotations[labelKey]) {
+            taggerAnnotations[labelKey] = new Set();
+          }
+          if (!labelsByTokenDict[labelKey]) {
+            labelsByTokenDict[labelKey] = new Set();
+          }
+          let tokensProcessed = tagInfo.tokens.join(" ").toLowerCase();
+          taggerAnnotations[labelKey].add(tokensProcessed);
+          labelsByTokenDict[labelKey].add(tokensProcessed);
+        }
+      });
+
+      taggersList.push(annotationsInfo.tagger);
+      annotationsDict[annotationsInfo.tagger.toLowerCase()] = taggerAnnotations;
+    });
+    setTaggers(taggersList);
+    labelsByTokenDict = combineSets(automationResult, labelsByTokenDict);
+    getAnnotationTaggersArray(labelsByTokenDict, taggersList, annotationsDict);
+  }
+
+  function combineSets(obj1, obj2) {
+    if (Object.keys(obj1).length === 0) {
+      return obj2;
+    }
+    if (Object.keys(obj2).length === 0) {
+      return obj1;
+    }
+
+    let combinedObj = {};
+    for (let key in obj1) {
+      if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
+        combinedObj[key] = new Set([...obj1[key], ...obj2[key]]);
+      }
+    }
+    return combinedObj;
+  }
+
+  function getAnnotationTaggersArray(
+    labelsByTokenDict,
+    taggersList,
+    annotationsDict
+  ) {
+    let tokensMatrix = [];
+    // iterating over all labels
+    Object.keys(labelsByTokenDict).forEach((label) => {
+      let tokensArray = labelsByTokenDict[label];
+      // iterating over all tokens in label
+      tokensArray.forEach((token) => {
+        let tokenArray = [label, token];
+        // iterating over all taggers and checking if they annotated the token for the label
+        taggersList.forEach((tagger) => {
+          // all the tokens the tagger has annotated for
+          let labelList = annotationsDict[tagger][label];
+          if (labelList == undefined) {
+            tokenArray.push(false);
+          } else {
+            tokenArray.push(labelList.has(token));
+          }
+        });
+        tokensMatrix.push(tokenArray);
+      });
+    });
+    setTokensTaggersMapping(tokensMatrix);
+  }
+
+  function renderCompareTable() {
+    return (
+      <div>
+        <h4 style={{ fontSize: "18px", fontWeight: "500" }}>
+          Comparing Annotation
+        </h4>
+
+        {tokensTaggersMapping != undefined && (
+          <div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Label Type</th>
+                  <th scope="col">Tokens</th>
+                  {taggers.map((tagger, index) => (
+                    <th key={index} scope="col">
+                      {tagger}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {tokensTaggersMapping.map((row, rowIndex) => {
+                  return (
+                    <tr key={rowIndex}>
+                      {row.map((value, index) => {
+                        return index === 0 || index === 1 ? (
+                          <th scope="row" key={index}>
+                            {value}
+                          </th>
+                        ) : value ? (
+                          <td key={index}>
+                            <i
+                              class="bi bi-check-lg"
+                              style={{ color: "green" }}
+                            ></i>
+                          </td>
+                        ) : (
+                          <td key={index}>
+                            <i class="bi bi-x" style={{ color: "red" }}></i>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
   }
 
   useEffect(() => {
     if (props) {
       props.set_out_data(labelsDictionary, "tags");
     }
-  }, [labelsDictionary]);
+  });
   return (
     <div style={{ textAlign: "center" }}>
       {outputLabels != undefined &&
@@ -140,11 +279,7 @@ export default function AutomationResultsTag(props) {
                     })}
                   </ul>
                   <div style={{ marginTop: "15px" }}>
-                    <CompareAnnotationsTag
-                      automationResult={labelsDictionary}
-                      matchingLabels={matchingLabels}
-                      annotationsData={props.annotationsData}
-                    />
+                    {renderCompareTable()}
                   </div>
                 </div>
               </div>
