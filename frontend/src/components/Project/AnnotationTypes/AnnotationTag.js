@@ -107,7 +107,10 @@ export default function AnnotationTag(props) {
                   class="border border-secondary rounded"
                   style={{ marginTop: "15px" }}
                 >
-                  <div class="text">
+                  <div
+                    class="text"
+                    style={{ maxHeight: "400px", overflow: "auto" }}
+                  >
                     {file.map((sentence, key) => {
                       return (
                         <TokenAnnotator
