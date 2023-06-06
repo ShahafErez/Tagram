@@ -17,8 +17,6 @@ export default function AnnotationCoOccurrence(props) {
   // tokens were selected
   function handleValueChange(key, selectedValue) {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
-    console.log(temp_current_state);
-    console.log("currentState", currentState);
     setCurrentKey(key);
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
