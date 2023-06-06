@@ -15,9 +15,10 @@ export default function AnnotationTag(props) {
   const [currentState, setCurrentState] = useState(props.tagCurrentState); // a matrix, each story is in array, representing the values currenly selected
   const [tagsSummary, setTagsSummary] = useState(props.tagSummary); // an array, all values that were selected and saved
   const [tag, setTag] = useState(tag_options[0]); // tag- currently selected tag
-
+  const [current_key, setCurrentKey] = useState(0);
   // tokens were selected
   function handleValueChange(key, selectedValue) {
+    setCurrentKey(key);
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
@@ -81,7 +82,12 @@ export default function AnnotationTag(props) {
     });
     return tokenString;
   }
-
+  function getUnderline(key) {
+    if (key === current_key) {
+      return "underline";
+    }
+    return "";
+  }
   return (
     <div class="annotate">
       {currentState && (
@@ -117,6 +123,7 @@ export default function AnnotationTag(props) {
                           style={{
                             padding: "5px",
                             lineHeight: 1.5,
+                            textDecoration: getUnderline(key),
                           }}
                           tokens={sentence.split(" ")}
                           value={currentState[key]}
