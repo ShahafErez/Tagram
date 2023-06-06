@@ -13,9 +13,13 @@ export default function AnnotationCoOccurrence(props) {
     props.coOccurrenceSummary
   ); //The saved co occurrence. Will be saved in db
 
+  const [current_key, setCurrentKey] = useState(0);
   // tokens were selected
   function handleValueChange(key, selectedValue) {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    console.log(temp_current_state);
+    console.log("currentState", currentState);
+    setCurrentKey(key);
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
 
@@ -92,6 +96,12 @@ export default function AnnotationCoOccurrence(props) {
     return tokenString;
   }
 
+  function getUnderline(key) {
+    if (key === current_key) {
+      return "underline";
+    }
+    return "";
+  }
   return (
     <div class="annotate">
       <div style={{ padding: "10px" }}>
@@ -113,6 +123,7 @@ export default function AnnotationCoOccurrence(props) {
                         style={{
                           padding: "5px",
                           lineHeight: 1.5,
+                          textDecoration: getUnderline(key),
                         }}
                         tokens={sentence.split(" ")}
                         value={currentState[key]}

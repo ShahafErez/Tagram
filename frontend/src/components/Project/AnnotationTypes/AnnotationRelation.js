@@ -15,7 +15,7 @@ export default function AnnotationRelation(props) {
 
   const [currentState, setCurrentState] = useState(props.relationCurrentState); // The current values being selected
   const [relationSummary, setRelationSummary] = useState(props.relationSummary); // The saved relations. Will be saved in db
-
+  const [current_key, setCurrentKey] = useState(0);
   // the first and second element that were selected
   const [firstElement, setFirstElement] = useState({
     selected: false,
@@ -32,6 +32,7 @@ export default function AnnotationRelation(props) {
 
   // tokens were selected
   function handleValueChange(key, selectedValue) {
+    setCurrentKey(key);
     // saving the current state after relation selection
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
@@ -170,7 +171,12 @@ export default function AnnotationRelation(props) {
     setRelationSummary(temp_relation_summary);
     props.onChangeRelation(temp_relation_summary, currentState);
   }
-
+  function getUnderline(key) {
+    if (key === current_key) {
+      return "underline";
+    }
+    return "";
+  }
   return (
     <div class="annotate">
       <div style={{ padding: "10px" }}>
@@ -207,6 +213,7 @@ export default function AnnotationRelation(props) {
                         style={{
                           padding: "5px",
                           lineHeight: 1.5,
+                          textDecoration: getUnderline(key),
                         }}
                         tokens={sentence.split(" ")}
                         value={currentState[key]}
