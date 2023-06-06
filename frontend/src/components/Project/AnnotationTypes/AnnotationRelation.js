@@ -197,7 +197,10 @@ export default function AnnotationRelation(props) {
                 class="border border-secondary rounded"
                 style={{ marginTop: "10px" }}
               >
-                <div class="text">
+                <div
+                  class="text"
+                  style={{ maxHeight: "400px", overflow: "auto" }}
+                >
                   {file.map((sentence, key) => {
                     return (
                       <TokenAnnotator
