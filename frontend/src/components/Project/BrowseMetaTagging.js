@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import MetaTaggingObject from "./MetaTaggingObject";
+import { ReactSession } from "react-client-session";
 
 export default function BrowseMetaTagging(props) {
+  let logged_in_user = ReactSession.get("username");
+
   const [metaTaggingList, setMetaTaggingList] = useState();
   const [metaTaggingId, setMetaTaggingId] = useState();
   const [metaTaggingTitle, setmetaTaggingTitle] = useState();
 
   // getting all the labels gouped by meta tagging id on loading
   useEffect(() => {
-    fetch("/api/meta-tagging/all-labels-grouped")
+    fetch(`/api/meta-tagging/all-labels-grouped?username=${logged_in_user}`)
       .then((response) => response.json())
       .then((data) => setMetaTaggingList(data));
   }, []);

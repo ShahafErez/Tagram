@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { ReactSession } from "react-client-session";
 
 export default function CreateMetaTagging(props) {
+  let logged_in_user = ReactSession.get("username");
+
   // meta-tagging setting
   const [title, setTitle] = useState("");
   const [currentMetaModel, setCurrentMetaModel] = useState("");
@@ -27,6 +30,7 @@ export default function CreateMetaTagging(props) {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
+        username: logged_in_user,
         title: title,
       }),
     })

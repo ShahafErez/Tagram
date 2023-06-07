@@ -27,6 +27,10 @@ export default function Routers() {
         element={<ProjectStatistics />}
       />
       <Route path="/automation/:projectId" element={<ProjectAutomation />} />
+      {/* login, register */}
+      <Route path="/login/*" />
+      <Route path="/register" />
+      <Route path="/reset_password" />
       {/* Catch-all route */}
       <Route path="*" element={<ErrorPage />} />/
     </Routes>
