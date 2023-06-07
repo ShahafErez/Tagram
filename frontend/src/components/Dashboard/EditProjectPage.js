@@ -28,12 +28,22 @@ export default function EditProjectPage(props) {
 
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
+  const [projectDetailsTitle, setProjectDetails] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   /* useEffects */
   useEffect(() => {
     //set project's annotators array
     getUsersByProject();
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/project/get?project_id=" + props.project_id)
+      .then((response) => response.json())
+      .then((data) => {
+        setProjectDetails(data);
+        console.log("DATAAA:" + data);
+      });
   }, []);
 
   useEffect(() => {
@@ -107,6 +117,15 @@ export default function EditProjectPage(props) {
     setSelectedUsers(temp_users);
   }
 
+  function PreSelectUser(username) {
+    let temp_users = JSON.parse(JSON.stringify(selectedUsers));
+    // add
+    if (temp_users.includes(username) == false) {
+      temp_users.push(username);
+      setSelectedUsers(temp_users);
+    }
+  }
+
   function backToPage() {
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
@@ -144,30 +163,34 @@ export default function EditProjectPage(props) {
         <h2>Edit project details</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
-            <label>Project Title</label>
-            <input
-              class="form-control"
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Your project name"
-            />
+            {projectDetailsTitle != null && (
+              <div>
+                <label>Project Title</label>
+                <input
+                  class="form-control"
+                  id="exampleFormControlTextarea2"
+                  type="text"
+                  onChange={(e) => setTitle(e.target.value)}
+                  defaultValue={projectDetailsTitle.title}
+                />
+
+                <div style={{ marginTop: "15px" }}>
+                  {" "}
+                  <label>Project Description</label>
+                  <textarea
+                    isEditable="true"
+                    class="form-control"
+                    id="exampleFormControlTextarea1"
+                    rows="3"
+                    defaultValue={projectDetailsTitle.description}
+                    placeholder="Your project description"
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
-          <div style={{ marginTop: "15px" }}>
-            {" "}
-            <label>Project Description</label>
-            <textarea
-              isEditable="true"
-              class="form-control"
-              id="exampleFormControlTextarea1"
-              rows="3"
-              defaultValue="todo insert desc"
-              value={description}
-              placeholder="Your project description"
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
+
           <div style={{ marginTop: "15px" }}>
             <label>Replace Meta-Tagging</label>
             <div style={{ marginTop: "5px" }}>
@@ -254,6 +277,9 @@ export default function EditProjectPage(props) {
                       const isChecked = annotators.some(
                         (annotator) => annotator === String(user.username)
                       );
+                      if (isChecked) {
+                        PreSelectUser(user.username);
+                      }
                       const checkboxId = `flexCheckDefault_${index}`; // Unique id for each checkbox
                       return (
                         <div class="form-check" key={index}>
