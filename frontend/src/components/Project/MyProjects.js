@@ -6,11 +6,18 @@ import { ReactSession } from "react-client-session";
 export default function MyProjects() {
   let username = ReactSession.get("username");
   const navigate = useNavigate();
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState();
   // getting projects
   useEffect(() => {
     fetch(`/api/users/projects-by-username/?user=${username}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status != 200) {
+          return;
+        }
+        {
+          return response.json();
+        }
+      })
       .then((data) => {
         setProjects(data);
       });
@@ -36,7 +43,7 @@ export default function MyProjects() {
           paddingRight: "20px",
         }}
       >
-        {projects.length > 0 &&
+        {projects != undefined &&
           projects.map((project, index) => (
             <div
               class="col mb-2"

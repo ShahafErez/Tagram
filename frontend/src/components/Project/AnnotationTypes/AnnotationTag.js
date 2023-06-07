@@ -146,12 +146,22 @@ export default function AnnotationTag(props) {
                     })}
                   </div>
                 </div>
+              </div>
 
+              <div class="col-6 col-md-4">
+                <button
+                  class="btn btn-secondary"
+                  style={{ marginRight: "10px" }}
+                  onClick={() => {
+                    handleSave();
+                  }}
+                >
+                  Save Tags
+                </button>
                 <button
                   type="submit"
                   class="btn btn-passive"
                   style={{
-                    marginRight: "10px",
                     backgroundColor: "#adb5bd",
                   }}
                   title="clear all selected tags"
@@ -159,17 +169,6 @@ export default function AnnotationTag(props) {
                 >
                   Clear
                 </button>
-                <button
-                  class="btn btn-secondary"
-                  onClick={() => {
-                    handleSave();
-                  }}
-                >
-                  Save Tags
-                </button>
-              </div>
-
-              <div class="col-6 col-md-4">
                 <h4>Selected Tags</h4>
                 <div style={{ width: "80%", margin: "auto" }}>
                   <table class="table">

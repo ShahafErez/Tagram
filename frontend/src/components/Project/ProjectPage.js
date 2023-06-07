@@ -14,12 +14,7 @@ export default function ProjectPage() {
   let { id } = useParams();
 
   // setting project and file
-  const [project, setProject] = useState({
-    title: "",
-    description: "",
-    project_manager: "",
-    created_at: "",
-  });
+  const [project, setProject] = useState();
   const [file, setFile] = useState({
     file_id: "",
     file: "",
@@ -455,9 +450,8 @@ export default function ProjectPage() {
     // if the user is not manager- they can only see their taggings
     // if the username is not assigned to the project, the page will be blocked
     if (
-      project.project_manager != logged_in_user ||
-      username != logged_in_user ||
-      isUserAssigned == false
+      project.project_manager != logged_in_user &&
+      (username != logged_in_user || isUserAssigned == false)
     ) {
       return <ErrorPage />;
     } else {
@@ -465,5 +459,5 @@ export default function ProjectPage() {
     }
   }
 
-  return <div>{renderPage()}</div>;
+  return project != undefined && <div>{renderPage()}</div>;
 }
