@@ -42,7 +42,6 @@ export default function EditProjectPage(props) {
       .then((response) => response.json())
       .then((data) => {
         setProjectDetails(data);
-        console.log("DATAAA:" + data);
       });
   }, []);
 
@@ -75,7 +74,7 @@ export default function EditProjectPage(props) {
         method: "POST",
         headers: { "Content-Type": "application/json ; charset=utf-8" },
         body: JSON.stringify({
-          project: project_id,
+          project: props.project_id,
           user: selectedUsers,
         }),
       }).then((response) => {
@@ -191,56 +190,6 @@ export default function EditProjectPage(props) {
             )}
           </div>
 
-          <div style={{ marginTop: "15px" }}>
-            <label>Replace Meta-Tagging</label>
-            <div style={{ marginTop: "5px" }}>
-              <button
-                type="submit"
-                class="btn btn-outline-secondary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsBrowseMetaTagging(true);
-                }}
-              >
-                Browse existing meta-tagging
-              </button>
-              <button
-                type="submit"
-                class="btn btn-outline-secondary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsCreateMetaTagging(true);
-                }}
-                style={{ marginLeft: "20px", width: "238px" }}
-              >
-                Create new meta-tagging
-              </button>
-            </div>
-            {/* Displaying a message that states if mega-tagging was selected */}
-            {metaTaggingTitle == "" && (
-              <p
-                style={{
-                  color: "#858585",
-                  margin: "2px 0 2px 0",
-                  fontSize: "15px",
-                }}
-              >
-                You don't have meta-tagging in your project yet
-              </p>
-            )}
-            {metaTaggingTitle != "" && (
-              <p
-                style={{
-                  color: "#858585",
-                  margin: "2px 0 2px 0",
-                  fontSize: "15px",
-                }}
-              >
-                You choose the meta-tagging <b>{metaTaggingTitle}</b>
-              </p>
-            )}
-          </div>
-
           {/* Displaying a list of all users */}
           <div
             class="accordion"
@@ -305,7 +254,7 @@ export default function EditProjectPage(props) {
           </div>
 
           {/* Saving is only enabled if all required fields are inserted */}
-          {title != "" && metaTaggingId != "" && selectedUsers.length > 0 ? (
+          {title != "" && selectedUsers.length > 0 ? (
             <button
               type="submit"
               class="btn btn-primary"
@@ -326,14 +275,6 @@ export default function EditProjectPage(props) {
       </div>
 
       {/* Calling the component the user has clicked on */}
-      {isCreateMetaTagging && (
-        <CreateMetaTagging onSave={saveMetaTagging} onBack={backToPage} />
-      )}
-      {isBrowseMetaTagging && (
-        <div>
-          <BrowseMetaTagging onSave={saveMetaTagging} onBack={backToPage} />
-        </div>
-      )}
     </div>
   );
 }
