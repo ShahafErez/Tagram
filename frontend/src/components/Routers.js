@@ -8,6 +8,7 @@ import AdminDashboardPage from "./Dashboard/AdminDashboardPage";
 import AdminProjectPage from "./Dashboard/AdminProjectPage";
 import ProjectStatistics from "./Dashboard/ProjectStatistics";
 import ProjectAutomation from "./Automation/ProjectAutomation";
+import ErrorPage from "./ErrorPage";
 
 export default function Routers() {
   return (
@@ -26,6 +27,8 @@ export default function Routers() {
         element={<ProjectStatistics />}
       />
       <Route path="/automation/:projectId" element={<ProjectAutomation />} />
+      {/* Catch-all route */}
+      <Route path="*" element={<ErrorPage />} />/
     </Routes>
   );
 }
