@@ -143,12 +143,20 @@ export default function AnnotationCoOccurrence(props) {
                   })}
                 </div>
               </div>
+            </div>
 
+            <div class="col-6 col-md-4">
+              <button
+                class="btn btn-secondary"
+                onClick={handleSave}
+                style={{ marginRight: "10px" }}
+              >
+                save co-occurrence set
+              </button>
               <button
                 type="submit"
                 class="btn btn-passive"
                 style={{
-                  marginRight: "10px",
                   backgroundColor: "#adb5bd",
                 }}
                 title="clear all selected tags"
@@ -156,12 +164,7 @@ export default function AnnotationCoOccurrence(props) {
               >
                 Clear
               </button>
-              <button class="btn btn-secondary" onClick={handleSave}>
-                save co-occurrence set
-              </button>
-            </div>
 
-            <div class="col-6 col-md-4">
               <h4>Selected Co-Occurrence</h4>
               <div style={{ width: "80%", margin: "auto" }}>
                 <table class="table">

@@ -6,7 +6,7 @@ import { SessionService } from "./SessionService";
 export default function NavigationBar() {
   const navigate = useNavigate();
   const [username, setUsername] = useState();
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState();
 
   // updating the user information if the session service notify about change
   let sessionService;

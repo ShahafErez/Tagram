@@ -237,21 +237,12 @@ export default function AnnotationRelation(props) {
                   })}
                 </div>
               </div>
+            </div>
 
-              <button
-                type="submit"
-                class="btn btn-passive"
-                style={{
-                  marginRight: "10px",
-                  backgroundColor: "#adb5bd",
-                }}
-                onClick={handleResetSelect}
-              >
-                Clear
-              </button>
-
+            <div class="col-6 col-md-4">
               <button
                 class="btn btn-secondary"
+                style={{ marginRight: "10px" }}
                 onClick={() => {
                   if (firstElement.selected && secondElement.selected) {
                     handleSave();
@@ -260,9 +251,16 @@ export default function AnnotationRelation(props) {
               >
                 Save Relation
               </button>
-            </div>
-
-            <div class="col-6 col-md-4">
+              <button
+                type="submit"
+                class="btn btn-passive"
+                style={{
+                  backgroundColor: "#adb5bd",
+                }}
+                onClick={handleResetSelect}
+              >
+                Clear
+              </button>
               <h4>Selected Relations</h4>
               <div style={{ width: "80%", margin: "auto" }}>
                 <table class="table">
