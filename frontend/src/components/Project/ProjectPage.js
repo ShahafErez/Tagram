@@ -5,7 +5,7 @@ import MetaTaggingObject from "./MetaTaggingObject";
 import AnnotationTag from "./AnnotationTypes/AnnotationTag";
 import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
 import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
-import ProjectErrorPage from "../ProjectErrorPage";
+import ErrorPage from "../ErrorPage";
 
 export default function ProjectPage() {
   let username = new URLSearchParams(window.location.search).get("username");
@@ -17,7 +17,7 @@ export default function ProjectPage() {
   const [project, setProject] = useState({
     title: "",
     description: "",
-    is_project_manager: false,
+    project_manager: "",
     created_at: "",
   });
   const [file, setFile] = useState({
@@ -455,10 +455,11 @@ export default function ProjectPage() {
     // if the user is not manager- they can only see their taggings
     // if the username is not assigned to the project, the page will be blocked
     if (
-      (!is_manager && username != logged_in_user) ||
+      project.project_manager != logged_in_user ||
+      username != logged_in_user ||
       isUserAssigned == false
     ) {
-      return <ProjectErrorPage />;
+      return <ErrorPage />;
     } else {
       return renderProjectPage();
     }

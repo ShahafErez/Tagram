@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ProjectErrorPage() {
+export default function ErrorPage() {
   return (
     <div
       class="card project-page"
@@ -10,13 +10,21 @@ export default function ProjectErrorPage() {
         width: "80%",
         margin: "auto",
         minHeight: "500px",
-        backgroundColor: "#fafafa",
       }}
     >
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
-        Project not found, or you don't have permissions
+        Page not found, or you don't have permissions
       </h2>
-      <img src="../../static/frontend/logo.gif" height="150" alt="" />
+      <img
+        src="../../static/frontend/logo.gif"
+        height="180"
+        alt=""
+        style={{
+          width: "fit-content",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
     </div>
   );
 }

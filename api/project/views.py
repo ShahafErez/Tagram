@@ -277,7 +277,9 @@ class GetAnnotatorsStatus(APIView):
                     if len(annotation_query) > 0:
                         project = ProjectSerializer(project).data
                         response = {"project_id": project_id,
-                                    "title": project["title"]}
+                                    "title": project["title"],
+                                    "project_manager": project["project_manager"]
+                                    }
                         annotators = []
                         for annotation in annotation_query:
                             annotators.append(
@@ -400,14 +402,17 @@ class UploadUserModel(APIView):
     def post(self, request, format=None):
         try:
             print(request.FILES['file'].name)
-            file_query = UserModel.objects.filter(user_model_name=request.FILES['file'].name)
+            file_query = UserModel.objects.filter(
+                user_model_name=request.FILES['file'].name)
             if len(file_query) > 0:
                 return Response("model name already exists", status=status.HTTP_405_METHOD_NOT_ALLOWED)
-            file = UserModel(user_model=request.FILES['file'],user_model_name =request.FILES['file'].name )
+            file = UserModel(
+                user_model=request.FILES['file'], user_model_name=request.FILES['file'].name)
             file.save()
             return Response("File saved", status=status.HTTP_201_CREATED)
         except:
             return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class RunUserModel(APIView):
 
@@ -419,7 +424,8 @@ class RunUserModel(APIView):
                 data = UserModelSerializer(file_query[0]).data
                 current_dir = os.getcwd()
                 model_path = f"{current_dir}\\user_models\\{data['user_model_name']}"
-                spec = importlib.util.spec_from_file_location('temp_script', model_path)
+                spec = importlib.util.spec_from_file_location(
+                    'temp_script', model_path)
                 temp_script = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(temp_script)
                 model = temp_script.Model()
@@ -428,7 +434,8 @@ class RunUserModel(APIView):
                 return Response(prediction, status=status.HTTP_200_OK)
         except:
             return Response({'Model File Not Found'}, status=status.HTTP_404_NOT_FOUND)
-        
+
+
 class GetUserModelsNames(APIView):
     """
     Getting all UserModels
@@ -437,8 +444,8 @@ class GetUserModelsNames(APIView):
     def get(self, request, format=None):
         usermodel_query = UserModel.objects.filter()
         if len(usermodel_query) > 0:
-            data = [UserModelSerializer(userModel).data['user_model_name'] for userModel in usermodel_query]
+            data = [UserModelSerializer(userModel).data['user_model_name']
+                    for userModel in usermodel_query]
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response([], status=status.HTTP_200_OK)
-        return Response("error", status=status.HTTP_400_BAD_REQUEST)

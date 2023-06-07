@@ -1,13 +1,11 @@
-from django.urls import path
+from django.urls import path, re_path
 from .views import index, admin_index
 from .views import loginpage, logoutUser
 from .views import register
 from .forms import UserPasswordResetForm, SetPasswordForm
 from django.contrib.auth import views as auth_views
 
-
 app_name = 'frontend'
-
 
 urlpatterns = [
     path('', index, name=''),
@@ -16,7 +14,7 @@ urlpatterns = [
     path('correct', index),
     path('login', loginpage),
     path('logout', logoutUser),
-    path('register', register,  name='register'),
+    path('register', register, name='register'),
     # admin_index
     # path('create', admin_index),
     path('create', index),
@@ -30,5 +28,6 @@ urlpatterns = [
         template_name='frontend/password_reset.html',
         form_class=UserPasswordResetForm), name='reset_password'),
 
-
+    # Catch-all URL pattern
+    re_path(r'^.*/$', index),
 ]
