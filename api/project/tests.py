@@ -1,12 +1,12 @@
-import json
+import os
+
 from django.test import TestCase
-from api.project.models import Annotation, MetaTagging
-from api.project.models import Project
-from api.users.models import User, UsersInProject
 from rest_framework.test import APIClient
 from rest_framework.views import status
-from api.project.models import File
-import os
+
+from api.project.models import Annotation, File, MetaTagging, Project
+from api.users.models import User, UsersInProject
+
 
 class CreateProject(TestCase):
     """
@@ -163,15 +163,17 @@ class file(TestCase):
     relative_path = 'api/project'
     relative_full_path = os.path.join(current_dir, relative_path)
     os.chdir(relative_full_path)
-    
+
     def setUp(self):
         self.client = APIClient()
         self.metaTagging = MetaTagging.objects.create(title='metaTagging1')
         self.metaTagging.save()
         session = self.client.session
         session.save()
-        self.manager1 = User.objects.create(username='manager1', is_project_manager=True)
-        self.project = Project.objects.create(title='project_title', description='project_description', meta_tagging=self.metaTagging, project_manager=self.manager1.username)
+        self.manager1 = User.objects.create(
+            username='manager1', is_project_manager=True)
+        self.project = Project.objects.create(title='project_title', description='project_description',
+                                              meta_tagging=self.metaTagging, project_manager=self.manager1.username)
         self.file = open(r'test.txt', 'r')
         self.file_data = {
             'project_id': self.project.project_id,
@@ -185,37 +187,42 @@ class file(TestCase):
 
     def test_upload_file(self):
         print("project: Running test_upload_file")
-        response = self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        response = self.client.post(
+            '/api/project/uploadfile', self.file_data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(File.objects.count(), 1)
         self.file.close()
 
-    def test_upload_file_no_project(self): 
+    def test_upload_file_no_project(self):
         print("project: Running test_upload_file_no_project")
         self.file_data = {
             'project_id': 'invalid',
             'myFile': self.file
         }
-        response = self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        response = self.client.post(
+            '/api/project/uploadfile', self.file_data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_file(self):
         print("project: Running test_get_file")
-        self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
-        response = self.client.get(f'/api/project/get-file?project_id={self.project.project_id}')
+        self.client.post('/api/project/uploadfile',
+                         self.file_data, format='multipart')
+        response = self.client.get(
+            f'/api/project/get-file?project_id={self.project.project_id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_file_invalid_project_id(self):
         print("project: Running test_get_file_invalid_project_id")
-        self.client.post('/api/project/uploadfile', self.file_data, format='multipart')
+        self.client.post('/api/project/uploadfile',
+                         self.file_data, format='multipart')
         response = self.client.get(f'/api/project/get-file?project_id=invalid')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
- 
+
     def test_get_file_content(self):
         print("project: Running test_get_file_content")
-        response = self.client.post(f'/api/project/get-file-content', self.file_data, format='multipart')
+        response = self.client.post(
+            f'/api/project/get-file-content', self.file_data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
 
 class saveAnnotation(TestCase):
@@ -391,7 +398,8 @@ class algorithm(TestCase):
             'project_id': 1,
             'tags': ['tag1', 'tag2', 'tag3']
         }
-        response = self.client.post('/api/project/send-to-algorithm', data, format='json')
+        response = self.client.post(
+            '/api/project/send-to-algorithm', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_send_to_algorithm_bad_request(self):
@@ -400,10 +408,11 @@ class algorithm(TestCase):
             'project_id': '',
             'tags': ['tag1', 'tag2', 'tag3']
         }
-        response = self.client.post('/api/project/send-to-algorithm', data, format='json')
+        response = self.client.post(
+            '/api/project/send-to-algorithm', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-# class kappa(TestCase): 
+# class kappa(TestCase):
 #     """
 #     test getProjectFleissKappaScore
 #     """
@@ -425,6 +434,4 @@ class algorithm(TestCase):
 #         }
 #         response = self.client.post('/api/project/getProjectFleissKappaScore', data, format='json')
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertEqual(response.data, '0.00')        
-
-
+#         self.assertEqual(response.data, '0.00')

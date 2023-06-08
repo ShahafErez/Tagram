@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ReactSession } from "react-client-session";
-import CreateMetaTagging from "./CreateMetaTagging";
+import { useNavigate } from "react-router-dom";
+import FileContent from "../FileContent";
 import BrowseMetaTagging from "./BrowseMetaTagging";
 import CorrectnessPage from "./CorrectnessPage";
-import FileContent from "../FileContent";
+import CreateMetaTagging from "./CreateMetaTagging";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();

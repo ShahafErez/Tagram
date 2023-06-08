@@ -1,14 +1,14 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import HomePage from "./HomePage";
-import CreateProjectPage from "./Project/CreateProjectPage";
-import ProjectPage from "./Project/ProjectPage";
-import MyProjects from "./Project/MyProjects";
+import { Route, Routes } from "react-router-dom";
+import ProjectAutomation from "./Automation/ProjectAutomation";
 import AdminDashboardPage from "./Dashboard/AdminDashboardPage";
 import AdminProjectPage from "./Dashboard/AdminProjectPage";
 import ProjectStatistics from "./Dashboard/ProjectStatistics";
-import ProjectAutomation from "./Automation/ProjectAutomation";
 import ErrorPage from "./ErrorPage";
+import HomePage from "./HomePage";
+import CreateProjectPage from "./Project/CreateProjectPage";
+import MyProjects from "./Project/MyProjects";
+import ProjectPage from "./Project/ProjectPage";
 
 export default function Routers() {
   return (

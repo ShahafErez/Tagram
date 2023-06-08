@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import Card from "react-bootstrap/Card";
 import { useParams } from "react-router-dom";
 import FileContent from "../FileContent";
 import MetaTaggingObject from "../Project/MetaTaggingObject";
 import AutomationResults from "./AutomationResults";
 import SelectModelFile from "./SelectModelFile";
-import Card from "react-bootstrap/Card";
 
 export default function ProjectAutomation() {
   let { projectId } = useParams();

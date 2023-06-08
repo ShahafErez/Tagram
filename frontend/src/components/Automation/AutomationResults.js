@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import AutomationResultsTag from "./AutomationResultsTag";
-import AutomationResultsRelations from "./AutomationResultsRelations";
 import AutomationResultsCoOccurrence from "./AutomationResultsCoOccurrence";
+import AutomationResultsRelations from "./AutomationResultsRelations";
+import AutomationResultsTag from "./AutomationResultsTag";
 
 export default function AutomationResults(props) {
   let { projectId } = useParams();
