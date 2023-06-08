@@ -74,11 +74,8 @@ class EditProjectView(APIView):
                 serializer = self.serializer_class(data=request.data)
                 if serializer.is_valid():
                     project = project_query[0]
-                    print("project ", project)
                     project.title = serializer.data.get('title')
-                    print("title ", serializer.data.get('title'))
                     project.description = serializer.data.get('description')
-                    print("project 2", project)
                     project.save()
                     return Response({'Project information changed successfully.'}, status=status.HTTP_200_OK)
             return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
@@ -431,7 +428,6 @@ class UploadUserModel(APIView):
 
     def post(self, request, format=None):
         try:
-            print(request.FILES['file'].name)
             file_query = UserModel.objects.filter(
                 user_model_name=request.FILES['file'].name)
             if len(file_query) > 0:

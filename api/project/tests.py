@@ -159,7 +159,6 @@ class file(TestCase):
         tests for getting file, uploading file or getting file content
     """
     current_dir = os.getcwd()
-    print(current_dir)
     relative_path = 'api/project'
     relative_full_path = os.path.join(current_dir, relative_path)
     os.chdir(relative_full_path)
@@ -411,27 +410,3 @@ class algorithm(TestCase):
         response = self.client.post(
             '/api/project/send-to-algorithm', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-# class kappa(TestCase):
-#     """
-#     test getProjectFleissKappaScore
-#     """
-#     def test_kappa(self):
-#         print("project: Running test_kappa")
-#         data = {
-#             'data': json.dumps({
-#                 'input1': {
-#                     'val1': {
-#                         'class1': [[1, 2], [3, 4]],
-#                         'class2': [[5, 6], [7, 8]]
-#                     },
-#                     'val2': {
-#                         'class1': [[9, 10], [11, 12]],
-#                         'class2': [[13, 14], [15, 16]]
-#                     }
-#                 }
-#             })
-#         }
-#         response = self.client.post('/api/project/getProjectFleissKappaScore', data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertEqual(response.data, '0.00')

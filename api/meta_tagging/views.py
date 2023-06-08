@@ -23,7 +23,7 @@ class CreateMetaTaggingView(APIView):
             username = serializer.data.get('username')
             title = serializer.data.get('title')
             metaTagging = MetaTagging(
-                title=title, username=username, test=test)
+                title=title, username=username)
             metaTagging.save()
             # saving the current meta tagging id in the session, so we could return the user to it if needed
             # storing a custom variable in the user session
@@ -104,10 +104,8 @@ class GetLabelsGroupByMetaTagging(APIView):
 
         # getting all mega-tagging, for each- getting all the labels
         username = request.GET.get(self.lookup_url_kwarg)
-        print("username ", username)
         if username != None:
             meta_taggings = MetaTagging.objects.filter(username=username)
-            print("meta_taggings ", meta_taggings)
             for meta_tagging in meta_taggings:
                 query = MetaTaggingLabels.objects.filter(
                     meta_tagging_id=meta_tagging.meta_tagging_id)
