@@ -60,14 +60,12 @@ export default function EditProjectPage(props) {
     // prevent the page from re-loading after submit
     e.preventDefault();
 
-    fetch("/api/project/create", {
+    fetch("/api/project/edit?project_id=" + props.project_id, {
       method: "POST",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        title: title,
-        description: description,
-        meta_tagging: metaTaggingId,
-        project_manager: username,
+        title: "cdcd",
+        description: "fddd",
       }),
     }).then(() => {
       fetch("/api/users/create-user-project-mapping", {
