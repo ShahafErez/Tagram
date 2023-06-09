@@ -8,22 +8,22 @@
 
 ## What you get from Tagram
 
-![Tagram demo](https://ibb.co/SrHXGjz)
+![GIF](frontend/static/frontend/readmegif.mp4)
+
 
 - **User managment** Sign up and login, when you make actions it's tied to your account.
 - **Create new annotation project** Project manager can create new project, uploat data file, set its name and description, set metatagging and add annotaitors.
 - **Create meta-tagging** Create new meta-tagging according to the desired model, choose tags names, color and type (tag/relation). Select from the existing meta-tagging.
 - **tagging process** Let you annotate tags, relations and co-occurrence, save all tagging in the system and export to file.
-
-## Tagram future steps
-
 - **Tagging statistics** Project manager can watch statistics of comparison between different taggers.
 - **User-stories correction** Let you correct spelling mistakes and check user stories template.
+ 
+## Tagram future steps
 - **Automatic tagging** Automatic tagging of user stories based on machine learning algorithm.
 
 
 ## Try out Tagram
-
+https://tagram.cs.bgu.ac.il/
 
 ### Run locally with the following commands
 
@@ -38,14 +38,12 @@ cd frontend
 npm run dev
 ```
 
-### The site will be published at the following address: 
-https://www.tagram.cs.bgu.ac.il/
-
-
 ## Why Tagram?
+
+![Logo](frontend/static/frontend/small_logo.png)
+
 consists of "TAG" and "GRAM". The process starts with manual tagging and ends with diagram created by a machine learning algorithm.
 Our logo is a Tangram puzzle (sounds like Tagram) in the shape of a camel that represents Ben Gurion University
-
 
 ## Meet our team
 The team members are Chen Mordehai, Shahaf Erez, Shani Rahamim and Noa Shpack.

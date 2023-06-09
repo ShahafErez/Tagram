@@ -14,14 +14,16 @@ import requests
 def index(request, *args, **kwargs):
     return render(request, 'frontend/index.html')
 
+
 @allowed_users(allowed_roles=['admins'])
 def admin_index(request, *args, **kwargs):
     return render(request, 'frontend/index.html')
 
+
 @csrf_protect
 def loginpage(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return redirect('/')       
+        return redirect('/')
     else:
         if request.method == 'POST':
             username1 = request.POST.get('username')
@@ -35,7 +37,7 @@ def loginpage(request, *args, **kwargs):
                 request.session['is_admin'] = is_admin(request)
                 return redirect('/')
             else:
-                messages.info(request, "Username or password is incorrect")
+                messages.warning(request, "Username or password is incorrect")
     context = {}
     return render(request, 'frontend/login.html', context)
 
@@ -61,7 +63,8 @@ def register(request, *args, **kwargs):
                 password1 = form.cleaned_data.get('password1')
                 user = authenticate(
                     request, username=username1, password=password1)
-                send_email = request.POST.get('send-email-checkbox', False) == 'on'
+                send_email = request.POST.get(
+                    'send-email-checkbox', False) == 'on'
                 if user is not None:
                     login(request, user)
                     context = {}

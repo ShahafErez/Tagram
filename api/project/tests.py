@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from api.project.models import Annotation, MetaTagging
 from api.project.models import Project
@@ -371,16 +372,59 @@ class getAnnotation(TestCase):
             f'/api/project/edit-annotation-status?project_id={self.project.project_id}&tagger={self.user.username}', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
 
-    def test_update_annotators_status_not_found(self):  # TODO:fix
-        print("project: Running test_update_annotators_status_not_found")
-        data = {'annotation_status': 'changes_requested'}
-        response = self.client.put(
-            f'/api/project/edit-annotation-status?project_id=123&tagger={self.user.username}', data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_update_annotators_status_bad_request(self):
         print("project: Running test_update_annotators_status_bad_request")
         data = {'annotation_status': 'changes_requested'}
         response = self.client.put(
             f'/api/project/edit-annotation-status?&tagger={None}', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class algorithm(TestCase):
+    """
+        algorithm tests 
+    """
+
+    def test_send_to_algorithm(self):
+        print("project: Running test_send_to_algorithm")
+        data = {
+            'project_id': 1,
+            'tags': ['tag1', 'tag2', 'tag3']
+        }
+        response = self.client.post('/api/project/send-to-algorithm', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_send_to_algorithm_bad_request(self):
+        print("project: Running test_send_to_algorithm_bad_request")
+        data = {
+            'project_id': '',
+            'tags': ['tag1', 'tag2', 'tag3']
+        }
+        response = self.client.post('/api/project/send-to-algorithm', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+# class kappa(TestCase): 
+#     """
+#     test getProjectFleissKappaScore
+#     """
+#     def test_kappa(self):
+#         print("project: Running test_kappa")
+#         data = {
+#             'data': json.dumps({
+#                 'input1': {
+#                     'val1': {
+#                         'class1': [[1, 2], [3, 4]],
+#                         'class2': [[5, 6], [7, 8]]
+#                     },
+#                     'val2': {
+#                         'class1': [[9, 10], [11, 12]],
+#                         'class2': [[13, 14], [15, 16]]
+#                     }
+#                 }
+#             })
+#         }
+#         response = self.client.post('/api/project/getProjectFleissKappaScore', data, format='json')
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response.data, '0.00')        
+
+

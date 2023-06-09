@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, File, Annotation
+from .models import Project, File, Annotation, UserModel
 from django import forms
 
 
@@ -53,3 +53,11 @@ class GetAnnotationSerializer(serializers.ModelSerializer):
         model = Annotation
         fields = ('project_id', 'tagger', 'tags',
                   'relations', 'co_occcurrence', 'annotation_status')
+
+class UserModelSerializer(serializers.ModelSerializer):
+    user_model = forms.FileField()
+    user_model_name = serializers.CharField(allow_blank=False)
+
+    class Meta:
+        model = UserModel
+        fields = ('model_id', 'user_model','user_model_name')

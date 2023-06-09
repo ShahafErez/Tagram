@@ -13,9 +13,11 @@ export default function AnnotationCoOccurrence(props) {
     props.coOccurrenceSummary
   ); //The saved co occurrence. Will be saved in db
 
+  const [current_key, setCurrentKey] = useState(0);
   // tokens were selected
   function handleValueChange(key, selectedValue) {
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
+    setCurrentKey(key);
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
 
@@ -92,6 +94,12 @@ export default function AnnotationCoOccurrence(props) {
     return tokenString;
   }
 
+  function getUnderline(key) {
+    if (key === current_key) {
+      return "underline";
+    }
+    return "";
+  }
   return (
     <div class="annotate">
       <div style={{ padding: "10px" }}>
@@ -103,13 +111,17 @@ export default function AnnotationCoOccurrence(props) {
                 class="border border-secondary rounded"
                 style={{ marginTop: "15px" }}
               >
-                <div class="text">
+                <div
+                  class="text"
+                  style={{ maxHeight: "400px", overflow: "auto" }}
+                >
                   {file.map((sentence, key) => {
                     return (
                       <TokenAnnotator
                         style={{
                           padding: "5px",
                           lineHeight: 1.5,
+                          textDecoration: getUnderline(key),
                         }}
                         tokens={sentence.split(" ")}
                         value={currentState[key]}
@@ -131,12 +143,20 @@ export default function AnnotationCoOccurrence(props) {
                   })}
                 </div>
               </div>
+            </div>
 
+            <div class="col-6 col-md-4">
+              <button
+                class="btn btn-secondary"
+                onClick={handleSave}
+                style={{ marginRight: "10px" }}
+              >
+                save co-occurrence set
+              </button>
               <button
                 type="submit"
                 class="btn btn-passive"
                 style={{
-                  marginRight: "10px",
                   backgroundColor: "#adb5bd",
                 }}
                 title="clear all selected tags"
@@ -144,12 +164,7 @@ export default function AnnotationCoOccurrence(props) {
               >
                 Clear
               </button>
-              <button class="btn btn-secondary" onClick={handleSave}>
-                save co-occurrence set
-              </button>
-            </div>
 
-            <div class="col-6 col-md-4">
               <h4>Selected Co-Occurrence</h4>
               <div style={{ width: "80%", margin: "auto" }}>
                 <table class="table">

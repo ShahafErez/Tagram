@@ -66,9 +66,10 @@ export default function CorrectnessPage(props) {
                 marginBottom: "0px",
               }}
             ></i>{" "}
-            faild connextra check. defect type: {value["Defect kind"]}
+            faild connextra check. defect type:{" "}
+            {value["Defect kind"].replace("_", " ")}
             {", "}
-            {value["Defect subkind"]}
+            {value["Defect subkind"].replace("_", " ")}
           </p>
         </div>
       );

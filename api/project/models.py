@@ -66,3 +66,20 @@ class Annotation(models.Model):
     # optional statuses: not_submitted, submitted, changes_requested
     annotation_status = models.CharField(
         max_length=20, default="not_submitted")
+    
+def generate_usermodel_unique_code():
+    length = 6
+
+    while True:
+        id = ''.join(random.choices(string.ascii_uppercase, k=length))
+        # checking if other annotation has his id
+        if UserModel.objects.filter(model_id=id).count() == 0:
+            break
+    return id
+class UserModel(models.Model):
+    model_id = models.CharField(
+    max_length=8, default=generate_usermodel_unique_code, unique=True, primary_key=True)
+    user_model = models.FileField(upload_to='./user_models',unique=True)
+    user_model_name = models.CharField(max_length=30, null=False)
+
+

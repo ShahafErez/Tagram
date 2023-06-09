@@ -8,33 +8,6 @@ from .models import MetaTagging, MetaTaggingLabels
 """ Meta Tagging """
 
 
-class MetaTaggingView(generics.ListAPIView):
-    """
-        Gets all of the meta tagging in the database
-    """
-    queryset = MetaTagging.objects.all()
-    serializer_class = MetaTaggingSerializer
-
-
-class GetMetaTagging(APIView):
-    """
-        Get meta-tagging details by a given id in path
-    """
-    serializer_class = MetaTaggingSerializer
-    lookup_url_kwarg = 'id'
-
-    def get(self, request, format=None):
-        # Getting meta-tagging id from path
-        meta_tagging_id = request.GET.get(self.lookup_url_kwarg)
-        if meta_tagging_id != None:
-            query = MetaTagging.objects.filter(meta_tagging_id=meta_tagging_id)
-            if len(query) > 0:
-                data = MetaTaggingSerializer(query[0]).data
-                return Response(data, status=status.HTTP_200_OK)
-            return Response({"Invalid meta-tagging id."}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid post data, did not find a meta tagging id'}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class CreateMetaTaggingView(APIView):
     """
         Creates a new meta tagging
@@ -43,33 +16,22 @@ class CreateMetaTaggingView(APIView):
 
     def post(self, request, format=None):
 
-        # checking if we have an active session with the user
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
         # serialize all the data that was sent
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            username = serializer.data.get('username')
             title = serializer.data.get('title')
-            metaTagging = MetaTagging(title=title)
+            metaTagging = MetaTagging(
+                title=title, username=username, test=test)
             metaTagging.save()
             # saving the current meta tagging id in the session, so we could return the user to it if needed
             # storing a custom variable in the user session
             self.request.session['meta_tagging_id'] = metaTagging.meta_tagging_id
-
             return Response({'meta_tagging_id': metaTagging.meta_tagging_id}, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-""" Meta Tagging  Lebals"""
-
-
-class MetaTaggingLabelView(generics.ListAPIView):
-    """
-        Gets all of labels in the database
-    """
-    queryset = MetaTaggingLabels.objects.all()
-    serializer_class = MetaTaggingLabelSerializer
+""" Meta Tagging  Labels"""
 
 
 class GetLabelsByMetaTaggingId(APIView):
@@ -134,20 +96,27 @@ class GetLabelsGroupByMetaTagging(APIView):
         Get all labels, grouped by meta tagging id
     """
 
+    lookup_url_kwarg = 'username'
+
     def get(self, request, format=None):
         data_response = []
 
         # getting all mega-tagging, for each- getting all the labels
-        meta_taggings = MetaTagging.objects.all()
-        for meta_tagging in meta_taggings:
-            query = MetaTaggingLabels.objects.filter(
-                meta_tagging_id=meta_tagging.meta_tagging_id)
-            labels = []
-            for label in query:
-                labels.append(MetaTaggingLabelSerializer(label).data)
-            data_response.append({
-                'meta_tagging_id': meta_tagging.meta_tagging_id,
-                'title': meta_tagging.title,
-                'labels': labels
-            })
-        return Response(data_response, status=status.HTTP_200_OK)
+        username = request.GET.get(self.lookup_url_kwarg)
+        print("username ", username)
+        if username != None:
+            meta_taggings = MetaTagging.objects.filter(username=username)
+            print("meta_taggings ", meta_taggings)
+            for meta_tagging in meta_taggings:
+                query = MetaTaggingLabels.objects.filter(
+                    meta_tagging_id=meta_tagging.meta_tagging_id)
+                labels = []
+                for label in query:
+                    labels.append(MetaTaggingLabelSerializer(label).data)
+                data_response.append({
+                    'meta_tagging_id': meta_tagging.meta_tagging_id,
+                    'title': meta_tagging.title,
+                    'labels': labels
+                })
+            return Response(data_response, status=status.HTTP_200_OK)
+        return Response({'Bad Request': 'Invalid post data, did not find a username'}, status=status.HTTP_400_BAD_REQUEST)

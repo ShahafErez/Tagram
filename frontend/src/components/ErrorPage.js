@@ -1,13 +1,6 @@
-import React, { useEffect } from "react";
-import { SessionService } from "./SessionService";
+import React from "react";
 
-export default function HomePage() {
-  // updating the seesion service
-  let sessionService = new SessionService();
-  useEffect(() => {
-    sessionService.updateSession();
-  }, []);
-
+export default function ErrorPage() {
   return (
     <div
       class="card project-page"
@@ -20,7 +13,7 @@ export default function HomePage() {
       }}
     >
       <h2 style={{ margintTop: "5px", marginBottom: "20px" }}>
-        Welcome to Tagram
+        Page not found, or you don't have permissions
       </h2>
       <img
         src="../../static/frontend/logo.gif"

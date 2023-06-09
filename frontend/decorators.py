@@ -1,13 +1,15 @@
 from django.shortcuts import redirect
 from django.http import HttpResponse
 
+
 def unauthenticated_user(view_func):
     def wrapper_func(request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect('/')
-        else: 
+        else:
             return view_func(request, *args, **kwargs)
     return wrapper_func
+
 
 def allowed_users(allowed_roles=[]):
     def decorator(view_func):
@@ -22,10 +24,10 @@ def allowed_users(allowed_roles=[]):
         return wrapper_func
     return decorator
 
+
 def is_admin(request):
-        if request.user.groups.exists():
-            group = request.user.groups.all()[0].name
-            if 'admins' == request.user.groups.all()[0].name:
-                return True
-            else:
-                return False
+    if request.user.groups.exists():
+        if 'admins' == request.user.groups.all()[0].name:
+            return True
+        else:
+            return False

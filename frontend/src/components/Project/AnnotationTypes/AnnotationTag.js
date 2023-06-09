@@ -1,6 +1,5 @@
 import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
-import { ReactSession } from "react-client-session";
 
 export default function AnnotationTag(props) {
   // mapping the selected tags and tag colors
@@ -16,15 +15,14 @@ export default function AnnotationTag(props) {
   const [currentState, setCurrentState] = useState(props.tagCurrentState); // a matrix, each story is in array, representing the values currenly selected
   const [tagsSummary, setTagsSummary] = useState(props.tagSummary); // an array, all values that were selected and saved
   const [tag, setTag] = useState(tag_options[0]); // tag- currently selected tag
-  let tagSessionField = props.tagSessionField; // string representing the value of the field to be saved in react session
-
+  const [current_key, setCurrentKey] = useState(0);
   // tokens were selected
   function handleValueChange(key, selectedValue) {
+    setCurrentKey(key);
     let temp_current_state = JSON.parse(JSON.stringify(currentState));
     temp_current_state[key] = selectedValue;
     setCurrentState(temp_current_state);
     props.onChangeTags(tagsSummary, temp_current_state);
-    ReactSession.set(tagSessionField, temp_current_state);
   }
 
   // tokens were un-selected
@@ -60,7 +58,6 @@ export default function AnnotationTag(props) {
     let new_current_state = new Array(file.length).fill([]);
     setCurrentState(new_current_state);
     props.onChangeTags(temp_tags_summary, new_current_state);
-    ReactSession.set(tagSessionField, new_current_state);
   }
 
   // Removing tagging set
@@ -76,7 +73,6 @@ export default function AnnotationTag(props) {
     let new_current_state = new Array(file.length).fill([]);
     setCurrentState(new_current_state);
     props.onChangeTags(tagsSummary, new_current_state);
-    ReactSession.set(tagSessionField, new_current_state);
   }
 
   function processToken(value) {
@@ -86,7 +82,12 @@ export default function AnnotationTag(props) {
     });
     return tokenString;
   }
-
+  function getUnderline(key) {
+    if (key === current_key) {
+      return "underline";
+    }
+    return "";
+  }
   return (
     <div class="annotate">
       {currentState && (
@@ -112,13 +113,17 @@ export default function AnnotationTag(props) {
                   class="border border-secondary rounded"
                   style={{ marginTop: "15px" }}
                 >
-                  <div class="text">
+                  <div
+                    class="text"
+                    style={{ maxHeight: "400px", overflow: "auto" }}
+                  >
                     {file.map((sentence, key) => {
                       return (
                         <TokenAnnotator
                           style={{
                             padding: "5px",
                             lineHeight: 1.5,
+                            textDecoration: getUnderline(key),
                           }}
                           tokens={sentence.split(" ")}
                           value={currentState[key]}
@@ -141,12 +146,22 @@ export default function AnnotationTag(props) {
                     })}
                   </div>
                 </div>
+              </div>
 
+              <div class="col-6 col-md-4">
+                <button
+                  class="btn btn-secondary"
+                  style={{ marginRight: "10px" }}
+                  onClick={() => {
+                    handleSave();
+                  }}
+                >
+                  Save Tags
+                </button>
                 <button
                   type="submit"
                   class="btn btn-passive"
                   style={{
-                    marginRight: "10px",
                     backgroundColor: "#adb5bd",
                   }}
                   title="clear all selected tags"
@@ -154,17 +169,6 @@ export default function AnnotationTag(props) {
                 >
                   Clear
                 </button>
-                <button
-                  class="btn btn-secondary"
-                  onClick={() => {
-                    handleSave();
-                  }}
-                >
-                  Save Tags
-                </button>
-              </div>
-
-              <div class="col-6 col-md-4">
                 <h4>Selected Tags</h4>
                 <div style={{ width: "80%", margin: "auto" }}>
                   <table class="table">

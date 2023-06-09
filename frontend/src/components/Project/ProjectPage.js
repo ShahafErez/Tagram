@@ -5,7 +5,7 @@ import MetaTaggingObject from "./MetaTaggingObject";
 import AnnotationTag from "./AnnotationTypes/AnnotationTag";
 import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
 import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
-import ProjectErrorPage from "../ProjectErrorPage";
+import ErrorPage from "../ErrorPage";
 
 export default function ProjectPage() {
   let username = new URLSearchParams(window.location.search).get("username");
@@ -13,16 +13,8 @@ export default function ProjectPage() {
   let is_manager = ReactSession.get("is_admin");
   let { id } = useParams();
 
-  // the name of the field to be saved in the react session
-  let tagSessionField = `tagsCurrentState_${id}_${username}`;
-
   // setting project and file
-  const [project, setProject] = useState({
-    title: "",
-    description: "",
-    is_project_manager: false,
-    created_at: "",
-  });
+  const [project, setProject] = useState();
   const [file, setFile] = useState({
     file_id: "",
     file: "",
@@ -151,11 +143,8 @@ export default function ProjectPage() {
           setRelationCurrentState(new Array(arrayLength).fill([]));
           setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
           setAnnotationStatus(data.annotation_status);
+          setTagCurrentState(new Array(arrayLength).fill([]));
           // checking if the user has the current state saved in it's local storage
-          let localStorageCurrentState = ReactSession.get(tagSessionField);
-          localStorageCurrentState != undefined
-            ? setTagCurrentState(localStorageCurrentState)
-            : setTagCurrentState(new Array(arrayLength).fill([]));
         });
       }
     });
@@ -244,7 +233,7 @@ export default function ProjectPage() {
             class="card project-page"
             style={{
               textAlign: "center",
-              width: "90%",
+              width: "80%",
               margin: "auto",
               minHeight: "500px",
             }}
@@ -306,7 +295,6 @@ export default function ProjectPage() {
                     labels={tagsLabels}
                     tagSummary={tagSummary}
                     tagCurrentState={tagCurrentState}
-                    tagSessionField={tagSessionField}
                     onChangeTags={(newValueSummary, newValueCurrentState) => {
                       setTagSummary(newValueSummary);
                       setTagCurrentState(newValueCurrentState);
@@ -459,18 +447,17 @@ export default function ProjectPage() {
    * If not- showing error page
    */
   function renderPage() {
-    // console.log("is assigned ", isUserAssigned);
     // if the user is not manager- they can only see their taggings
     // if the username is not assigned to the project, the page will be blocked
     if (
-      (!is_manager && username != logged_in_user) ||
-      isUserAssigned == false
+      project.project_manager != logged_in_user &&
+      (username != logged_in_user || isUserAssigned == false)
     ) {
-      return <ProjectErrorPage />;
+      return <ErrorPage />;
     } else {
       return renderProjectPage();
     }
   }
 
-  return <div>{renderPage()}</div>;
+  return project != undefined && <div>{renderPage()}</div>;
 }

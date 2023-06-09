@@ -4,6 +4,7 @@ import { ReactSession } from "react-client-session";
 import CreateMetaTagging from "./CreateMetaTagging";
 import BrowseMetaTagging from "./BrowseMetaTagging";
 import CorrectnessPage from "./CorrectnessPage";
+import FileContent from "../FileContent";
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
@@ -168,7 +169,7 @@ export default function CreateProjectPage() {
   return (
     <div
       class="card"
-      style={{ maxWidth: "75%", margin: "auto", padding: "20px" }}
+      style={{ maxWidth: "80%", margin: "auto", padding: "20px" }}
     >
       {/* If we're in: create meta-tagging, browse meta-tagging or check correctness -> 
         we set the className to be 'hide', and we hide the content in style.css
@@ -210,9 +211,7 @@ export default function CreateProjectPage() {
             <input
               type="file"
               onChange={(e) => {
-                console.log("file!! ", e);
                 processFile(e.target.files[0]);
-                console.log("");
               }}
               style={{ marginTop: "0px" }}
             />
@@ -228,64 +227,14 @@ export default function CreateProjectPage() {
           </div>
           {/* if file exist- showing it in accordion display */}
           {fileContent != null && (
-            <div
-              class="accordion"
-              id="accordionExample"
-              style={{ marginTop: "15px" }}
-            >
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                  <button
-                    class="accordion-button"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne"
-                    aria-expanded="true"
-                    aria-controls="collapseOne"
-                  >
-                    Uploaded user stories
-                  </button>
-                </h2>
-                <div
-                  id="collapseOne"
-                  class="accordion-collapse collapse"
-                  aria-labelledby="headingOne"
-                  data-bs-parent="#accordionExample"
-                >
-                  <div class="accordion-body">
-                    <div>
-                      <ol class="list-group" style={{ marginLeft: "10px" }}>
-                        {fileContent.map((element, index) => (
-                          <li
-                            style={{ paddingLeft: "4px", paddingRight: "6px" }}
-                          >
-                            {element}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {fileContent != null && (
-            <div style={{ marginTop: "10px" }}>
-              <button
-                type="submit"
-                class="btn btn-outline-primary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsCheckingCorrectness(true);
+            <div style={{ marginTop: "15px" }}>
+              <FileContent
+                fileContent={fileContent}
+                showCorrectness={true}
+                isCheckingCorrectness={(isCheckingCorrectness) => {
+                  setIsCheckingCorrectness(isCheckingCorrectness);
                 }}
-              >
-                Edit stories & Check correctness
-                <i
-                  class="bi bi-pencil-square"
-                  style={{ marginLeft: "8px" }}
-                ></i>
-              </button>
+              />
             </div>
           )}
 
