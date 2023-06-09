@@ -4,6 +4,7 @@ import { ReactSession } from "react-client-session";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
+import EditProjectFunc from "./EditProjectPage";
 
 export default function AdminProjectPage() {
   let { projectId } = useParams();
@@ -122,6 +123,15 @@ export default function AdminProjectPage() {
                 Show Statistics
               </button>
               {showStatistics && <ProjectStatistics project_id={projectId} />}
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                onClick={() => editProject(true)}
+                style={{ marginLeft: "2%" }}
+              >
+                Edit project details
+              </button>
+              {editProjectDetails && <EditProjectFunc project_id={projectId} />}
             </div>
           </div>
         )}
