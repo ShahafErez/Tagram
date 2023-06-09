@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import GetUsersByProject, CreateUserProjectView, CreateUserView, GetProjectsByUsername, GetSessionDetails, UserView, IsAssigned
 
+from .views import (CreateUserProjectView, CreateUserView,
+                    GetProjectsByUsername, GetSessionDetails,
+                    GetUsersByProject, IsAssigned, UserView)
 
 urlpatterns = [
     path('getsession/', GetSessionDetails.as_view()),

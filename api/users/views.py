@@ -1,10 +1,12 @@
 from rest_framework import generics, status
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from api.project.models import Project
+from rest_framework.views import APIView
+
+from api.project.models import Annotation, Project
 from api.users.models import User, UsersInProject
-from api.project.models import Annotation
-from api.users.serializers import CreateUserSerializer, CreateUsersInProjectSerializer, UserSerializer, UsersInProjectSerializer
+from api.users.serializers import (CreateUserSerializer,
+                                   CreateUsersInProjectSerializer,
+                                   UserSerializer, UsersInProjectSerializer)
 
 
 class GetSessionDetails(APIView):

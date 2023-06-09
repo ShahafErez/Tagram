@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import MetaTaggingObject from "./MetaTaggingObject";
 import { ReactSession } from "react-client-session";
+import MetaTaggingObject from "./MetaTaggingObject";
 
 export default function BrowseMetaTagging(props) {
   let logged_in_user = ReactSession.get("username");

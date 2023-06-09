@@ -1,13 +1,12 @@
 import random
 import string
-from django.db import models
-from api.project.models import Project
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.core.mail import send_mail
-from django.conf import settings
 
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.db import models
+
+from api.project.models import Project
 
 
 def generate_unique_code():
@@ -26,12 +25,14 @@ class User(models.Model):
     is_project_manager = models.BooleanField(default=False)
 
     def send_new_user_notification(self):
-            subject = 'New User asked to be a project manager on Tagram'
-            message = 'A new user has registered on your site and asked to be a project manager. Username: %s, Email: %s' % (self.username, self.email)
-            from_email = settings.EMAIL_HOST_USER
-            recipient_list = ['shanirah@post.bgu.ac.il']  # Replace with the actual email address of the system manager
-            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-
+        subject = 'New User asked to be a project manager on Tagram'
+        message = 'A new user has registered on your site and asked to be a project manager. Username: %s, Email: %s' % (
+            self.username, self.email)
+        from_email = settings.EMAIL_HOST_USER
+        # Replace with the actual email address of the system manager
+        recipient_list = ['shanirah@post.bgu.ac.il']
+        send_mail(subject, message, from_email,
+                  recipient_list, fail_silently=False)
 
 
 class UsersInProject(models.Model):

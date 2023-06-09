@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import CreateMetaTaggingView, CreateMetaTaggingLabelView, GetLabelsByMetaTaggingId, GetLabelsGroupByMetaTagging
+
+from .views import (CreateMetaTaggingLabelView, CreateMetaTaggingView,
+                    GetLabelsByMetaTaggingId, GetLabelsGroupByMetaTagging)
 
 urlpatterns = [
     path('create', CreateMetaTaggingView.as_view()),

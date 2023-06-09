@@ -1,19 +1,22 @@
-import os
-import pickle
-import sys
 import importlib.util
-from rest_framework import generics, status
-from .serializers import ProjectSerializer, CreateProjectSerializer, FileSerializer, SaveAnnotationSerializer, GetAnnotationSerializer, EditAnnotationStatusSerializer, UserModelSerializer
-from .models import Project, File, Annotation, UserModel
+import json
+import os
+
+import pandas as pd
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from statsmodels.stats.inter_rater import fleiss_kappa
+
 from api.meta_tagging.models import MetaTagging
 from api.users.models import UsersInProject
-from rest_framework.views import APIView
-from rest_framework.response import Response
-import json
-from statsmodels.stats.inter_rater import fleiss_kappa, aggregate_raters
-import numpy as np
-import pandas as pd
-import subprocess
+
+from .models import Annotation, File, Project, UserModel
+from .serializers import (CreateProjectSerializer,
+                          EditAnnotationStatusSerializer,
+                          EditProjectSerializer, FileSerializer,
+                          GetAnnotationSerializer, ProjectSerializer,
+                          SaveAnnotationSerializer, UserModelSerializer)
 
 
 class CreateProjectView(APIView):
@@ -53,6 +56,30 @@ class CreateProjectView(APIView):
             project.save()
             return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EditProjectView(APIView):
+    """
+        Edit an existing project
+    """
+    lookup_url_kwarg = 'project_id'
+    serializer_class = EditProjectSerializer
+
+    def put(self, request, format=None):
+        project_id = request.GET.get(self.lookup_url_kwarg)
+        # Checking we got project id in the path param
+        if project_id != None:
+            project_query = Project.objects.filter(project_id=project_id)
+            if len(project_query) > 0:
+                serializer = self.serializer_class(data=request.data)
+                if serializer.is_valid():
+                    project = project_query[0]
+                    project.title = serializer.data.get('title')
+                    project.description = serializer.data.get('description')
+                    project.save()
+                    return Response({'Project information changed successfully.'}, status=status.HTTP_200_OK)
+            return Response({'Project Not Found': 'Invalid Project Id.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request': 'Invalid path, did not find a project id'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetProject(APIView):
@@ -401,7 +428,6 @@ class UploadUserModel(APIView):
 
     def post(self, request, format=None):
         try:
-            print(request.FILES['file'].name)
             file_query = UserModel.objects.filter(
                 user_model_name=request.FILES['file'].name)
             if len(file_query) > 0:

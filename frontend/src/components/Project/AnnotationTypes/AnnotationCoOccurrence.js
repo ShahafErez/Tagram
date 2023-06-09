@@ -1,5 +1,5 @@
-import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
+import { TokenAnnotator } from "react-text-annotate";
 
 export default function AnnotationCoOccurrence(props) {
   const file = props.file;
