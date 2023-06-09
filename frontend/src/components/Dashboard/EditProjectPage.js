@@ -61,7 +61,7 @@ export default function EditProjectPage(props) {
     e.preventDefault();
 
     fetch("/api/project/edit?project_id=" + props.project_id, {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
         title: "cdcd",
