@@ -145,13 +145,7 @@ export default function EditProjectPage(props) {
       {/* If we're in: create meta-tagging, browse meta-tagging or check correctness -> 
         we set the className to be 'hide', and we hide the content in style.css
       */}
-      <div
-        className={
-          isCreateMetaTagging || isBrowseMetaTagging || isCheckingCorrectness
-            ? "hide"
-            : ""
-        }
-      >
+      <div>
         {/* Create a new project form */}
         <h2>Edit project details</h2>
         <form onSubmit={handleSubmit}>
