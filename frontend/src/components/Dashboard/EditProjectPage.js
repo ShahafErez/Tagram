@@ -8,7 +8,7 @@ import CorrectnessPage from "../Project/CorrectnessPage";
 export default function EditProjectPage(props) {
   const navigate = useNavigate();
   let username = ReactSession.get("username");
-  let project = props;
+  let project_id = props.project_id;
   let projectName = props.projectName;
 
   // project details
@@ -67,21 +67,27 @@ export default function EditProjectPage(props) {
         title: title,
         description: description,
       }),
-    }).then(() => {
-      fetch("/api/users/create-user-project-mapping", {
-        method: "POST",
-        headers: { "Content-Type": "application/json ; charset=utf-8" },
-        body: JSON.stringify({
-          project: props.project_id,
-          user: selectedUsers,
-        }),
-      }).then((response) => {
-        if (response.status == 201) {
-        } else {
-          console.log("error");
-        }
+    })
+      .then(() => {
+        fetch(
+          "/api/project/delete-users-from-project?project_id=" +
+            props.project_id,
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json ; charset=utf-8" },
+          }
+        );
+      })
+      .then(() => {
+        fetch("/api/users/create-user-project-mapping", {
+          method: "POST",
+          headers: { "Content-Type": "application/json ; charset=utf-8" },
+          body: JSON.stringify({
+            project: props.project_id,
+            user: selectedUsers,
+          }),
+        });
       });
-    });
   };
 
   /* General */
@@ -108,6 +114,14 @@ export default function EditProjectPage(props) {
     // add/remove
     if (temp_users.includes(username)) {
       temp_users.splice(temp_users.indexOf(username), 1);
+      let temp_annotators = JSON.parse(JSON.stringify(annotators));
+      if (temp_annotators.includes(username)) {
+        temp_annotators.splice(temp_annotators.indexOf(username), 1);
+        if (temp_annotators.length == 0) {
+          temp_annotators.push("fakeUserOnlyForRemainLengthBiggerThanOne");
+        }
+        setAnnotators(temp_annotators);
+      }
     } else {
       temp_users.push(username);
     }
@@ -158,6 +172,7 @@ export default function EditProjectPage(props) {
       >
         {/* Create a new project form */}
         <h2>Edit project details</h2>
+        {selectedUsers}
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
             {projectDetailsTitle != null && (
