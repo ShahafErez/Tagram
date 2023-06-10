@@ -59,13 +59,21 @@ export default function EditProjectPage(props) {
   const handleSubmit = (e) => {
     // prevent the page from re-loading after submit
     e.preventDefault();
-
+    let titleBody = title;
+    let descriptionBody = description;
+    console.log(projectDetailsTitle.title);
+    if (title == "") {
+      titleBody = projectDetailsTitle.title;
+    }
+    if (description == "") {
+      descriptionBody = projectDetailsTitle.description;
+    }
     fetch("/api/project/edit?project_id=" + props.project_id, {
       method: "PUT",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        title: title,
-        description: description,
+        title: titleBody,
+        description: descriptionBody,
       }),
     })
       .then(() => {
