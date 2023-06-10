@@ -103,11 +103,25 @@ export default function AdminProjectPage() {
               <button
                 type="button"
                 class="btn btn-outline-primary"
+                onClick={() => navigate("/edit/" + projectInfo.project_id)}
+              >
+                Edit project{" "}
+                <i
+                  class="bi bi-pencil-square"
+                  style={{ marginLeft: "5px" }}
+                ></i>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                style={{ marginLeft: "15px" }}
                 onClick={() =>
                   navigate("/automation/" + projectInfo.project_id)
                 }
               >
                 Automatic Annotation
+                <i class="bi bi-calculator" style={{ marginLeft: "5px" }}></i>
               </button>
 
               <button
@@ -117,7 +131,9 @@ export default function AdminProjectPage() {
                 onClick={() => setShowStatistics(true)}
               >
                 Show Statistics
+                <i class="bi bi-graph-up" style={{ marginLeft: "5px" }}></i>
               </button>
+
               {showStatistics && <ProjectStatistics project_id={projectId} />}
             </div>
           </div>

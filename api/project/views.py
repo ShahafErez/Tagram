@@ -57,6 +57,28 @@ class CreateProjectView(APIView):
             return Response(ProjectSerializer(project).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
+class DeleteUsersFromProjectView(APIView):
+    """
+    Delete user-project connections for a specific project
+    """
+    lookup_url_kwarg = 'project_id'
+
+    def delete(self, request, format=None):
+        project = request.GET.get(self.lookup_url_kwarg)
+        # Checking we got project id in the path param
+        if project != None:
+            project_query = UsersInProject.objects.filter(project=project)
+            if len(project_query) > 0:
+                for userInProject in project_query:
+                    userInProject.delete()
+            annotation_query = Annotation.objects.filter(project=project)
+            if len(annotation_query) > 0:
+                for userInProject in annotation_query:
+                    userInProject.delete()
+            return Response({'Success': 'User-project connections deleted'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'Bad Request': 'Invalid project ID'}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class EditProjectView(APIView):
     """

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (CreateProjectView, EditProjectView, GetAnnotationByProject,
-                    GetAnnotationByTagger, GetAnnotatorsStatus,
+                    GetAnnotationByTagger, GetAnnotatorsStatus, DeleteUsersFromProjectView,
                     GetByProjectManager, GetFile, GetProcessedFile, GetProject,
                     GetProjectFleissKappaScore, GetUserModelsNames,
                     RunUserModel, SaveAnnotation, SendToAlgorithm,
@@ -13,6 +13,7 @@ urlpatterns = [
     path('edit', EditProjectView.as_view()),
     path('get', GetProject.as_view()),
     path('get-by-project-manager', GetByProjectManager.as_view()),
+    path('delete-users-from-project', DeleteUsersFromProjectView.as_view()),
 
     # file
     path('uploadfile', UploadFile.as_view()),
