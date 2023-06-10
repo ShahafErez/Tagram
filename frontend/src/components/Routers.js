@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import ProjectAutomation from "./Automation/ProjectAutomation";
 import AdminDashboardPage from "./Dashboard/AdminDashboardPage";
 import AdminProjectPage from "./Dashboard/AdminProjectPage";
+import EditProjectPage from "./Dashboard/EditProjectPage";
 import ProjectStatistics from "./Dashboard/ProjectStatistics";
 import ErrorPage from "./ErrorPage";
 import HomePage from "./HomePage";
@@ -15,6 +16,7 @@ export default function Routers() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/create" element={<CreateProjectPage />} />
+      <Route path="/edit/:projectId" element={<EditProjectPage />} />
       <Route path="/my-projects" element={<MyProjects />} />
       <Route path="/project/:id" element={<ProjectPage />} />
       <Route

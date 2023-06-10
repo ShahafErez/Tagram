@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ReactSession } from "react-client-session";
 import { useNavigate, useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
-import EditProjectFunc from "./EditProjectPage";
 import ProjectStatistics from "./ProjectStatistics";
 
 export default function AdminProjectPage() {
@@ -11,7 +10,6 @@ export default function AdminProjectPage() {
   const navigate = useNavigate();
   const [projectInfo, setProjectInfo] = useState();
   const [showStatistics, setShowStatistics] = useState(false);
-  const [editProjectDetails, editProject] = useState();
 
   useEffect(() => {
     fetch(`/api/project/get-annotators-status?project_id=${projectId}`)
@@ -105,11 +103,25 @@ export default function AdminProjectPage() {
               <button
                 type="button"
                 class="btn btn-outline-primary"
+                onClick={() => navigate("/edit/" + projectInfo.project_id)}
+              >
+                Edit project{" "}
+                <i
+                  class="bi bi-pencil-square"
+                  style={{ marginLeft: "5px" }}
+                ></i>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                style={{ marginLeft: "15px" }}
                 onClick={() =>
                   navigate("/automation/" + projectInfo.project_id)
                 }
               >
                 Automatic Annotation
+                <i class="bi bi-calculator" style={{ marginLeft: "5px" }}></i>
               </button>
 
               <button
@@ -119,17 +131,10 @@ export default function AdminProjectPage() {
                 onClick={() => setShowStatistics(true)}
               >
                 Show Statistics
+                <i class="bi bi-graph-up" style={{ marginLeft: "5px" }}></i>
               </button>
+
               {showStatistics && <ProjectStatistics project_id={projectId} />}
-              <button
-                type="button"
-                class="btn btn-outline-primary"
-                onClick={() => editProject(true)}
-                style={{ marginLeft: "2%" }}
-              >
-                Edit project details
-              </button>
-              {editProjectDetails && <EditProjectFunc project_id={projectId} />}
             </div>
           </div>
         )}

@@ -1,30 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ReactSession } from "react-client-session";
-import CreateMetaTagging from "../Project/CreateMetaTagging";
-import BrowseMetaTagging from "../Project/BrowseMetaTagging";
-import CorrectnessPage from "../Project/CorrectnessPage";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function EditProjectPage(props) {
   const navigate = useNavigate();
+  let { projectId } = useParams();
   let username = ReactSession.get("username");
-  let project_id = props.project_id;
-  let projectName = props.projectName;
 
   // project details
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [annotators, setAnnotators] = useState([]);
-  const [annotatorsStatus, setAnnotatorsStatus] = useState();
-
-  // page states
-  const [isCreateMetaTagging, setIsCreateMetaTagging] = useState(false);
-  const [isBrowseMetaTagging, setIsBrowseMetaTagging] = useState(false);
-  const [isCheckingCorrectness, setIsCheckingCorrectness] = useState(false);
-
-  // meta tagging
-  const [metaTaggingId, setMetaTaggingId] = useState("");
-  const [metaTaggingTitle, setMetaTaggingTitle] = useState("");
 
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
@@ -33,12 +19,12 @@ export default function EditProjectPage(props) {
 
   /* useEffects */
   useEffect(() => {
-    //set project's annotators array
+    // set project's annotators array
     getUsersByProject();
   }, []);
 
   useEffect(() => {
-    fetch("/api/project/get?project_id=" + props.project_id)
+    fetch("/api/project/get?project_id=" + projectId)
       .then((response) => response.json())
       .then((data) => {
         setProjectDetails(data);
@@ -68,7 +54,7 @@ export default function EditProjectPage(props) {
     if (description == "") {
       descriptionBody = projectDetailsTitle.description;
     }
-    fetch("/api/project/edit?project_id=" + props.project_id, {
+    fetch("/api/project/edit?project_id=" + projectId, {
       method: "PUT",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
@@ -78,8 +64,7 @@ export default function EditProjectPage(props) {
     })
       .then(() => {
         fetch(
-          "/api/project/delete-users-from-project?project_id=" +
-            props.project_id,
+          "/api/project/delete-users-from-project?project_id=" + projectId,
           {
             method: "DELETE",
             headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -91,7 +76,7 @@ export default function EditProjectPage(props) {
           method: "POST",
           headers: { "Content-Type": "application/json ; charset=utf-8" },
           body: JSON.stringify({
-            project: props.project_id,
+            project: projectId,
             user: selectedUsers,
           }),
         });
@@ -104,20 +89,12 @@ export default function EditProjectPage(props) {
   /* General */
   function getUsersByProject() {
     // get all annotators in project
-    fetch("/api/users/users-by-project/?project=" + props.project_id)
+    fetch("/api/users/users-by-project/?project=" + projectId)
       .then((response) => response.json())
       .then((data) => {
         // get users annotation
         setAnnotators(data.map((obj) => obj.username));
       });
-  }
-
-  /** Meta tagging is being saved */
-  function saveMetaTagging(metaTagging) {
-    setIsCreateMetaTagging(false);
-    setIsBrowseMetaTagging(false);
-    setMetaTaggingTitle(metaTagging.title);
-    setMetaTaggingId(metaTagging.meta_tagging_id);
   }
 
   function SelectUser(username) {
@@ -148,14 +125,8 @@ export default function EditProjectPage(props) {
     }
   }
 
-  function backToPage() {
-    setIsCreateMetaTagging(false);
-    setIsBrowseMetaTagging(false);
-    setIsCheckingCorrectness(false);
-  }
-
   useEffect(() => {
-    fetch(`/api/project/get-annotators-status?project_id=${props.project_id}`)
+    fetch(`/api/project/get-annotators-status?project_id=${projectId}`)
       .then((response) => {
         if (response.status != 200) {
           return;

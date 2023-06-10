@@ -7,9 +7,11 @@ export default function ProjectPreviewAdmin(props) {
     <div>
       {project ? (
         <div class="card project-preview">
-          <h4 class="card-title" style={{ marginBottom: "0px" }}>
-            {project.title}
-          </h4>
+          <div>
+            <h4 class="card-title" style={{ marginBottom: "0px" }}>
+              {project.title}
+            </h4>
+          </div>
           <hr style={{ marginTop: "10px" }} />
           {project.description ? (
             <div>

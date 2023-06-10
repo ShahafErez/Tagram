@@ -1,9 +1,8 @@
-from django.urls import path, re_path
-from .views import index, admin_index
-from .views import loginpage, logoutUser
-from .views import register
-from .forms import UserPasswordResetForm, SetPasswordForm
 from django.contrib.auth import views as auth_views
+from django.urls import path, re_path
+
+from .forms import SetPasswordForm, UserPasswordResetForm
+from .views import admin_index, index, loginpage, logoutUser, register
 
 app_name = 'frontend'
 
@@ -18,6 +17,7 @@ urlpatterns = [
     # admin_index
     # path('create', admin_index),
     path('create', index),
+    path('edit/<str:projectId>', index),
     path('manager/dashboard/<str:username>', index),
     path('manager/<str:projectId>', index),
     path('manager/<str:projectId>/statistics', index),
