@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ReactSession } from "react-client-session";
 import { useNavigate, useParams } from "react-router-dom";
 
-export default function EditProjectPage(props) {
+export default function EditProjectPage() {
   const navigate = useNavigate();
   let { projectId } = useParams();
   let username = ReactSession.get("username");
@@ -14,7 +14,7 @@ export default function EditProjectPage(props) {
 
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
-  const [projectDetailsTitle, setProjectDetails] = useState();
+  const [projectDetails, setProjectDetails] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   /* useEffects */
@@ -47,12 +47,11 @@ export default function EditProjectPage(props) {
     e.preventDefault();
     let titleBody = title;
     let descriptionBody = description;
-    console.log(projectDetailsTitle.title);
     if (title == "") {
-      titleBody = projectDetailsTitle.title;
+      titleBody = projectDetails.title;
     }
     if (description == "") {
-      descriptionBody = projectDetailsTitle.description;
+      descriptionBody = projectDetails.description;
     }
     fetch("/api/project/edit?project_id=" + projectId, {
       method: "PUT",
@@ -125,18 +124,6 @@ export default function EditProjectPage(props) {
     }
   }
 
-  useEffect(() => {
-    fetch(`/api/project/get-annotators-status?project_id=${projectId}`)
-      .then((response) => {
-        if (response.status != 200) {
-          return;
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setAnnotatorsStatus(data);
-      });
-  }, []);
   return (
     <div
       class="card"
@@ -150,7 +137,7 @@ export default function EditProjectPage(props) {
         <h2>Edit project details</h2>
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
-            {projectDetailsTitle != null && (
+            {projectDetails != null && (
               <div>
                 <label>Project Title</label>
                 <input
@@ -158,7 +145,7 @@ export default function EditProjectPage(props) {
                   id="exampleFormControlTextarea2"
                   type="text"
                   onChange={(e) => setTitle(e.target.value)}
-                  defaultValue={projectDetailsTitle.title}
+                  defaultValue={projectDetails.title}
                 />
 
                 <div style={{ marginTop: "15px" }}>
@@ -169,7 +156,7 @@ export default function EditProjectPage(props) {
                     class="form-control"
                     id="exampleFormControlTextarea1"
                     rows="3"
-                    defaultValue={projectDetailsTitle.description}
+                    defaultValue={projectDetails.description}
                     placeholder="Your project description"
                     onChange={(e) => setDescription(e.target.value)}
                   />
