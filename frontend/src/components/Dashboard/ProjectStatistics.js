@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import Alert from "react-bootstrap/Alert";
+import Badge from "react-bootstrap/Badge";
+import Form from "react-bootstrap/Form";
+import Kappa from "./Kappa";
 import ProjectRelationTable from "./ProjectRelationTable";
 import ProjectTagTable from "./ProjectTagTable";
-import Form from "react-bootstrap/Form";
-import Alert from "react-bootstrap/Alert";
-import Kappa from "./Kappa";
-import Badge from "react-bootstrap/Badge";
 
 export default function ProjectStatistics(props) {
   let project_id = props.project_id;
@@ -163,13 +163,15 @@ export default function ProjectStatistics(props) {
       const userTags = allAnnotationData.filter(
         (x) => x.tagger === annotators[u]
       );
-      let result_processUserTagAnnotation = processUserTagAnnotation(
-        userTags[0].tags
-      );
-      results.push({
-        user: annotators[u],
-        data: result_processUserTagAnnotation,
-      });
+      if (userTags.length > 0) {
+        let result_processUserTagAnnotation = processUserTagAnnotation(
+          userTags[0].tags
+        );
+        results.push({
+          user: annotators[u],
+          data: result_processUserTagAnnotation,
+        });
+      }
     }
 
     let temp_UsersTagsAnnotationStatistics = {};
@@ -225,24 +227,25 @@ export default function ProjectStatistics(props) {
       const userRels = allAnnotationData.filter(
         (x) => x.tagger === annotators[u]
       );
-      let result_processUserRelationAnnotation = processUserRelationAnnotation(
-        userRels[0].relations
-      );
-      results.push({
-        user: annotators[u],
-        data: result_processUserRelationAnnotation,
-      });
+      if (userRels.length > 0) {
+        let result_processUserRelationAnnotation =
+          processUserRelationAnnotation(userRels[0].relations);
+        results.push({
+          user: annotators[u],
+          data: result_processUserRelationAnnotation,
+        });
 
-      let temp_UsersRelationsAnnotationStatistics = {};
+        let temp_UsersRelationsAnnotationStatistics = {};
 
-      for (const r in results) {
-        temp_UsersRelationsAnnotationStatistics[results[r].user] =
-          results[r].data;
+        for (const r in results) {
+          temp_UsersRelationsAnnotationStatistics[results[r].user] =
+            results[r].data;
+        }
+
+        setUsersRelationsAnnotationStatistics(
+          temp_UsersRelationsAnnotationStatistics
+        );
       }
-
-      setUsersRelationsAnnotationStatistics(
-        temp_UsersRelationsAnnotationStatistics
-      );
     }
   }
 

@@ -128,7 +128,7 @@ export default function AdminProjectPage() {
                 type="button"
                 class="btn btn-outline-primary"
                 style={{ marginLeft: "15px" }}
-                onClick={() => setShowStatistics(true)}
+                onClick={() => setShowStatistics(!showStatistics)}
               >
                 Show Statistics
                 <i class="bi bi-graph-up" style={{ marginLeft: "5px" }}></i>
