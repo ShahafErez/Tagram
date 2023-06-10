@@ -1,5 +1,5 @@
-import { Subject } from "rxjs";
 import { ReactSession } from "react-client-session";
+import { Subject } from "rxjs";
 
 /** Single service that provides observable to session
  * The perpose of this class is to notify other components when user has logged in

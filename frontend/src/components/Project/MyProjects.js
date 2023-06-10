@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { ReactSession } from "react-client-session";
 import { useNavigate } from "react-router-dom";
 import ProjectPreview from "./ProjectPreview";
-import { ReactSession } from "react-client-session";
 
 export default function MyProjects() {
   let username = ReactSession.get("username");

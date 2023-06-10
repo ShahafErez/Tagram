@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { ReactSession } from "react-client-session";
-import MetaTaggingObject from "./MetaTaggingObject";
-import AnnotationTag from "./AnnotationTypes/AnnotationTag";
-import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
-import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
+import { useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
+import AnnotationCoOccurrence from "./AnnotationTypes/AnnotationCoOccurrence";
+import AnnotationRelation from "./AnnotationTypes/AnnotationRelation";
+import AnnotationTag from "./AnnotationTypes/AnnotationTag";
+import MetaTaggingObject from "./MetaTaggingObject";
 
 export default function ProjectPage() {
   let username = new URLSearchParams(window.location.search).get("username");

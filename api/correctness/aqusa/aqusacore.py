@@ -1,19 +1,13 @@
 import os
 import sys
 
-from api.correctness.aqusa.corefiles.wellformed import *
 from api.correctness.aqusa.corefiles.analyzer import *
 from api.correctness.aqusa.corefiles.globals import *
 from api.correctness.aqusa.corefiles.stories import *
+from api.correctness.aqusa.corefiles.wellformed import *
 
 
 def getConnextra(fileText):
-    print('======================================================\n' +
-          '                     AQUSA-Core\n' +
-          '    Requirements Engineering Lab, Utrecht University\n' +
-          '           Fabiano Dalpiaz, Garm Lucassen\n' +
-          '======================================================\n')
-
     defects.clear()
     allStories = Stories(None)
     init_format("txt")

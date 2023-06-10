@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 
 function SelectModelFile({ set_gobal_selectedModelName }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -40,7 +39,6 @@ function SelectModelFile({ set_gobal_selectedModelName }) {
         response.json();
       })
       .then((data) => {
-        console.log("ok");
         window.location.reload(false);
       });
   };

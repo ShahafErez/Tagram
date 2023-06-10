@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ProjectStatistics from "./ProjectStatistics";
 import { ReactSession } from "react-client-session";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
 import EditProjectFunc from "./EditProjectPage";
+import ProjectStatistics from "./ProjectStatistics";
 
 export default function AdminProjectPage() {
   let { projectId } = useParams();
@@ -23,7 +22,6 @@ export default function AdminProjectPage() {
         return response.json();
       })
       .then((data) => {
-        console.log("data ", data);
         setProjectInfo(data);
       });
   }, []);
@@ -140,15 +138,12 @@ export default function AdminProjectPage() {
   }
 
   function renderPage() {
-    console.log("hello");
     if (logged_in_user != projectInfo.project_manager) {
       return <ErrorPage />;
     } else {
       return renderAdminProjectPage();
     }
   }
-
-  console.log("projectInfo ", projectInfo);
 
   return <div>{projectInfo != undefined && <div>{renderPage()}</div>}</div>;
 }

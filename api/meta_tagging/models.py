@@ -1,6 +1,7 @@
-from django.db import models
 import random
 import string
+
+from django.db import models
 
 
 def generate_unique_code_meta_tagging():
@@ -19,7 +20,6 @@ class MetaTagging(models.Model):
                                        unique=True, primary_key=True)
     title = models.CharField(max_length=500)
     username = models.CharField(max_length=500)
-    test = models.CharField(max_length=500, default="1")
 
 
 def generate_unique_code_label():

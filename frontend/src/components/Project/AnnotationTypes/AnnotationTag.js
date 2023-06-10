@@ -1,5 +1,5 @@
-import { TokenAnnotator } from "react-text-annotate";
 import React, { useState } from "react";
+import { TokenAnnotator } from "react-text-annotate";
 
 export default function AnnotationTag(props) {
   // mapping the selected tags and tag colors
