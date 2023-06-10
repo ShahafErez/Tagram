@@ -87,6 +87,9 @@ export default function EditProjectPage(props) {
             user: selectedUsers,
           }),
         });
+      })
+      .then(() => {
+        navigate(`/manager/dashboard/${username}`);
       });
   };
 
@@ -172,7 +175,6 @@ export default function EditProjectPage(props) {
       >
         {/* Create a new project form */}
         <h2>Edit project details</h2>
-        {selectedUsers}
         <form onSubmit={handleSubmit}>
           <div style={{ marginTop: "15px" }}>
             {projectDetailsTitle != null && (
@@ -267,7 +269,7 @@ export default function EditProjectPage(props) {
           </div>
 
           {/* Saving is only enabled if all required fields are inserted */}
-          {title != "" && selectedUsers.length > 0 ? (
+          {selectedUsers.length > 0 ? (
             <button
               type="submit"
               class="btn btn-primary"
