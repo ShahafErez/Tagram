@@ -64,8 +64,8 @@ export default function EditProjectPage(props) {
       method: "PUT",
       headers: { "Content-Type": "application/json ; charset=utf-8" },
       body: JSON.stringify({
-        title: "cdcd",
-        description: "fddd",
+        title: title,
+        description: description,
       }),
     }).then(() => {
       fetch("/api/users/create-user-project-mapping", {
