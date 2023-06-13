@@ -10,18 +10,12 @@ export default function EditProjectPage() {
   // project details
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [annotators, setAnnotators] = useState([]);
+  const [unselectedAnnotators, setUnselectedAnnotators] = useState([]);
 
   // getting all users for selecting users to project
   const [users, setUsers] = useState([]);
   const [projectDetails, setProjectDetails] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
-
-  /* useEffects */
-  useEffect(() => {
-    // set project's annotators array
-    getUsersByProject();
-  }, []);
 
   useEffect(() => {
     fetch("/api/project/get?project_id=" + projectId)
@@ -36,6 +30,7 @@ export default function EditProjectPage() {
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
+        getUsersByProject(data);
       });
   }, []);
 
@@ -86,13 +81,23 @@ export default function EditProjectPage() {
   };
 
   /* General */
-  function getUsersByProject() {
+  function getUsersByProject(allUsers) {
     // get all annotators in project
     fetch("/api/users/users-by-project/?project=" + projectId)
       .then((response) => response.json())
       .then((data) => {
         // get users annotation
-        setAnnotators(data.map((obj) => obj.username));
+        let selectedUsers = data.map((obj) => obj.username);
+        console.log(selectedUsers);
+        let unselectedUsers = [];
+        allUsers.forEach((user) => {
+          // console.log("user ", user);
+          if (!selectedUsers.includes(user.username)) {
+            console.log("dont inclue ", user);
+            unselectedUsers.push(user);
+          }
+        });
+        setUnselectedAnnotators(unselectedUsers);
       });
   }
 
@@ -101,13 +106,13 @@ export default function EditProjectPage() {
     // add/remove
     if (temp_users.includes(username)) {
       temp_users.splice(temp_users.indexOf(username), 1);
-      let temp_annotators = JSON.parse(JSON.stringify(annotators));
+      let temp_annotators = JSON.parse(JSON.stringify(unselectedAnnotators));
       if (temp_annotators.includes(username)) {
         temp_annotators.splice(temp_annotators.indexOf(username), 1);
         if (temp_annotators.length == 0) {
           temp_annotators.push("fakeUserOnlyForRemainLengthBiggerThanOne");
         }
-        setAnnotators(temp_annotators);
+        setUnselectedAnnotators(temp_annotators);
       }
     } else {
       temp_users.push(username);
@@ -181,7 +186,7 @@ export default function EditProjectPage() {
                   aria-expanded="false"
                   aria-controls="collapseThree"
                 >
-                  Edit taggers of your project
+                  Add taggers to your project
                   <i
                     class="bi bi-person-add fa-6x"
                     style={{ fontSize: "25px", marginLeft: "8px" }}
@@ -196,28 +201,25 @@ export default function EditProjectPage() {
               >
                 <div class="accordion-body">
                   {users.length > 0 &&
-                    annotators.length > 0 &&
-                    users.map((user, index) => {
-                      const isChecked = annotators.some(
-                        (annotator) => annotator === String(user.username)
-                      );
-                      if (isChecked) {
-                        PreSelectUser(user.username);
-                      }
+                    unselectedAnnotators.length > 0 &&
+                    unselectedAnnotators.map((user, index) => {
                       const checkboxId = `flexCheckDefault_${index}`; // Unique id for each checkbox
+                      // console.log("user ", user);
                       return (
-                        <div class="form-check" key={index}>
+                        <div class="form-check">
                           <input
                             class="form-check-input"
                             type="checkbox"
                             value=""
-                            id={checkboxId}
-                            defaultChecked={isChecked}
+                            id="flexCheckDefault"
                             onClick={() => {
                               SelectUser(user.username);
                             }}
                           />
-                          <label class="form-check-label" htmlFor={checkboxId}>
+                          <label
+                            class="form-check-label"
+                            for="flexCheckDefault"
+                          >
                             {user.username}
                           </label>
                         </div>
