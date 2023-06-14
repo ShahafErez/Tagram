@@ -57,15 +57,6 @@ export default function EditProjectPage() {
       }),
     })
       .then(() => {
-        fetch(
-          "/api/project/delete-users-from-project?project_id=" + projectId,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json ; charset=utf-8" },
-          }
-        );
-      })
-      .then(() => {
         fetch("/api/users/create-user-project-mapping", {
           method: "POST",
           headers: { "Content-Type": "application/json ; charset=utf-8" },
@@ -118,15 +109,6 @@ export default function EditProjectPage() {
       temp_users.push(username);
     }
     setSelectedUsers(temp_users);
-  }
-
-  function PreSelectUser(username) {
-    let temp_users = JSON.parse(JSON.stringify(selectedUsers));
-    // add
-    if (temp_users.includes(username) == false) {
-      temp_users.push(username);
-      setSelectedUsers(temp_users);
-    }
   }
 
   return (
