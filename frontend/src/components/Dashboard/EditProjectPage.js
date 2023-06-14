@@ -79,12 +79,9 @@ export default function EditProjectPage() {
       .then((data) => {
         // get users annotation
         let selectedUsers = data.map((obj) => obj.username);
-        console.log(selectedUsers);
         let unselectedUsers = [];
         allUsers.forEach((user) => {
-          // console.log("user ", user);
           if (!selectedUsers.includes(user.username)) {
-            console.log("dont inclue ", user);
             unselectedUsers.push(user);
           }
         });
@@ -186,7 +183,6 @@ export default function EditProjectPage() {
                     unselectedAnnotators.length > 0 &&
                     unselectedAnnotators.map((user, index) => {
                       const checkboxId = `flexCheckDefault_${index}`; // Unique id for each checkbox
-                      // console.log("user ", user);
                       return (
                         <div class="form-check">
                           <input
