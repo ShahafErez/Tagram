@@ -33,6 +33,16 @@ export default function CreateProjectPage() {
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
+    // getting information from sessions
+    setTitle(ReactSession.get("title"));
+    setDescription(ReactSession.get("description"));
+    setMetaTaggingTitle(ReactSession.get("metaTaggingTitle"));
+    setMetaTaggingId(ReactSession.get("metaTaggingId"));
+    let selectedUsersSession = ReactSession.get("selectedUsers");
+    if (selectedUsersSession != undefined) {
+      setSelectedUsers(selectedUsersSession);
+    }
+
     fetch("/api/users/get-all")
       .then((response) => response.json())
       .then((data) => {
@@ -46,6 +56,8 @@ export default function CreateProjectPage() {
   const handleSubmit = (e) => {
     // prevent the page from re-loading after submit
     e.preventDefault();
+
+    resetSessionValues();
 
     fetch("/api/project/create", {
       method: "POST",
@@ -129,6 +141,8 @@ export default function CreateProjectPage() {
     setIsBrowseMetaTagging(false);
     setMetaTaggingTitle(metaTagging.title);
     setMetaTaggingId(metaTagging.meta_tagging_id);
+    ReactSession.set("metaTaggingTitle", metaTagging.title);
+    ReactSession.set("metaTaggingId", metaTagging.meta_tagging_id);
   }
 
   /** Updated file content is being saved
@@ -158,12 +172,21 @@ export default function CreateProjectPage() {
       temp_users.push(username);
     }
     setSelectedUsers(temp_users);
+    ReactSession.set("selectedUsers", temp_users);
   }
 
   function backToPage() {
     setIsCreateMetaTagging(false);
     setIsBrowseMetaTagging(false);
     setIsCheckingCorrectness(false);
+  }
+
+  function resetSessionValues() {
+    ReactSession.set("title", "");
+    ReactSession.set("description", "");
+    ReactSession.set("metaTaggingTitle", "");
+    ReactSession.set("metaTaggingId", "");
+    ReactSession.set("selectedUsers", []);
   }
 
   return (
@@ -191,7 +214,11 @@ export default function CreateProjectPage() {
               type="text"
               required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                let title = e.target.value;
+                setTitle(title);
+                ReactSession.set("title", title);
+              }}
               placeholder="Enter title"
             />
           </div>
@@ -204,7 +231,11 @@ export default function CreateProjectPage() {
               rows="3"
               value={description}
               placeholder="Your project description"
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                let description = e.target.value;
+                setDescription(description);
+                ReactSession.set("description", description);
+              }}
             />
           </div>
           <div style={{ marginTop: "15px" }}>
@@ -319,48 +350,72 @@ export default function CreateProjectPage() {
               >
                 <div class="accordion-body">
                   {users.length > 0 &&
-                    users.map((user, index) => (
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="flexCheckDefault"
-                          onClick={() => {
-                            SelectUser(user.username);
-                          }}
-                        />
-                        <label class="form-check-label" for="flexCheckDefault">
-                          {user.username}
-                        </label>
-                      </div>
-                    ))}
+                    users.map((user, index) => {
+                      const isChecked =
+                        selectedUsers.indexOf(user.username) == -1
+                          ? false
+                          : true;
+                      return (
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value=""
+                            id="flexCheckDefault"
+                            defaultChecked={isChecked}
+                            onClick={() => {
+                              SelectUser(user.username);
+                            }}
+                          />
+                          <label
+                            class="form-check-label"
+                            for="flexCheckDefault"
+                          >
+                            {user.username}
+                          </label>
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Saving is only enabled if all required fields are inserted */}
-          {title != "" &&
-          metaTaggingId != "" &&
-          selectedFile &&
-          selectedUsers.length > 0 ? (
+          <div style={{ marginTop: "15px" }}>
             <button
               type="submit"
-              class="btn btn-primary"
-              style={{ marginTop: "15px" }}
+              class="btn btn-passive"
+              style={{
+                marginRight: "10px",
+                backgroundColor: "#adb5bd",
+                width: "80px",
+              }}
+              onClick={() => {
+                setTitle("");
+                setDescription("");
+                setMetaTaggingTitle("");
+                setMetaTaggingId("");
+                setSelectedUsers([]);
+                resetSessionValues();
+                window.location.reload(true);
+              }}
             >
-              Save
+              Reset
             </button>
-          ) : (
-            <button
-              type="submit"
-              class="btn btn-primary disabled"
-              style={{ marginTop: "15px" }}
-            >
-              Save
-            </button>
-          )}
+            {/* Saving is only enabled if all required fields are inserted */}
+            {title != "" &&
+            metaTaggingId != "" &&
+            selectedFile &&
+            selectedUsers.length > 0 ? (
+              <button type="submit" class="btn btn-primary">
+                Save Project
+              </button>
+            ) : (
+              <button type="submit" class="btn btn-primary disabled">
+                Save Project
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
