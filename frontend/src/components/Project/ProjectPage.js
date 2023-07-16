@@ -45,6 +45,10 @@ export default function ProjectPage() {
   // annotation status
   const [annotationStatus, setAnnotationStatus] = useState();
 
+  // session variables
+  let currentTagsSession = `TagCurrentState_${id}_${username}`;
+  let currentRelationSession = `RelationCurrentState_${id}_${username}`;
+  let currentCoOccurrenceSession = `CoOccurrenceCurrentState_${id}_${username}`;
   function getPojectDetails() {
     fetch("/api/users/is-assigned?username=" + username + "&project_id=" + id)
       .then((response) => {
@@ -128,22 +132,33 @@ export default function ProjectPage() {
         "&tagger=" +
         username
     ).then((response) => {
+      // set tags from session
+      ReactSession.get(currentTagsSession) == undefined
+        ? setTagCurrentState(new Array(arrayLength).fill([]))
+        : setTagCurrentState(ReactSession.get(currentTagsSession));
+
+      // set relation from session
+      ReactSession.get(currentRelationSession) == undefined
+        ? setRelationCurrentState(new Array(arrayLength).fill([]))
+        : setRelationCurrentState(ReactSession.get(currentRelationSession));
+
+      // set co occurrence from session
+      ReactSession.get(currentCoOccurrenceSession) == undefined
+        ? setCoOccurrenceCurrentState(new Array(arrayLength).fill([]))
+        : setCoOccurrenceCurrentState(
+            ReactSession.get(currentCoOccurrenceSession)
+          );
+
       if (response.status == 204) {
         // annotations not found, setting empty arrays
-        setRelationCurrentState(new Array(arrayLength).fill([]));
-        setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
         setAnnotationStatus("not_submitted");
-        setTagCurrentState(new Array(arrayLength).fill([]));
       } else if (response.status == 200) {
         // annotations found
         return response.json().then((data) => {
           setTagSummary(data.tags);
           setRelationSummary(data.relations);
           setCoOccurrenceSummary(data.co_occcurrence);
-          setRelationCurrentState(new Array(arrayLength).fill([]));
-          setCoOccurrenceCurrentState(new Array(arrayLength).fill([]));
           setAnnotationStatus(data.annotation_status);
-          setTagCurrentState(new Array(arrayLength).fill([]));
           // checking if the user has the current state saved in it's local storage
         });
       }
@@ -298,6 +313,10 @@ export default function ProjectPage() {
                     onChangeTags={(newValueSummary, newValueCurrentState) => {
                       setTagSummary(newValueSummary);
                       setTagCurrentState(newValueCurrentState);
+                      ReactSession.set(
+                        currentTagsSession,
+                        newValueCurrentState
+                      );
                     }}
                   />
                 )}
@@ -315,6 +334,10 @@ export default function ProjectPage() {
                       ) => {
                         setRelationSummary(newValueSummary);
                         setRelationCurrentState(newValueCurrentState);
+                        ReactSession.set(
+                          currentRelationSession,
+                          newValueCurrentState
+                        );
                       }}
                     />
                   )}
@@ -329,6 +352,10 @@ export default function ProjectPage() {
                     ) => {
                       setCoOccurrenceSummary(newValueSummary);
                       setCoOccurrenceCurrentState(newValueCurrentState);
+                      ReactSession.set(
+                        currentCoOccurrenceSession,
+                        newValueCurrentState
+                      );
                     }}
                   />
                 )}
