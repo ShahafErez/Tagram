@@ -182,7 +182,6 @@ export default function EditProjectPage() {
                   {users.length > 0 &&
                     unselectedAnnotators.length > 0 &&
                     unselectedAnnotators.map((user, index) => {
-                      const checkboxId = `flexCheckDefault_${index}`; // Unique id for each checkbox
                       return (
                         <div class="form-check">
                           <input
