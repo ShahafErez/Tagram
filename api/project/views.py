@@ -3,6 +3,8 @@ import json
 import os
 
 import pandas as pd
+from drf_yasg.utils import swagger_auto_schema
+from .swagger_api import *
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,7 +26,7 @@ class CreateProjectView(APIView):
         Creates a new project
     """
     serializer_class = CreateProjectSerializer
-
+    @swagger_auto_schema(**post_create_projet())
     def post(self, request, format=None):
 
         # checking if we have an active session with the user
@@ -62,7 +64,7 @@ class DeleteUsersFromProjectView(APIView):
     Delete user-project connections for a specific project
     """
     lookup_url_kwarg = 'project_id'
-
+    @swagger_auto_schema(**delete_users_from_project(lookup_url_kwarg))
     def delete(self, request, format=None):
         project = request.GET.get(self.lookup_url_kwarg)
         # Checking we got project id in the path param
@@ -87,6 +89,7 @@ class EditProjectView(APIView):
     lookup_url_kwarg = 'project_id'
     serializer_class = EditProjectSerializer
 
+    @swagger_auto_schema(**put_edit_project(lookup_url_kwarg))
     def put(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg)
         # Checking we got project id in the path param
@@ -111,6 +114,7 @@ class GetProject(APIView):
     serializer_class = ProjectSerializer
     lookup_url_kwarg = 'project_id'
 
+    @swagger_auto_schema(**get_project(lookup_url_kwarg))
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg)
         # Checking we got project id in the path param
@@ -129,7 +133,7 @@ class UploadFile(APIView):
     """
     Saving a file and related it to an existing project id
     """
-
+    @swagger_auto_schema(**post_upload_file())
     def post(self, request, format=None):
         project_id = request.POST['project_id']
         if project_id != None:
@@ -147,7 +151,7 @@ class GetProcessedFile(APIView):
     """
     Reciving a file and returning processed text
     """
-
+    @swagger_auto_schema(**get_processed_file())
     def post(self, request, format=None):
         new_file = request.FILES['myFile']
         f = new_file.open('r')
@@ -162,6 +166,7 @@ class GetFile(APIView):
     serializer_class = FileSerializer
     lookup_url_kwarg = 'project_id'
 
+    @swagger_auto_schema(**get_file(lookup_url_kwarg))
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg)
         if project_id != None:
@@ -186,6 +191,7 @@ class SaveAnnotation(APIView):
     """
     serializer_class = SaveAnnotationSerializer
 
+    @swagger_auto_schema(**post_save_annotation())
     def post(self, request, format=None):
         data = request.data
         project = None
@@ -229,6 +235,7 @@ class UpdateAnnotationStatus(APIView):
     lookup_url_kwarg_project_id = 'project_id'
     lookup_url_kwarg_tagger = 'tagger'
 
+    @swagger_auto_schema(**put_update_annotation_status(lookup_url_kwarg_project_id, lookup_url_kwarg_tagger))
     def put(self, request, format=None):
         data = request.data
         annotation_new_status = data['annotation_status']
@@ -254,6 +261,7 @@ class GetAnnotationByTagger(APIView):
     lookup_url_kwarg_project_id = 'project_id'
     lookup_url_kwarg_tagger = 'tagger'
 
+    @swagger_auto_schema(**get_annotation_by_tagger(lookup_url_kwarg_project_id, lookup_url_kwarg_tagger))
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg_project_id)
         tagger = request.GET.get(self.lookup_url_kwarg_tagger)
@@ -284,6 +292,7 @@ class GetAnnotationByProject(APIView):
     """
     lookup_url_kwarg_project_id = 'project_id'
 
+    @swagger_auto_schema(**get_annotation_by_project(lookup_url_kwarg_project_id))
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg_project_id)
         if project_id != None:
@@ -314,6 +323,7 @@ class GetAnnotationByProject(APIView):
 class GetAnnotatorsStatus(APIView):
     lookup_url_kwarg_project_id = 'project_id'
 
+    @swagger_auto_schema(**get_annotators_status(lookup_url_kwarg_project_id))
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg_project_id)
         if project_id != None:
@@ -345,6 +355,7 @@ class GetByProjectManager(APIView):
     """
     lookup_url_kwarg_project_manager = 'manager'
 
+    @swagger_auto_schema(**get_by_project_manager(lookup_url_kwarg_project_manager))
     def get(self, request, format=None):
         project_manager = request.GET.get(
             self.lookup_url_kwarg_project_manager)
@@ -360,6 +371,7 @@ class GetByProjectManager(APIView):
 
 
 class SendToAlgorithm(APIView):
+    @swagger_auto_schema(**post_send_to_algorithm())
     def post(self, request, format=None):
         if (request.data['project_id']):
             lst = request.data['tags']
@@ -430,6 +442,7 @@ class GetProjectFleissKappaScore(APIView):
         # return the numpy array
         return df.values
 
+    @swagger_auto_schema(**post_fleiss_kappa())
     def post(self, request, format=None):
 
         data = request.data['data']
@@ -447,7 +460,7 @@ class UploadUserModel(APIView):
     """
     Saving a usermodel
     """
-
+    @swagger_auto_schema(**upload_user_model_schema())
     def post(self, request, format=None):
         try:
             file_query = UserModel.objects.filter(
@@ -463,7 +476,7 @@ class UploadUserModel(APIView):
 
 
 class RunUserModel(APIView):
-
+    @swagger_auto_schema(**run_user_model())
     def post(self, request, format=None):
         try:
             model_name = request.data['user_model_name_']
@@ -488,7 +501,7 @@ class GetUserModelsNames(APIView):
     """
     Getting all UserModels
     """
-
+    @swagger_auto_schema(**get_user_model_names())
     def get(self, request, format=None):
         usermodel_query = UserModel.objects.filter()
         if len(usermodel_query) > 0:
