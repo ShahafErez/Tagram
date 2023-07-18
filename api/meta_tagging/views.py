@@ -6,6 +6,9 @@ from .models import MetaTagging, MetaTaggingLabels
 from .serializers import (CreateMetaTaggingSerializer,
                           MetaTaggingLabelSerializer, MetaTaggingSerializer)
 
+from drf_yasg.utils import swagger_auto_schema
+from .swagger_api import *
+
 """ Meta Tagging """
 
 
@@ -14,7 +17,7 @@ class CreateMetaTaggingView(APIView):
         Creates a new meta tagging
     """
     serializer_class = CreateMetaTaggingSerializer
-
+    @swagger_auto_schema(**post_create_meta_tagging())
     def post(self, request, format=None):
 
         # serialize all the data that was sent
@@ -42,6 +45,7 @@ class GetLabelsByMetaTaggingId(APIView):
     serializer_class = MetaTaggingSerializer
     lookup_url_kwarg = 'meta-tagging-id'
 
+    @swagger_auto_schema(**get_labels_by_meta_tagging_id())
     def get(self, request, format=None):
         meta_tagging_id = request.GET.get(self.lookup_url_kwarg)
 
@@ -65,7 +69,7 @@ class CreateMetaTaggingLabelView(APIView):
     """
         Creates new labels by a given meta tagging id
     """
-
+    @swagger_auto_schema(**post_create_label())
     def post(self, request, format=None):
 
         # checking if we have an active session with the user
@@ -99,6 +103,7 @@ class GetLabelsGroupByMetaTagging(APIView):
 
     lookup_url_kwarg = 'username'
 
+    @swagger_auto_schema(**get_labels_groups())
     def get(self, request, format=None):
         data_response = []
 

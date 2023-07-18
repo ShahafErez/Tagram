@@ -7,13 +7,15 @@ from api.users.models import User, UsersInProject
 from api.users.serializers import (CreateUserSerializer,
                                    CreateUsersInProjectSerializer,
                                    UserSerializer, UsersInProjectSerializer)
+from drf_yasg.utils import swagger_auto_schema
+from .swagger_api import *
 
 
 class GetSessionDetails(APIView):
     """
         Get project details by a given path param
     """
-
+    @swagger_auto_schema(**get_session_details())
     def get(self, request, format=None):
         username = ""
         is_admin = False
@@ -38,7 +40,7 @@ class CreateUserView(APIView):
         Creates a new user
     """
     serializer_class = CreateUserSerializer
-
+    @swagger_auto_schema(**post_create_user())
     def post(self, request, format=None):
 
         # serialize all the data that was sent
@@ -62,6 +64,7 @@ class CreateUserProjectView(APIView):
     """
     serializer_class = CreateUsersInProjectSerializer
 
+    @swagger_auto_schema(**post_create_user_project_mapping())
     def post(self, request, format=None):
 
         # checking if we have an active session with the user
@@ -111,6 +114,7 @@ class GetProjectsByUsername(APIView):
     """
     lookup_url_kwarg = 'user'
 
+    @swagger_auto_schema(**get_project_by_username())
     def get(self, request, format=None):
         user = request.GET.get(self.lookup_url_kwarg)
         if user != None:
@@ -133,7 +137,7 @@ class GetUsersByProject(APIView):
         Get all users for a given project
     """
     lookup_url_kwarg = 'project'
-
+    @swagger_auto_schema(**get_users_by_project())
     def get(self, request, format=None):
         project = request.GET.get(self.lookup_url_kwarg)
         if project != None:
@@ -157,6 +161,7 @@ class IsAssigned(APIView):
     lookup_url_kwarg_project_id = 'project_id'
     lookup_url_kwarg_project_username = 'username'
 
+    @swagger_auto_schema(**get_is_assinged())
     def get(self, request, format=None):
         project_id = request.GET.get(self.lookup_url_kwarg_project_id)
         user = request.GET.get(self.lookup_url_kwarg_project_username)
