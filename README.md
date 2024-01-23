@@ -1,22 +1,17 @@
+<img src="frontend/static/frontend/small_logo.png" width="350px"/>
 
-## What is Tagram?
+# Tagram: Tag, Annotate, and Model User Stories
 
-##### A WEB platform that is an infrastructure for processing, tagging and modeling a set of user stories.
-##### The system was built in order to support our mentors research requirements (Mr. Maxim Bargilovsky and Prof. Arnon Sturm). 
-##### This system will allow manage labeling projects, whose products will constitute the data that will train the ML model 
-##### (that extracts relationships and entities from a set of requirements presented in the form of user stories).
+Tagram is a web platform designed as an infrastructure for processing, tagging, and modeling sets of user stories. Developed to meet the research requirements of Mr. Maxim Bargilovsky and Prof. Arnon Sturm, Tagram facilitates the management of labeling projects. The labeled data from these projects serves as the training dataset for a machine learning model, extracting relationships and entities from user stories presented in various forms.
 
-## What you get from Tagram
+## Features at a Glance
 
-![GIF](frontend/static/frontend/readmegif.mp4)
-
-
-- **User managment** Sign up and login, when you make actions it's tied to your account.
-- **Create new annotation project** Project manager can create new project, uploat data file, set its name and description, set metatagging and add annotaitors.
-- **Create meta-tagging** Create new meta-tagging according to the desired model, choose tags names, color and type (tag/relation). Select from the existing meta-tagging.
-- **tagging process** Let you annotate tags, relations and co-occurrence, save all tagging in the system and export to file.
-- **Tagging statistics** Project manager can watch statistics of comparison between different taggers.
-- **User-stories correction** Let you correct spelling mistakes and check user stories template.
+- **User Management:** Sign up and log in to tie your actions to your account.
+- **Create New Annotation Projects:** Project managers can create new projects, upload data files, set names and descriptions, enable metatagging, and add annotators.
+- **Create Meta-Tagging:** Define new meta-tagging according to desired models, choosing tag names, colors, and types (tag/relation). Select from existing meta-tagging.
+- **Tagging Process:** Annotate tags, relations, and co-occurrences, save all tagging in the system, and export it to a file.
+- **Tagging Statistics:** Project managers can monitor statistics comparing different taggers.
+- **User-Stories Correction:** Correct spelling mistakes and check user story templates.
  
 ## Tagram future steps
 - **Automatic tagging** Automatic tagging of user stories based on machine learning algorithm.
@@ -38,7 +33,7 @@ cd frontend
 npm run dev
 ```
 
-## Why Tagram?
+## Why "Tagram"?
 
 ![Logo](frontend/static/frontend/small_logo.png)
 
