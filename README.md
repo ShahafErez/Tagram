@@ -35,8 +35,6 @@ npm run dev
 
 ## Why "Tagram"?
 
-![Logo](frontend/static/frontend/small_logo.png)
-
 consists of "TAG" and "GRAM". The process starts with manual tagging and ends with diagram created by a machine learning algorithm.
 Our logo is a Tangram puzzle (sounds like Tagram) in the shape of a camel that represents Ben Gurion University
 
