@@ -41,5 +41,3 @@ Our logo is a Tangram puzzle (sounds like Tagram) in the shape of a camel that r
 ## Meet our team
 The team members are Chen Mordehai, Shahaf Erez, Shani Rahamim and Noa Shpack.
 We are software & information systems engineering students at Ben Gurion University.
-For more information please contact us:
-tagram.bgu@gmail.com
