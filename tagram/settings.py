@@ -13,18 +13,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+from .secrets import DEBUG, EMAIL_HOST_PASSWORD, SECRET_KEY
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'whfxmu35o6%2)9z71og9*efq^7++so1%@i-nwekkj2d8&fi=$t'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = SECRET_KEY
+DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -143,4 +137,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tagramProjectManager@gmail.com'
-EMAIL_HOST_PASSWORD = 'dniywimrcxpabziq'
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD

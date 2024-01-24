@@ -29,7 +29,8 @@ python manage.py runserver
 
 The frontend part of Tagram app lies in the `frontend/` folder and written in React JS. In case you've made some changes there, the following commands should be run before building / starting the instance:
 ```
-cd frontend                                                  
+cd frontend
+npm install                                                  
 npm run dev
 ```
 
