@@ -54,4 +54,6 @@ Thumbs.db
 /api/project/uploads
 /api/correctness/aqusa/input
 /user_models
-tagram/secrets.py
+/tagram/config.py
+/venv/
+db.sqlite3

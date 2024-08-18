@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-from .secrets import DEBUG, EMAIL_HOST_PASSWORD, SECRET_KEY
+from .config import DEBUG, EMAIL_HOST_PASSWORD, SECRET_KEY
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'api.users.apps.UsersConfig',
     'api.correctness.apps.CorrectnessConfig',
     'drf_yasg',
+    'pandas',
+    'statsmodels',
+    'nltk',
+    'yattag'
 ]
 
 MIDDLEWARE = [
@@ -136,5 +140,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'tagramProjectManager@gmail.com'
+EMAIL_HOST_USER = 'shahaf221b@gmail.com'
 EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
